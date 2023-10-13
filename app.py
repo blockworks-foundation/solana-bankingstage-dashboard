@@ -7,6 +7,7 @@ app = Flask(__name__)
 @app.route('/txerrors')
 def table():
     maprows = dbtestcall.RunQuery()
+    print(maprows)
     return render_template('table.html', transactions=maprows)
 
 @app.route('/<name>')
