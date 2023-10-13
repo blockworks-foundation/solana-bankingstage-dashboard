@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ turbo() }}
     <title>Solana Transaction Errors</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
@@ -15,11 +14,11 @@
             --explorer-default-font: 'Rubik';
         }
     </style>
+    {{ turbo() }}
 </head>
-<body>
+<body data-turbo-suppress-warning>
 
-
-<div class="main-content pb-4">
+<div id="load" class="load main-content pb-4">
     <div class="containter mt-n2">
         <div class="card">
 
