@@ -1,8 +1,9 @@
 from flask import Flask, render_template
+from turbo_flask import Turbo
 import transaction_database
 
 app = Flask(__name__)
-
+turbo = Turbo(app)
 
 @app.route('/dashboard')
 def table():
