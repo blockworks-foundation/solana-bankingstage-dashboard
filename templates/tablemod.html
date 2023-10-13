@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>TABLE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='table-moderno.css') }}">
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript">
+        var data = []
+    </script>
+    <script src="https://cdn.jsdelivr.net/gh/an23lm/table-moderno@1.6/dist/table-moderno.js"></script>
+    <link
+            rel="stylesheet"
+            type="text/css"
+            href="https://cdn.jsdelivr.net/gh/an23lm/table-moderno@1.6/dist/table-moderno.css"
+    />
+</head>
+<body>
+    <h1>asdf,!</h1>
+
+    <div class="moderno-table-wrapper" id="table1">
+        <div class="moderno-table">
+            <div class="moderno-table-header">
+                <div class="moderno-table-row">
+                    <div class="moderno-table-item">ID</div>
+                    <div class="moderno-table-item">Name</div>
+                    <div class="moderno-table-item">Email</div>
+                    <div class="moderno-table-item">Phone</div>
+                    <div class="moderno-table-item">Profession</div>
+                    <div class="moderno-table-item">Hobbies</div>
+                </div>
+            </div>
+            <div class="moderno-table-body">
+                <div class="moderno-table-row">
+                    <div class="moderno-table-item">1</div>
+                    <div class="moderno-table-item">Patrick</div>
+                    <div class="moderno-table-item">thisispatrick@krustykrab.com</div>
+                    <div class="moderno-table-item">+1800-krusty-krab</div>
+                    <div class="moderno-table-item">
+                        Uh, that's the name of the restaurant
+                    </div>
+                    <div class="moderno-table-item">Sleeping</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const config = {
+            scrollBarType: "always",
+            widthByColumn: ["20%", "20%", "20%", "20%"],
+            stickColumnsLeft: [1],
+            stickColumnsRight: [4],
+            stickHeader: true,
+            singleLineRows: true,
+            highlightBodyColor: false,
+            highlightHeaderColor: false,
+            tooltip: true,
+            convertToLocaleString: true,
+            locale: "en-IN",
+            maximumFractionDigits: 2,
+            lazyLoad: true,
+            columnFit: "fixed",
+        };
+
+        var moderno = new TableModerno("table1", config);
+    </script>
+</body>
+</html>
