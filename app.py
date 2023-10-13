@@ -1,12 +1,12 @@
 from flask import Flask, render_template
-import dbtestcall
+import transaction_database
 
 app = Flask(__name__)
 
 
-@app.route('/txerrors')
+@app.route('/dashboard')
 def table():
-    maprows = dbtestcall.RunQuery()
+    maprows = transaction_database.RunQuery()
     print(maprows)
     return render_template('table.html', transactions=maprows)
 
