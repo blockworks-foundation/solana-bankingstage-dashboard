@@ -49,11 +49,13 @@
                         <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
                         <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
                         <td>
+                            {% for error in tx.errors_array %}
                             <div class="d-flex align-items-center">
                                 <div class="d-flex d-lg-none align-items-center"><span class="font-size-tiny me-2"></span><span
-                                        class="font-monospace text-danger">{{ tx.errors }}</span>
+                                        class="font-monospace text-danger">{{ error }}</span>
                                 </div>
                             </div>
+                            {% endfor %}
                         </td>
                     </tr>
                     {% endfor %}

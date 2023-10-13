@@ -21,7 +21,7 @@ def RunQuery():
         data = dict()
         data['signature'] = row[0]
         data['errors'] = row[1]
-        # data['errors_array'] = row[1].split(';')
+        data['errors_array'] = row[1].split(';')
         data['is_executed'] = row[2]
         data['is_confirmed'] = row[3]
         data['cu_requested'] = row[4]
