@@ -1,0 +1,14 @@
+
+.cusid {
+    height: 15px;
+    width: 15px;
+}
+.cusid.hide {
+    display: none;
+}
+.cusid.show {
+    display: inline;
+}
+#table1 {
+    width: 100%;
+}
