@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TABLE</title>
+    <title>Solana Transaction Errors</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
     <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
     <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
@@ -21,14 +21,14 @@
     <div class="containter mt-n2">
         <div class="card">
 
-            <div class="card-header align-items-center"><h3 class="card-header-title">Filtered Block Transactions (129/429)</h3>
+            <div class="card-header align-items-center"><h3 class="card-header-title">Transactions Errors</h3>
             </div>
             <div class="table-responsive mb-0">
                 <table class="table table-sm table-nowrap card-table">
                     <thead>
                     <tr>
                         <th class="text-muted c-pointer">#</th>
-                        <th class="text-muted">Result</th>
+                        <th class="text-muted">Execution</th>
                         <th class="text-muted">Transaction Signature</th>
                         <th class="text-muted text-end c-pointer">CU requested</th>
                         <th class="text-muted text-end c-pointer">Prio Fees</th>
@@ -38,12 +38,17 @@
                     <tbody class="list">
                     {% for tx in transactions %}
                     <tr>
-                        <td>5</td>
-                        <td><span class="badge bg-success-soft">Success</span></td>
+                        <td>{{ tx.pos }}</td>
+
+                        {% if tx.is_executed %}
+                        <td><span class="badge bg-success-soft">Executed</span></td>
+                        {% elif not tx.is_executed %}
+                        <td><span class="badge bg-warning-soft">Failed</span></td>
+                        {% endif %}
                         <td>
-                            <div class="d-flex align-items-center "><span class="font-size-tiny me-2"></span></span><span
+                            <div class="align-items-center" style="width:20em;text-overflow:ellipsis; overflow:hidden"><span class="font-size-tiny me-2"></span></span><span
                                     class="font-monospace"><a class=""
-                                                              href="/tx/{{ tx.signature }}">{{ tx.signature }}</a></span>
+                                                              href="https://explorer.solana.com/tx/{{ tx.signature }}">{{ tx.signature }}</a></span>
                             </div>
                         </td>
                         <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
@@ -51,7 +56,7 @@
                         <td>
                             {% for error in tx.errors_array %}
                             <div class="d-flex align-items-center">
-                                <div class="d-flex d-lg-none align-items-center"><span class="font-size-tiny me-2"></span><span
+                                <div class="d-flex align-items-center"><span class="font-size-tiny me-2"></span><span
                                         class="font-monospace text-danger">{{ error }}</span>
                                 </div>
                             </div>

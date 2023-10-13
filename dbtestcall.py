@@ -17,8 +17,11 @@ def RunQuery():
         """)
 
     maprows = []
+    pos = 1
     for row in result:
         data = dict()
+        data['pos'] = pos
+        pos += 1
         data['signature'] = row[0]
         data['errors'] = row[1]
         data['errors_array'] = row[1].split(';')
