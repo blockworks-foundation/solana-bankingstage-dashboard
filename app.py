@@ -17,11 +17,9 @@ def dashboard():
     maprows = transaction_database.RunQuery()
     return render_template('dashboard.html', transactions=maprows)
 
-# refresh all clients
-@app.route('/refresh')
-def refresh():
-    # turbo.push(turbo.replace(render_template('table.html'), 'datatable'))
-    return 'ok'
+@app.route('/recent-blocks')
+def recent_blocks():
+    return render_template('recent_blocks.html')
 
 
 def start_if_needed():
