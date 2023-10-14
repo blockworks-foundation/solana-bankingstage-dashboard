@@ -20,9 +20,11 @@
         <td><span class="badge bg-warning-soft">Failed</span></td>
         {% endif %}
         <td>
-            <div class="align-items-center" style="width:20em;text-overflow:ellipsis; overflow:hidden"><span class="font-size-tiny me-2"></span></span><span
-                    class="font-monospace"><a class=""
-                                              href="https://explorer.solana.com/tx/{{ tx.signature }}">{{ tx.signature }}</a></span>
+            <div class="align-items-center">
+                <span class="font-size-tiny me-2"></span>
+                <span class="font-monospace">
+                    <a href="https://explorer.solana.com/tx/{{ tx.signature }}">{{ tx.signature }}</a>
+                </span>
             </div>
         </td>
         <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
