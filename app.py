@@ -5,10 +5,17 @@ import threading
 import time
 from random import shuffle
 
+#
+# MAIN
+#
+
 app = Flask(__name__)
 # https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
 turbo = Turbo(app)
 app.update_thread_started = False
+
+
+######################
 
 
 @app.route('/dashboard')

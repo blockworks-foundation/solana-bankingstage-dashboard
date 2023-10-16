@@ -13,13 +13,15 @@ Pre-alpha / demo only
 
 
 ### Development
+**Caution:** Port `5000` cannot be used on MacOS.
+
 ```
 # Unix/macOS
 python3 -m venv .venv
 source .venv/bin/activate
-TEMPLATES_AUTO_RELOAD=True flask run --debug --reload
+TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
 ```
 
 Open Firefox Browser and navigate to ...
-* [Dashboard](http://localhost:5000/dashboard)
-* [Blocks and Tx Errors](http://localhost:5000/recent-blocks)
+* [Dashboard](http://localhost:5050/dashboard)
+* [Blocks and Tx Errors](http://localhost:5050/recent-blocks)
