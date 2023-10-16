@@ -14,5 +14,12 @@ Pre-alpha / demo only
 
 ### Development
 ```
+# Unix/macOS
+python3 -m venv .venv
+source .venv/bin/activate
 TEMPLATES_AUTO_RELOAD=True flask run --debug --reload
 ```
+
+Open Firefox Browser and navigate to ...
+* [Dashboard](http://localhost:5000/dashboard)
+* [Blocks and Tx Errors](http://localhost:5000/recent-blocks)
