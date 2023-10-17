@@ -13,14 +13,15 @@ def RunQuery():
                 ROW_NUMBER() OVER () AS pos,
                 signature,
                 message,
+                -- e.g. "Account in use-225558172:2;Account in use-225558173:1;"
                 errors,
                 is_executed,
                 is_confirmed,
                 first_notification_slot,
                 cu_requested,
                 prioritization_fees,
-                -- "OCT 17 12:29:17.5127"
                 utc_timestamp,
+                -- e.g. "OCT 17 12:29:17.5127"
                 to_char(utc_timestamp, 'MON DD HH24:MI:SS.FF4') as timestamp_formatted,
                 accounts_used
             FROM banking_stage_results.transaction_infos
