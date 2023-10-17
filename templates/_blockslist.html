@@ -1,0 +1,27 @@
+<table id="blockslist" class="table table-sm table-nowrap card-table">
+    <thead>
+    <tr>
+        <th class="text-muted">Slot #</th>
+        <th class="text-muted">Block content</th>
+        <th class="text-muted text-end">Tx errors/total</th>
+    </tr>
+    </thead>
+    <tbody class="list">
+    <tr>
+        <td><span class="text-primary">121.332</span></td>
+        <td>
+            <div class="progress">
+                <div class="progress-bar bg-info" role="progressbar" style="width: 95%"></div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: 5%"></div>
+            </div>
+        </td>
+        <td class="text-end">
+            {% if True %}
+            <span class="text-danger">130</span>
+            {% elif False %}
+            <span class="text-primary">0</span>
+            {% endif %}
+            /<span class="text-primary">2000</span></td>
+    </tr>
+    </tbody>
+</table>
