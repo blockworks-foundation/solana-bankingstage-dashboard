@@ -2,7 +2,12 @@ import math
 from typing import Union, Any
 
 import pg8000.native
+import log_scale
 
+# x: 0..1
+# out: "80%"
+def format_width(x):
+    return format(100.0 * x, "#.1f") + '%'
 
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
@@ -11,9 +16,20 @@ def calc_bars(row):
     total = processed_transactions + banking_stage_errors
     if total > 0:
         row['hide_bar'] = False
-        row['bar_success'] = format(100.0 * successful_transactions / total, '#.1f') + '%'
-        row['bar_txerror'] = format(100.0 * (processed_transactions - successful_transactions) / total, '#.1f') + '%'
-        row['bar_bankingerror'] = format(100.0 * banking_stage_errors / total, '#.1f') + '%'
+        a = successful_transactions / total
+        b = processed_transactions / total
+        c = (processed_transactions + banking_stage_errors) / total # effectively 1.0
+
+        print("a=", a, "b=", b, "c=", c)
+        la = log_scale.invlog_scale(a)
+        lb = log_scale.invlog_scale(b)
+        lc = log_scale.invlog_scale(c)
+        print("la=", la, "lb=", lb, "lc=", lc)
+
+        row['bar_success'] = format_width(la)
+        row['bar_txerror'] = format_width(lb - la)
+        row['bar_bankingerror'] = format_width(lc - lb)
+        print(row['bar_success'], row['bar_txerror'], row['bar_bankingerror'])
     else:
         row['hide_bar'] = True
 
