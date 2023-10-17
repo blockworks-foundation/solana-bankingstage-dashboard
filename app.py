@@ -46,5 +46,5 @@ def update_load():
             # TODO remove - this is for testing only
             shuffle(maprows)
             # note: the push sends update to all subscribed clients
-            turbo.push(turbo.replace(render_template('table.html', transactions=maprows), 'datatable'))
+            turbo.push(turbo.replace(render_template('_table.html', transactions=maprows), 'datatable'))
 
