@@ -3,6 +3,7 @@
     <tr>
         <th class="text-muted c-pointer">#</th>
         <th class="text-muted">Execution</th>
+        <th class="text-muted">Timestamp</th>
         <th class="text-muted">Transaction Signature</th>
         <th class="text-muted">Errors</th>
         <th class="text-muted text-end c-pointer">CU requested</th>
@@ -19,6 +20,14 @@
         {% elif not tx.is_executed %}
         <td><span class="badge bg-warning-soft">Failed</span></td>
         {% endif %}
+        <td>
+            <div class="align-items-center text-truncate" style="width:300px">
+                <span class="font-size-tiny me-2"></span>
+                <span class="font-monospace text-muted">
+                    {{ tx.timestamp_formatted }}
+                </span>
+            </div>
+        </td>
         <td>
             <div class="align-items-center text-truncate" style="width:300px">
                 <span class="font-size-tiny me-2"></span>
