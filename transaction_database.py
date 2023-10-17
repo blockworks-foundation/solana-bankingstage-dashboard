@@ -1,36 +1,38 @@
 import math
+from typing import Union, Any
+
 import pg8000.native
 
 def RunQuery():
-    # con = pg8000.native.Connection('postgres', password='postgres', host='localhost', port=5432, database='da11copy')
-    con = pg8000.native.Connection('query_user', password='Udoz4nahbeethohb', host='localhost', port=5432, database='da11copy')
-    result = con.run(
+    con = pg8000.dbapi.Connection('query_user', password='Udoz4nahbeethohb', host='localhost', port=5432, database='da11copy')
+    c = con.cursor()
+    c.execute(
         """
         SELECT * FROM (
             SELECT
-                signature,  RTRIM(NULLIF(errors, '')) as errors,
-                is_executed, is_confirmed,
-                cu_requested, prioritization_fees
+                ROW_NUMBER() OVER () AS pos,
+                signature,
+                message,
+                errors,
+                is_executed,
+                is_confirmed,
+                first_notification_slot,
+                cu_requested,
+                prioritization_fees,
+                "timestamp",
+                accounts_used
             FROM banking_stage_results.transaction_infos
         ) AS data
-        WHERE errors is not null
+        WHERE true
+        ORDER BY "timestamp"
         """)
 
-    maprows = []
-    pos = 1
-    for row in result:
-        data = dict()
-        data['pos'] = pos
-        pos += 1
-        data['signature'] = row[0]
-        data['errors'] = row[1]
-        data['errors_array'] = row[1].split(';')
-        data['is_executed'] = row[2]
-        data['is_confirmed'] = row[3]
-        data['cu_requested'] = row[4]
-        data['prioritization_fees'] = row[5]
-        # print(data)
-        maprows.append(data)
+    rows = c.fetchall()
+    keys = [k[0] for k in c.description]
+    maprows = [dict(zip(keys, row)) for row in rows]
+    print(maprows)
+
+
     return maprows
 
 def Main():
