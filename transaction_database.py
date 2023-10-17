@@ -19,12 +19,14 @@ def RunQuery():
                 first_notification_slot,
                 cu_requested,
                 prioritization_fees,
+                -- "OCT 17 12:29:17.5127"
                 "timestamp",
+                to_char("timestamp", 'MON DD HH24:MI:SS.FF4') as timestamp_formatted,
                 accounts_used
             FROM banking_stage_results.transaction_infos
+            WHERE true
+            ORDER BY "timestamp" DESC
         ) AS data
-        WHERE true
-        ORDER BY "timestamp"
         """)
 
     keys = [k[0] for k in cursor.description]
