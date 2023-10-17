@@ -20,12 +20,12 @@ def RunQuery():
                 cu_requested,
                 prioritization_fees,
                 -- "OCT 17 12:29:17.5127"
-                "timestamp",
-                to_char("timestamp", 'MON DD HH24:MI:SS.FF4') as timestamp_formatted,
+                utc_timestamp,
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.FF4') as timestamp_formatted,
                 accounts_used
             FROM banking_stage_results.transaction_infos
             WHERE true
-            ORDER BY "timestamp" DESC
+            ORDER BY utc_timestamp DESC
         ) AS data
         """)
 
@@ -37,6 +37,9 @@ def RunQuery():
         for row in maprows[:10]:
             print(row)
         print("...")
+
+    for row in maprows:
+        row['errors_array'] = row['errors'].rstrip().split(';')
 
     return maprows
 

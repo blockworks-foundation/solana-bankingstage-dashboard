@@ -43,8 +43,10 @@ def update_load():
         while True:
             time.sleep(1)
             maprows = transaction_database.RunQuery()
-            # TODO remove - this is for testing only
-            shuffle(maprows)
+            # manipulate the data to proof that the push works
+            if len(maprows) > 0:
+                maprows[0]['pos'] = 1000 + round(time.time()) % 9000
+                maprows[0]['errors_array'] = ["Account in use-12112:42","Account in use-12112:43"]
             # note: the push sends update to all subscribed clients
             turbo.push(turbo.replace(render_template('_table.html', transactions=maprows), 'datatable'))
 

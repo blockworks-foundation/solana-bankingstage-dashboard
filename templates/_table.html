@@ -21,8 +21,7 @@
         <td><span class="badge bg-warning-soft">Failed</span></td>
         {% endif %}
         <td>
-            <div class="align-items-center text-truncate" style="width:300px">
-                <span class="font-size-tiny me-2"></span>
+            <div class="align-items-center">
                 <span class="font-monospace text-muted">
                     {{ tx.timestamp_formatted }}
                 </span>
@@ -30,20 +29,25 @@
         </td>
         <td>
             <div class="align-items-center text-truncate" style="width:300px">
-                <span class="font-size-tiny me-2"></span>
                 <span class="font-monospace">
                     <a href="https://explorer.solana.com/tx/{{ tx.signature }}">{{ tx.signature }}</a>
                 </span>
             </div>
         </td>
         <td>
-            {% for error in tx.errors_array %}
-            <div class="d-flex align-items-center">
-                <div class="d-flex align-items-center"><span class="font-size-tiny me-2"></span><span
-                        class="font-monospace text-danger">{{ error }}</span>
-                </div>
+            <div class="d-flex align-items-left">
+                <table>
+                    {% for error in tx.errors_array %}
+                    <tr>
+                        <td>
+                            <span class="font-monospace text-danger">
+                                {{ error }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
             </div>
-            {% endfor %}
         </td>
         <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
         <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
