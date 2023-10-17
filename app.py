@@ -36,12 +36,15 @@ def start_if_needed():
     threading.Thread(target=update_load).start()
 
 
-
+# note: the poller needs to be started in web context to learn about the server parameters
 def update_load():
     with app.app_context():
         print('start update poller')
         while True:
             time.sleep(1)
             maprows = transaction_database.RunQuery()
+            # TODO remove - this is for testing only
             shuffle(maprows)
+            # note: the push sends update to all subscribed clients
             turbo.push(turbo.replace(render_template('table.html', transactions=maprows), 'datatable'))
+
