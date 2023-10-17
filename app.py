@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from turbo_flask import Turbo
 import transaction_database
+import recent_blocks_database
 import threading
 import time
 from random import shuffle
@@ -27,7 +28,8 @@ def dashboard():
 @app.route('/recent-blocks')
 def recent_blocks():
     start_if_needed()
-    return render_template('recent_blocks.html')
+    maprows = recent_blocks_database.RunQuery()
+    return render_template('recent_blocks.html', blocks=maprows)
 
 
 def start_if_needed():
@@ -50,5 +52,6 @@ def update_load():
                 maprows[0]['errors_array'] = ["Account in use-12112:42","Account in use-12112:43"]
             # note: the push sends update to all subscribed clients
             turbo.push(turbo.replace(render_template('_table.html', transactions=maprows), 'datatable'))
-            turbo.push(turbo.replace(render_template('_blockslist.html'), 'blockslist'))
+            maprows = recent_blocks_database.RunQuery()
+            turbo.push(turbo.replace(render_template('_blockslist.html', blocks=maprows), 'blockslist'))
 

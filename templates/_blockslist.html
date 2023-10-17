@@ -7,21 +7,37 @@
     </tr>
     </thead>
     <tbody class="list">
-    <tr>
-        <td><span class="text-primary">121.332</span></td>
-        <td>
-            <div class="progress">
-                <div class="progress-bar bg-info" role="progressbar" style="width: 95%"></div>
-                <div class="progress-bar bg-danger" role="progressbar" style="width: 5%"></div>
-            </div>
-        </td>
-        <td class="text-end">
-            {% if True %}
-            <span class="text-danger">130</span>
-            {% elif False %}
-            <span class="text-primary">0</span>
-            {% endif %}
-            /<span class="text-primary">2000</span></td>
-    </tr>
+        {% for block in blocks %}
+        <tr>
+            <td><span class="text-primary"> {{ block.slot }} </span></td>
+            <td>
+                <div style="width:10em">
+
+                    {% if not block.hide_bar %}
+                        <div class="progress">
+                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success }}"></div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror }}"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror }}"></div>
+                        </div>
+                        <div>
+                            {{ block.bar_success }} / {{ block.bar_txerror }} / {{ block.bar_bankingerror }}
+                        </div>
+                    {% else %}
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </td>
+            <td class="text-end">
+                {% if True %}
+                <span class="text-danger">130</span>
+                {% elif False %}
+                <span class="text-primary">0</span>
+                {% endif %}
+                /<span class="text-primary">2000</span></td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
