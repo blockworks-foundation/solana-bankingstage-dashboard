@@ -5,8 +5,8 @@ import pg8000.native
 
 def RunQuery():
     con = pg8000.dbapi.Connection('query_user', password='Udoz4nahbeethohb', host='localhost', port=5432, database='da11copy')
-    c = con.cursor()
-    c.execute(
+    cursor = con.cursor()
+    cursor.execute(
         """
         SELECT * FROM (
             SELECT
@@ -27,11 +27,14 @@ def RunQuery():
         ORDER BY "timestamp"
         """)
 
-    rows = c.fetchall()
-    keys = [k[0] for k in c.description]
-    maprows = [dict(zip(keys, row)) for row in rows]
-    print(maprows)
+    keys = [k[0] for k in cursor.description]
+    maprows = [dict(zip(keys, row)) for row in cursor]
 
+    # print first 10 rows
+    if True:
+        for row in maprows[:10]:
+            print(row)
+        print("...")
 
     return maprows
 
