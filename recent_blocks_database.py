@@ -33,10 +33,15 @@ def calc_bars(row):
         lb = log_scale.invlog_scale(b)
         lc = log_scale.invlog_scale(c)
 
-        # relative values for the bar widths
-        row['bar_success'] = format_width_percentage(la)
-        row['bar_txerror'] = format_width_percentage(lb - la)
-        row['bar_bankingerror'] = format_width_percentage(lc - lb)
+        # relative values for the bar labels (linear scale)
+        row['bar_success'] = format_width_percentage(a)
+        row['bar_txerror'] = format_width_percentage(b - a)
+        row['bar_bankingerror'] = format_width_percentage(c - b)
+
+        # relative values for the bar widths (log scale)
+        row['bar_success_log'] = format_width_percentage(la)
+        row['bar_txerror_log'] = format_width_percentage(lb - la)
+        row['bar_bankingerror_log'] = format_width_percentage(lc - lb)
     else:
         row['hide_bar'] = True
 

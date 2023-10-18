@@ -15,13 +15,13 @@
 
                     {% if not block.hide_bar %}
                         <div class="progress">
-                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success }}">
+                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success_log }}">
                                 <span class="overflow-hidden">{{ block.bar_success }}</span>
                             </div>
-                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror }}">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror_log }}">
                                 <span class="overflow-hidden">{{ block.bar_txerror }}</span>
                             </div>
-                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror }}">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror_log }}">
                                 <span class="overflow-hidden">{{ block.bar_bankingerror }}</span>
                             </div>
                         </div>
@@ -37,9 +37,9 @@
             <td class="text-end">
 
                 <div class="font-monospace">
-                    <span class="text-primary" style="display:inline-block; width:7em">proc:{{ block.processed_transactions }}</span>
-                    <span class="text-warning" style="display:inline-block; width:4em">fail:{{ block.txerrors }}</span>
-                    <span class="text-danger" style="display:inline-block; width:4em">bank:{{ block.banking_stage_errors }}</span>
+                    <span class="text-primary" style="display:inline-block; min-width:7em">proc:{{ block.processed_transactions }}</span>
+                    <span class="text-warning" style="display:inline-block; min-width:4em">fail:{{ block.txerrors }}</span>
+                    <span class="text-danger" style="display:inline-block; min-width:4em">bank:{{ block.banking_stage_errors }}</span>
                 </div>
 
             </td>

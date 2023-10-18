@@ -1,5 +1,5 @@
 def invlog_scale(x):
-    m=10
+    m=30
     return (pow(2,x * m)-1)/(pow(2,m)-1)
 
 if __name__=="__main__":
