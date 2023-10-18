@@ -3,7 +3,7 @@
     <tr>
         <th class="text-muted">Slot #</th>
         <th class="text-muted">Block content (log scale)</th>
-        <th class="text-muted text-end">Tx errors/total</th>
+        <th class="text-muted text-end">Tx success/processed/banking stage</th>
     </tr>
     </thead>
     <tbody class="list">
@@ -35,12 +35,12 @@
 
             </td>
             <td class="text-end">
-                {% if True %}
-                <span class="text-danger">130</span>
-                {% elif False %}
-                <span class="text-primary">0</span>
-                {% endif %}
-                /<span class="text-primary">2000</span></td>
+
+                <span class="text-primary">process:{{ block.processed_transactions }}</span>
+                <span class="text-primary text-warning">fail:{{ block.txerrors }}</span>
+                <span class="text-primary text-danger">bank:{{ block.banking_stage_errors }}</span>
+
+            </td>
         </tr>
         {% endfor %}
     </tbody>

@@ -9,6 +9,13 @@ def format_width_percentage(x):
     return format(100.0 * x, "#.1f") + '%'
 
 
+def calc_figures(row):
+    successful_transactions = row['successful_transactions']
+    processed_transactions = row['processed_transactions']
+    banking_stage_errors = row['banking_stage_errors']
+    txerrors = processed_transactions - successful_transactions
+    row['txerrors'] = txerrors
+
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
@@ -65,11 +72,14 @@ def run_query():
 
     for row in maprows:
         calc_bars(row)
+        calc_figures(row)
 
     return maprows
 
+
 def main():
     run_query()
+
 
 if __name__=="__main__":
     main()
