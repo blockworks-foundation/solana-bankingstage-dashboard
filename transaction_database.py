@@ -1,10 +1,8 @@
-import math
-from typing import Union, Any
+import postgres_connection
 
-import pg8000.native
 
-def RunQuery():
-    con = pg8000.dbapi.Connection('query_user', password='Udoz4nahbeethohb', host='localhost', port=5432, database='da11copy')
+def run_query():
+    con = postgres_connection.create_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -34,20 +32,19 @@ def RunQuery():
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, row)) for row in cursor]
 
-    # print first 10 rows
-    if True:
-        for row in maprows[:10]:
-            print(row)
-        print("...")
+    # print some samples
+    for row in maprows[:3]:
+        print(row)
+    print("...")
 
     for row in maprows:
         row['errors_array'] = row['errors'].rstrip().split(';')
 
     return maprows
 
-def Main():
-    RunQuery()
+def main():
+    run_query()
 
 if __name__=="__main__":
-    Main()
+    main()
 

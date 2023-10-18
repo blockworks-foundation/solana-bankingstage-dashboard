@@ -1,13 +1,13 @@
-import math
-from typing import Union, Any
-
-import pg8000.native
+import pg8000
 import log_scale
+import postgres_connection
 
-# x: 0..1
-# out: "80%"
-def format_width(x):
+
+# x: [0,1]
+# out: "80.0%" (shown on html page and used for CSS width: 80%)
+def format_width_percentage(x):
     return format(100.0 * x, "#.1f") + '%'
+
 
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
@@ -16,30 +16,26 @@ def calc_bars(row):
     total = processed_transactions + banking_stage_errors
     if total > 0:
         row['hide_bar'] = False
+        # absolute values in range [0,1]
         a = successful_transactions / total
         b = processed_transactions / total
         c = (processed_transactions + banking_stage_errors) / total # effectively 1.0
 
-        print("a=", a, "b=", b, "c=", c)
+        # absolute values in range [0,1] - log scaled
         la = log_scale.invlog_scale(a)
         lb = log_scale.invlog_scale(b)
         lc = log_scale.invlog_scale(c)
-        print("la=", la, "lb=", lb, "lc=", lc)
 
-        row['bar_success'] = format_width(la)
-        row['bar_txerror'] = format_width(lb - la)
-        row['bar_bankingerror'] = format_width(lc - lb)
-        print(row['bar_success'], row['bar_txerror'], row['bar_bankingerror'])
+        # relative values for the bar widths
+        row['bar_success'] = format_width_percentage(la)
+        row['bar_txerror'] = format_width_percentage(lb - la)
+        row['bar_bankingerror'] = format_width_percentage(lc - lb)
     else:
         row['hide_bar'] = True
 
-    # successful_transactions::real / (processed_transactions + banking_stage_errors)::real as bar_success,
-    # (processed_transactions - successful_transactions)::real / (processed_transactions + banking_stage_errors)::real as bar_txerror,
-    # banking_stage_errors::real / (processed_transactions + banking_stage_errors)::real as bar_bankingerror
 
-
-def RunQuery():
-    con = pg8000.dbapi.Connection('query_user', password='Udoz4nahbeethohb', host='localhost', port=5432, database='da11copy')
+def run_query():
+    con = postgres_connection.create_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -62,20 +58,19 @@ def RunQuery():
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, row)) for row in cursor]
 
-    # print first 10 rows
-    if True:
-        for row in maprows[:10]:
-            print(row)
-        print("...")
+    # print some samples
+    for row in maprows[:3]:
+        print(row)
+    print("...")
 
-        for row in maprows:
-            calc_bars(row)
+    for row in maprows:
+        calc_bars(row)
 
     return maprows
 
-def Main():
-    RunQuery()
+def main():
+    run_query()
 
 if __name__=="__main__":
-    Main()
+    main()
 

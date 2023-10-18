@@ -16,19 +16,31 @@ turbo = Turbo(app)
 app.update_thread_started = False
 
 
+transaction_database.run_query()
+recent_blocks_database.run_query()
+print("SELFTEST passed")
+
 ######################
 
 
 @app.route('/dashboard')
 def dashboard():
     start_if_needed()
-    maprows = transaction_database.RunQuery()
+    start = time.time()
+    maprows = transaction_database.run_query()
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("transaction_database.RunQuery() took", elapsed, "seconds")
     return render_template('dashboard.html', transactions=maprows)
 
 @app.route('/recent-blocks')
 def recent_blocks():
     start_if_needed()
-    maprows = recent_blocks_database.RunQuery()
+    start = time.time()
+    maprows = recent_blocks_database.run_query()
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
     return render_template('recent_blocks.html', blocks=maprows)
 
 
@@ -42,16 +54,15 @@ def start_if_needed():
 # note: the poller needs to be started in web context to learn about the server parameters
 def update_load():
     with app.app_context():
-        print('start update poller')
+        print('start turbo.js update poller')
         while True:
-            time.sleep(1)
-            maprows = transaction_database.RunQuery()
-            # manipulate the data to proof that the push works
-            if len(maprows) > 0:
-                maprows[0]['pos'] = 1000 + round(time.time()) % 9000
-                maprows[0]['errors_array'] = ["Account in use-12112:42","Account in use-12112:43"]
             # note: the push sends update to all subscribed clients
+
+            maprows = transaction_database.run_query()
             turbo.push(turbo.replace(render_template('_table.html', transactions=maprows), 'datatable'))
-            maprows = recent_blocks_database.RunQuery()
+
+            maprows = recent_blocks_database.run_query()
             turbo.push(turbo.replace(render_template('_blockslist.html', blocks=maprows), 'blockslist'))
+
+            time.sleep(1)
 

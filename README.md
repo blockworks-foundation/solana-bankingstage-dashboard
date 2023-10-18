@@ -19,9 +19,10 @@ Pre-alpha / demo only
 # Unix/macOS
 python3 -m venv .venv
 source .venv/bin/activate
-TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
+PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
 ```
 
 Open Firefox Browser and navigate to ...
 * [Dashboard](http://localhost:5050/dashboard)
 * [Blocks and Tx Errors](http://localhost:5050/recent-blocks)
+
