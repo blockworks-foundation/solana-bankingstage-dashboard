@@ -62,7 +62,7 @@ def update_load():
             turbo.push(turbo.replace(render_template('_table.html', transactions=maprows), 'datatable'))
 
             maprows = recent_blocks_database.run_query()
-            # turbo.push(turbo.replace(render_template('_blockslist.html', blocks=maprows), 'blockslist'))
+            turbo.push(turbo.replace(render_template('_blockslist.html', blocks=maprows), 'blockslist'))
 
             time.sleep(1)
 
