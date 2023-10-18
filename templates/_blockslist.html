@@ -15,9 +15,15 @@
 
                     {% if not block.hide_bar %}
                         <div class="progress">
-                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success }}">{{ block.bar_success }}</div>
-                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror }}">{{ block.bar_txerror }}</div>
-                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror }}">{{ block.bar_bankingerror }}</div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success }}">
+                                <span class="overflow-hidden">{{ block.bar_success }}</span>
+                            </div>
+                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror }}">
+                                <span class="overflow-hidden">{{ block.bar_txerror }}</span>
+                            </div>
+                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror }}">
+                                <span class="overflow-hidden">{{ block.bar_bankingerror }}</span>
+                            </div>
                         </div>
                         <!-- {{ block.bar_success }} / {{ block.bar_txerror }} / {{ block.bar_bankingerror }} -->
                     {% else %}
