@@ -61,7 +61,7 @@ def run_query():
                 total_cu_used,
                 total_cu_requested
             FROM banking_stage_results.blocks
-            WHERE true
+            WHERE banking_stage_errors > 0
             ORDER BY slot DESC
             LIMIT 30
         ) AS data
