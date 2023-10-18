@@ -1,4 +1,4 @@
-<table id="blockslist" class="table table-sm table-nowrap card-table">
+<table id="blockslist" class="table table-sm table-nowrap">
     <thead>
     <tr>
         <th class="text-muted">Slot #</th>
@@ -36,9 +36,11 @@
             </td>
             <td class="text-end">
 
-                <span class="text-primary">process:{{ block.processed_transactions }}</span>
-                <span class="text-primary text-warning">fail:{{ block.txerrors }}</span>
-                <span class="text-primary text-danger">bank:{{ block.banking_stage_errors }}</span>
+                <div class="font-monospace">
+                    <span class="text-primary" style="display:inline-block; width:7em">proc:{{ block.processed_transactions }}</span>
+                    <span class="text-warning" style="display:inline-block; width:4em">fail:{{ block.txerrors }}</span>
+                    <span class="text-danger" style="display:inline-block; width:4em">bank:{{ block.banking_stage_errors }}</span>
+                </div>
 
             </td>
         </tr>
