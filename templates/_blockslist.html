@@ -15,13 +15,13 @@
 
                     {% if not block.hide_bar %}
                         <div class="progress">
-                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success_log }}">
+                            <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success_scaled }}">
                                 <span class="overflow-hidden">{{ block.bar_success }}</span>
                             </div>
-                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror_log }}">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror_scaled }}">
                                 <span class="overflow-hidden">{{ block.bar_txerror }}</span>
                             </div>
-                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror_log }}">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror_scaled }}">
                                 <span class="overflow-hidden">{{ block.bar_bankingerror }}</span>
                             </div>
                         </div>

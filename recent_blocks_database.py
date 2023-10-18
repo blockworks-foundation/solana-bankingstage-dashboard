@@ -29,19 +29,23 @@ def calc_bars(row):
         c = (processed_transactions + banking_stage_errors) / total # effectively 1.0
 
         # absolute values in range [0,1] - log scaled
-        la = log_scale.invlog_scale(a)
-        lb = log_scale.invlog_scale(b)
-        lc = log_scale.invlog_scale(c)
+        # la = log_scale.invlog_scale(a)
+        # lb = log_scale.invlog_scale(b)
+        # lc = log_scale.invlog_scale(c)
+        # absolute values in range [0,1] - linear scale
+        la = a
+        lb = b
+        lc = c
 
         # relative values for the bar labels (linear scale)
         row['bar_success'] = format_width_percentage(a)
         row['bar_txerror'] = format_width_percentage(b - a)
         row['bar_bankingerror'] = format_width_percentage(c - b)
 
-        # relative values for the bar widths (log scale)
-        row['bar_success_log'] = format_width_percentage(la)
-        row['bar_txerror_log'] = format_width_percentage(lb - la)
-        row['bar_bankingerror_log'] = format_width_percentage(lc - lb)
+        # relative values for the bar widths (log/linear scale)
+        row['bar_success_scaled'] = format_width_percentage(la)
+        row['bar_txerror_scaled'] = format_width_percentage(lb - la)
+        row['bar_bankingerror_scaled'] = format_width_percentage(lc - lb)
     else:
         row['hide_bar'] = True
 
