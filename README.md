@@ -19,7 +19,7 @@ Pre-alpha / demo only
 # Unix/macOS
 python3 -m venv .venv
 source .venv/bin/activate
-PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
+SOLANA_CLUSTER=testnet PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
 ```
 
 Open Firefox Browser and navigate to ...
