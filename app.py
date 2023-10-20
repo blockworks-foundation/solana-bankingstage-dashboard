@@ -30,18 +30,19 @@ def dashboard():
     start_if_needed()
     this_config = config.get_config()
     start = time.time()
-    maprows = transaction_database.run_query()
+    maprows = list(transaction_database.run_query())
     elapsed = time.time() - start
     if elapsed > .5:
         print("transaction_database.RunQuery() took", elapsed, "seconds")
     return render_template('dashboard.html', config=this_config, transactions=maprows)
+
 
 @webapp.route('/recent-blocks')
 def recent_blocks():
     start_if_needed()
     this_config = config.get_config()
     start = time.time()
-    maprows = recent_blocks_database.run_query()
+    maprows = list(recent_blocks_database.run_query())
     elapsed = time.time() - start
     if elapsed > .5:
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
@@ -63,10 +64,10 @@ def update_load():
         while True:
             # note: the push sends update to all subscribed clients
 
-            maprows = transaction_database.run_query()
+            maprows = list(transaction_database.run_query())
             turbo.push(turbo.replace(render_template('_table.html', config=this_config, transactions=maprows), 'datatable'))
 
-            maprows = recent_blocks_database.run_query()
+            maprows = list(recent_blocks_database.run_query())
             turbo.push(turbo.replace(render_template('_blockslist.html', config=this_config, blocks=maprows), 'blockslist'))
 
             time.sleep(1)
