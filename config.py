@@ -10,5 +10,5 @@ def get_config():
         'devnet':{'cluster': 'devnet', 'cluster_label': 'Devnet'},
     }
     config = switch.get(cluster_param.lower())
-    assert config is not None, f"No Config for " + cluster_param
+    assert config is not None, f"No cluster config for <{cluster_param}>"
     return config

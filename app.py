@@ -11,14 +11,13 @@ import config
 # MAIN
 #
 
-app = Flask(__name__)
+webapp = Flask(__name__)
 # https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
-turbo = Turbo(app)
-app.update_thread_started = False
+turbo = Turbo(webapp)
+webapp.update_thread_started = False
 
 
-config = config.get_config()
-print("SOLANA_CLUSTER", config['cluster'])
+print("SOLANA_CLUSTER", config.get_config()['cluster'])
 transaction_database.run_query()
 recent_blocks_database.run_query()
 print("SELFTEST passed")
@@ -26,7 +25,7 @@ print("SELFTEST passed")
 ######################
 
 
-@app.route('/dashboard')
+@webapp.route('/dashboard')
 def dashboard():
     start_if_needed()
     this_config = config.get_config()
@@ -37,10 +36,10 @@ def dashboard():
         print("transaction_database.RunQuery() took", elapsed, "seconds")
     return render_template('dashboard.html', config=this_config, transactions=maprows)
 
-@app.route('/recent-blocks')
+@webapp.route('/recent-blocks')
 def recent_blocks():
     start_if_needed()
-    this_config = get_config()
+    this_config = config.get_config()
     start = time.time()
     maprows = recent_blocks_database.run_query()
     elapsed = time.time() - start
@@ -50,17 +49,17 @@ def recent_blocks():
 
 
 def start_if_needed():
-    if app.update_thread_started:
+    if webapp.update_thread_started:
         return
-    app.update_thread_started = True
+    webapp.update_thread_started = True
     threading.Thread(target=update_load).start()
 
 
 # note: the poller needs to be started in web context to learn about the server parameters
 def update_load():
-    with app.app_context():
+    with webapp.app_context():
         print('start turbo.js update poller')
-        this_config = app.get_config()
+        this_config = config.get_config()
         while True:
             # note: the push sends update to all subscribed clients
 
