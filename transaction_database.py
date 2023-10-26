@@ -38,7 +38,8 @@ def run_query():
     print("...")
 
     for row in maprows:
-        row['errors_array'] = row['errors'].rstrip().split(';')
+        # note: type changed from 'text' to 'text[]'
+        row['errors_array'] = row['errors']
 
     return maprows
 
