@@ -57,8 +57,16 @@ def is_slot_number(raw_string):
     return re.fullmatch("[0-9]+", raw_string) is not None
 
 
+
+def is_block_hash(raw_string):
+    # regex is not perfect - feel free to improve
+    return re.fullmatch("[0-9a-zA-Z]{43,44}", raw_string) is not None
+
+
 def is_tx_sig(raw_string):
     # regex is not perfect - feel free to improve
+    if is_block_hash(raw_string):
+        return False
     return re.fullmatch("[0-9a-zA-Z]{64,100}", raw_string) is not None
 
 
@@ -67,15 +75,23 @@ def search():
     this_config = config.get_config()
     if htmx:
         search_string = request.form.get("search").strip()
-        print("search_string=", search_string)
 
         if is_slot_number(search_string):
+            print("slot search=", search_string)
             maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html')
+        elif is_block_hash(search_string):
+            print("blockhash search=", search_string)
+            maprows = list(recent_blocks_database.find_block_by_blockhash(search_string))
+            if len(maprows):
+                return render_template('_blockslist.html', config=this_config, blocks=maprows)
+            else:
+                return render_template('_search_noresult.html')
         elif is_tx_sig(search_string):
+            print("txsig search=", search_string)
             maprows = list(transaction_database.find_transaction_by_sig(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows)
@@ -117,7 +133,7 @@ def update_load():
             # note: the push sends update to all subscribed clients
 
             maprows = list(transaction_database.run_query())
-            turbo.push(turbo.replace(render_template('_txlist.html', config=this_config, transactions=maprows), 'datatable'))
+            turbo.push(turbo.replace(render_template('_txlist.html', config=this_config, transactions=maprows), 'txlist'))
 
             maprows = list(recent_blocks_database.run_query())
             turbo.push(turbo.replace(render_template('_blockslist.html', config=this_config, blocks=maprows), 'blockslist'))

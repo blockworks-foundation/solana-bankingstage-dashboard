@@ -32,9 +32,9 @@ def run_query():
     maprows = [dict(zip(keys, row)) for row in cursor]
 
     # print some samples
-    for row in maprows[:3]:
-        print(row)
-    print("...")
+    # for row in maprows[:3]:
+    #     print(row)
+    # print("...")
 
     for row in maprows:
         # note: type changed from 'text' to 'text[]'
@@ -43,7 +43,7 @@ def run_query():
     return maprows
 
 
-def find_transaction_by_sig(tx_sig):
+def find_transaction_by_sig(tx_sig: str):
     con = postgres_connection.create_connection()
     cursor = con.cursor()
     # transaction table primary key is uses

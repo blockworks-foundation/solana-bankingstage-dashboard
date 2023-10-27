@@ -76,9 +76,9 @@ def run_query():
     maprows = [dict(zip(keys, row)) for row in cursor]
 
     # print some samples
-    for row in maprows[:3]:
-        print(row)
-    print("...")
+    # for row in maprows[:3]:
+    #     print(row)
+    # print("...")
 
     for row in maprows:
         calc_bars(row)
@@ -87,10 +87,9 @@ def run_query():
     return maprows
 
 
-def find_block_by_slotnumber(slot_number):
+def find_block_by_slotnumber(slot_number: int):
     con = postgres_connection.create_connection()
     cursor = con.cursor()
-    # uses index idx_blocks_slot
     cursor.execute(
         """
         SELECT * FROM (
@@ -103,7 +102,7 @@ def find_block_by_slotnumber(slot_number):
                 total_cu_used,
                 total_cu_requested
             FROM banking_stage_results.blocks
-            -- this critera uses index idx_blocks_slot_errors
+            -- this critera uses index idx_blocks_slot
             WHERE slot = %s
         ) AS data
         """, args=[slot_number])
@@ -116,6 +115,40 @@ def find_block_by_slotnumber(slot_number):
     for row in maprows:
         calc_bars(row)
         calc_figures(row)
+
+    return maprows
+
+
+def find_block_by_blockhash(block_hash: str):
+    con = postgres_connection.create_connection()
+    cursor = con.cursor()
+    cursor.execute(
+        """
+        SELECT * FROM (
+            SELECT
+                ROW_NUMBER() OVER () AS pos,
+                slot,
+                processed_transactions,
+                successful_transactions,
+                banking_stage_errors,
+                total_cu_used,
+                total_cu_requested
+            FROM banking_stage_results.blocks
+            -- uses index on primary key
+            WHERE block_hash = %s
+        ) AS data
+        """, args=[block_hash])
+
+    keys = [k[0] for k in cursor.description]
+    maprows = [dict(zip(keys, row)) for row in cursor]
+
+    assert len(maprows) <= 1, "Block hash is unique - find zero or one"
+
+    for row in maprows:
+        calc_bars(row)
+        calc_figures(row)
+
+    print("found ", maprows, block_hash)
 
     return maprows
 
