@@ -52,24 +52,14 @@ def recent_blocks():
     return render_template('recent_blocks.html', config=this_config, blocks=maprows)
 
 
-@webapp.route("/searchzzzz", methods=["GET", "POST"])
-def fooobar():
-    if request.method == "POST":
-        data = dict(request.form)
-        print("search", data["search"])
-        users = getusers(data["search"])
-    else:
-        users = []
-
-    print(users)
-    return render_template("search.html", usr=users)
-
-
 @webapp.route('/search', methods=["GET", "POST"])
 def search2():
+    this_config = config.get_config()
     if htmx:
-        print("AJAX request")
-        return render_template('_searchresult.html')
+        # print("AJAX request")
+        # return render_template('_searchresult.html')
+        maprows = list(recent_blocks_database.run_query())
+        return render_template('_blockslist.html', config=this_config, blocks=maprows)
 
     return render_template('searchajax.html')
 
