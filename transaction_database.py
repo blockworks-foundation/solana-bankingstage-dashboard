@@ -11,7 +11,6 @@ def run_query():
                 ROW_NUMBER() OVER () AS pos,
                 signature,
                 message,
-                -- e.g. "Account in use-225558172:2;Account in use-225558173:1;"
                 errors,
                 is_executed,
                 is_confirmed,
@@ -47,6 +46,7 @@ def run_query():
 def find_transaction_by_sig(tx_sig):
     con = postgres_connection.create_connection()
     cursor = con.cursor()
+    # transaction table primary key is uses
     cursor.execute(
         """
         SELECT * FROM (
@@ -54,7 +54,6 @@ def find_transaction_by_sig(tx_sig):
                 ROW_NUMBER() OVER () AS pos,
                 signature,
                 message,
-                -- e.g. "Account in use-225558172:2;Account in use-225558173:1;"
                 errors,
                 is_executed,
                 is_confirmed,

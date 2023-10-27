@@ -15,25 +15,28 @@
         --explorer-default-font: 'Rubik';
     }
   </style>
-  {{ turbo() }}
 </head>
 <body>
 
 <div class="main-content pb-6">
   <div class="container mt-n2">
+
+  </div>
+  <div class="container-fluid mt-n2">
+
     <div class="card">
 
-      <div class="card-header align-items-center"><h3 class="card-header-title">Recent Blocks ({{config.cluster_label}})</h3>
+      <div class="card-header align-items-center"><h3 class="card-header-title">Search Transactions and Blocks</h3>
       </div>
 
-
-      <div class="card-body mb-0">
-      <span class="htmx-indicator">
-        <div class="progress" role="progressbar">
-          <div class="progress-bar progress-bar-striped bg-info" style="width: 75%"></div>
-        </div>
-       </span>
+      <div>
+        <span class="htmx-indicator">
+          <div class="progress" role="progressbar">
+            <div class="progress-bar progress-bar-striped bg-info" style="width: 75%"></div>
+          </div>
+         </span>
       </div>
+
       <input class="form-control" type="search"
              name="search" placeholder="Begin Typing Slot Number or Tx Signature..."
              hx-post="/search"
@@ -41,13 +44,11 @@
              hx-target="#search-results"
              hx-indicator=".htmx-indicator">
 
-      <div id="search-results">
+      <div id="search-results" class="table-responsive mb-0">
       </div>
 
     </div>
-
   </div>
-</div>
 
 
 
