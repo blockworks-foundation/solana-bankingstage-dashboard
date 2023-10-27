@@ -87,6 +87,38 @@ def run_query():
     return maprows
 
 
+def search_blocks(slot_number):
+    con = postgres_connection.create_connection()
+    cursor = con.cursor()
+    cursor.execute(
+        """
+        SELECT * FROM (
+            SELECT
+                ROW_NUMBER() OVER () AS pos,
+                slot,
+                processed_transactions,
+                successful_transactions,
+                banking_stage_errors,
+                total_cu_used,
+                total_cu_requested
+            FROM banking_stage_results.blocks
+            -- this critera uses index idx_blocks_slot_errors
+            WHERE slot = %s
+            ORDER BY slot DESC
+            LIMIT 1
+        ) AS data
+        """, args=[slot_number])
+
+    keys = [k[0] for k in cursor.description]
+    maprows = [dict(zip(keys, row)) for row in cursor]
+
+    for row in maprows:
+        calc_bars(row)
+        calc_figures(row)
+
+    return maprows
+
+
 def main():
     run_query()
 

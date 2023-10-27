@@ -1,0 +1,63 @@
+<table id="blockslist" class="table table-sm table-nowrap">
+    <thead>
+    <tr>
+        <th class="text-muted">Slot #</th>
+        <th class="text-muted">Block content (lin scale)</th>
+        <th class="text-muted text-end">Tx processed/error/banking stage</th>
+    </tr>
+    </thead>
+    <tbody class="list">
+    {% for block in blocks %}
+    <tr>
+        <td><span class="text-primary"> {{ block.slot }} </span></td>
+        <td>
+            <div style="width:20em">
+
+                {% if not block.hide_bar %}
+                <div class="progress">
+                    <div class="progress-bar bg-info" role="progressbar" style="width:{{ block.bar_success_scaled }}">
+                        <span class="overflow-hidden">{{ block.bar_success }}</span>
+                    </div>
+                    <div class="progress-bar bg-warning" role="progressbar" style="width:{{ block.bar_txerror_scaled }}">
+                        <span class="overflow-hidden">{{ block.bar_txerror }}</span>
+                    </div>
+                    <div class="progress-bar bg-danger" role="progressbar" style="width:{{ block.bar_bankingerror_scaled }}">
+                        <span class="overflow-hidden">{{ block.bar_bankingerror }}</span>
+                    </div>
+                </div>
+                <!-- {{ block.bar_success }} / {{ block.bar_txerror }} / {{ block.bar_bankingerror }} -->
+                {% else %}
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+                {% endif %}
+            </div>
+
+        </td>
+        <td class="text-end">
+
+            <div class="font-monospace">
+                    <span class="" style="display:inline-block; min-width:9em">
+                        <span class="text-primary">proc:{{ block.processed_transactions }}</span>
+                    </span>
+                <span class="" style="display:inline-block; min-width:6em">
+                        {% if block.txerrors > 0 %}
+                        <span class="text-warning">fail:{{ block.txerrors }}</span>
+                        {% else %}
+                        <span class="text-secondary">fail:0</span>
+                        {% endif %}
+                    </span>
+                <span class="" style="display:inline-block; min-width:6em">
+                        {% if block.banking_stage_errors > 0 %}
+                        <span class="text-danger">bank:{{ block.banking_stage_errors }}</span>
+                        {% else %}
+                        <span class="text-secondary">bank:0</span>
+                        {% endif %}
+                    </span>
+            </div>
+
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

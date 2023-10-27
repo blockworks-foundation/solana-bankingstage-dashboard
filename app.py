@@ -3,6 +3,7 @@ from turbo_flask import Turbo
 import threading
 import time
 from flask_htmx import HTMX
+import re
 
 import transaction_database
 import recent_blocks_database
@@ -52,16 +53,27 @@ def recent_blocks():
     return render_template('recent_blocks.html', config=this_config, blocks=maprows)
 
 
-@webapp.route('/search', methods=["GET", "POST"])
-def search2():
+def is_slot_number(raw_string):
+    return re.fullmatch("[0-9]+", raw_string) is not None
+
+
+@webapp.route('/search-blocks-by-slotnumber', methods=["GET", "POST"])
+def search():
     this_config = config.get_config()
     if htmx:
-        # print("AJAX request")
-        # return render_template('_searchresult.html')
-        maprows = list(recent_blocks_database.run_query())
-        return render_template('_blockslist.html', config=this_config, blocks=maprows)
+        search_string = request.form.get("search").strip()
+        print("search_string=", search_string)
 
-    return render_template('searchajax.html')
+        if is_slot_number(search_string):
+            maprows = list(recent_blocks_database.search_blocks(int(search_string)))
+            if len(maprows):
+                return render_template('_searchblocks.html', config=this_config, blocks=maprows)
+            else:
+                return render_template('_search_noresult.html')
+        else:
+            return render_template('_search_unsupported.html', search_string=search_string)
+
+    return render_template('search_blocks.html')
 
 
 # uid INTEGER,

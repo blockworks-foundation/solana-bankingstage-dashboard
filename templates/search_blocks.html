@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Solana Transaction Errors</title>
+  <title>Search Block</title>
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
   <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
-    <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
   <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
   <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>-->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -22,27 +22,20 @@
   <h3>
     Search Blocks by Slot Number
     <span class="htmx-indicator">
-      <img src="/img/bars.svg"/> Searching...
+      <div class="progress" role="progressbar">
+        <div class="progress-bar progress-bar-striped bg-info" style="width: 75%"></div>
+      </div>
      </span>
   </h3>
   <input class="form-control" type="search"
-         name="search" placeholder="Begin Typing To Search Users..."
-         hx-post="/search"
+         name="search" placeholder="Begin Typing Slot Number or Tx Signature..."
+         hx-post="/search-blocks-by-slotnumber"
          hx-trigger="keyup changed delay:500ms, search"
          hx-target="#search-results"
          hx-indicator=".htmx-indicator">
 
-  <table class="table">
-    <thead>
-    <tr>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Email</th>
-    </tr>
-    </thead>
-    <tbody id="search-results">
-    </tbody>
-  </table>
+  <div id="search-results">
+  </div>
 
 </body>
 </html>
