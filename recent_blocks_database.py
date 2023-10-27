@@ -66,7 +66,7 @@ def run_query():
                 total_cu_requested
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot_errors
-            WHERE banking_stage_errors > 0
+            WHERE true
             ORDER BY slot DESC
             LIMIT 30
         ) AS data

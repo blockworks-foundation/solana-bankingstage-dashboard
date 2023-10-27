@@ -1,7 +1,8 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, make_response
 from turbo_flask import Turbo
 import threading
 import time
+from flask_htmx import HTMX
 
 import transaction_database
 import recent_blocks_database
@@ -14,6 +15,8 @@ import config
 webapp = Flask(__name__)
 # https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
 turbo = Turbo(webapp)
+htmx = HTMX(webapp)
+
 webapp.update_thread_started = False
 
 
@@ -47,6 +50,42 @@ def recent_blocks():
     if elapsed > .5:
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
     return render_template('recent_blocks.html', config=this_config, blocks=maprows)
+
+
+@webapp.route("/searchzzzz", methods=["GET", "POST"])
+def fooobar():
+    if request.method == "POST":
+        data = dict(request.form)
+        print("search", data["search"])
+        users = getusers(data["search"])
+    else:
+        users = []
+
+    print(users)
+    return render_template("search.html", usr=users)
+
+
+@webapp.route('/search', methods=["GET", "POST"])
+def search2():
+    if htmx:
+        print("AJAX request")
+        return render_template('_searchresult.html')
+
+    return render_template('searchajax.html')
+
+
+# uid INTEGER,
+# name TEXT NOT NULL,
+# email TEXT NOT NULL,
+# tel TEXT NOT NULL,
+def getusers(search):
+    row = dict()
+    row["uid"] = 42
+    row["name"] = "John, Doe"
+    row["email"] = "foo@bar.com"
+    row["tel"] = "0121212"
+    results = [row, row ,row]
+    return results
 
 
 def start_if_needed():
