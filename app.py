@@ -67,7 +67,7 @@ def search():
         if is_slot_number(search_string):
             maprows = list(recent_blocks_database.search_blocks(int(search_string)))
             if len(maprows):
-                return render_template('_searchblocks.html', config=this_config, blocks=maprows)
+                return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html')
         else:
