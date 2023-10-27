@@ -87,7 +87,7 @@ def run_query():
     return maprows
 
 
-def search_blocks(slot_number):
+def find_block_by_slotnumber(slot_number):
     con = postgres_connection.create_connection()
     cursor = con.cursor()
     # uses index idx_blocks_slot

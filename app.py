@@ -57,7 +57,12 @@ def is_slot_number(raw_string):
     return re.fullmatch("[0-9]+", raw_string) is not None
 
 
-@webapp.route('/search-blocks-by-slotnumber', methods=["GET", "POST"])
+def is_tx_sig(raw_string):
+    # regex is not perfect - feel free to improve
+    return re.fullmatch("[0-9a-zA-Z]{64,100}", raw_string) is not None
+
+
+@webapp.route('/search', methods=["GET", "POST"])
 def search():
     this_config = config.get_config()
     if htmx:
@@ -65,15 +70,21 @@ def search():
         print("search_string=", search_string)
 
         if is_slot_number(search_string):
-            maprows = list(recent_blocks_database.search_blocks(int(search_string)))
+            maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
+            else:
+                return render_template('_search_noresult.html')
+        elif is_tx_sig(search_string):
+            maprows = list(transaction_database.find_transaction_by_sig(search_string))
+            if len(maprows):
+                return render_template('_txlist.html', config=this_config, transactions=maprows)
             else:
                 return render_template('_search_noresult.html')
         else:
             return render_template('_search_unsupported.html', search_string=search_string)
 
-    return render_template('search_blocks.html')
+    return render_template('search.html')
 
 
 # uid INTEGER,
