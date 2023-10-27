@@ -65,7 +65,7 @@ def update_load():
             # note: the push sends update to all subscribed clients
 
             maprows = list(transaction_database.run_query())
-            turbo.push(turbo.replace(render_template('_table.html', config=this_config, transactions=maprows), 'datatable'))
+            turbo.push(turbo.replace(render_template('_txlist.html', config=this_config, transactions=maprows), 'datatable'))
 
             maprows = list(recent_blocks_database.run_query())
             turbo.push(turbo.replace(render_template('_blockslist.html', config=this_config, blocks=maprows), 'blockslist'))
