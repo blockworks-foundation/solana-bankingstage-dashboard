@@ -30,7 +30,11 @@
         <td>
             <div class="align-items-center text-truncate" style="width:300px">
                 <span class="font-monospace">
-                    <a href="https://explorer.solana.com/tx/{{ tx.signature }}?cluster={{config.cluster}}">{{ tx.signature }}</a>
+                    {% if tx.is_executed %}
+                        <a href="https://explorer.solana.com/tx/{{ tx.signature }}?cluster={{config.cluster}}">{{ tx.signature }}</a>
+                    {% else %}
+                        {{ tx.signature }}
+                    {% endif %}
                 </span>
             </div>
         </td>
