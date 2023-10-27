@@ -90,6 +90,7 @@ def run_query():
 def search_blocks(slot_number):
     con = postgres_connection.create_connection()
     cursor = con.cursor()
+    # uses index idx_blocks_slot
     cursor.execute(
         """
         SELECT * FROM (
@@ -104,13 +105,13 @@ def search_blocks(slot_number):
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot_errors
             WHERE slot = %s
-            ORDER BY slot DESC
-            LIMIT 1
         ) AS data
         """, args=[slot_number])
 
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, row)) for row in cursor]
+
+    assert len(maprows) <= 1, "Slot is primary key - find zero or one"
 
     for row in maprows:
         calc_bars(row)
