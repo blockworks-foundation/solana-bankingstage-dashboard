@@ -25,4 +25,5 @@ SOLANA_CLUSTER=testnet PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret T
 Open Firefox Browser and navigate to ...
 * [Dashboard](http://localhost:5050/dashboard)
 * [Blocks and Tx Errors](http://localhost:5050/recent-blocks)
+* [Search for one Block or Transaction](http://localhost:5050/search)
 
