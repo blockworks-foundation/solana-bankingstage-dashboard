@@ -8,7 +8,6 @@ def run_query():
         """
         SELECT * FROM (
             SELECT
-                ROW_NUMBER() OVER () AS pos,
                 signature,
                 message,
                 errors,
@@ -36,7 +35,8 @@ def run_query():
     #     print(row)
     # print("...")
 
-    for row in maprows:
+    for index, row in enumerate(maprows):
+        row['pos'] = index + 1
         # note: type changed from 'text' to 'text[]'
         row['errors_array'] = row['errors']
 
@@ -51,7 +51,6 @@ def find_transaction_by_sig(tx_sig: str):
         """
         SELECT * FROM (
             SELECT
-                ROW_NUMBER() OVER () AS pos,
                 signature,
                 message,
                 errors,

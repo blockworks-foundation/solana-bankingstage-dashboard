@@ -57,7 +57,6 @@ def run_query():
         """
         SELECT * FROM (
             SELECT
-                ROW_NUMBER() OVER () AS pos,
                 slot,
                 processed_transactions,
                 successful_transactions,
@@ -94,7 +93,6 @@ def find_block_by_slotnumber(slot_number: int):
         """
         SELECT * FROM (
             SELECT
-                ROW_NUMBER() OVER () AS pos,
                 slot,
                 processed_transactions,
                 successful_transactions,
@@ -126,7 +124,6 @@ def find_block_by_blockhash(block_hash: str):
         """
         SELECT * FROM (
             SELECT
-                ROW_NUMBER() OVER () AS pos,
                 slot,
                 processed_transactions,
                 successful_transactions,
