@@ -59,6 +59,15 @@ def recent_blocks():
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
     return render_template('recent_blocks.html', config=this_config, blocks=maprows)
 
+@webapp.route('/block')
+def get_block():
+    this_config = config.get_config()
+    start = time.time()
+    maprows = list(recent_blocks_database.run_query())
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
+    return render_template('block_details.html', config=this_config)
 
 def is_slot_number(raw_string):
     return re.fullmatch("[0-9]+", raw_string) is not None
