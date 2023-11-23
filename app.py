@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, redirect
 from turbo_flask import Turbo
 import threading
 import time
@@ -31,6 +31,10 @@ print("SELFTEST passed")
 
 @webapp.route('/dashboard')
 def dashboard():
+    return redirect("/tx-errors", code=302)
+
+@webapp.route('/tx-errors')
+def tx_errors():
     start_if_needed()
     this_config = config.get_config()
     start = time.time()
