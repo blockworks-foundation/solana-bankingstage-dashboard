@@ -13,15 +13,11 @@ def create_connection():
     port = environ.get('PGPORT', '5432')
     database = environ.get('PGDATABASE', 'mangolana')
     if environ.get('PGSSL', 'false') == 'true':
-        # ca_cert_file = open('ca.crt', 'w', encoding="utf-8")
-        # ca_cert_file.write(base64.b64decode(environ.get('PGCACERT')).decode("utf-8"))
-        # client_key_file = open('client.pks', 'w', encoding="utf-8")
-        # client_key_file.write(base64.b64decode(environ.get('PGCLIENTKEY')).decode("utf-8"))
         ssl_context = ssl.create_default_context()
         ssl_context.verify_mode = ssl.CERT_REQUIRED
         ssl_context.check_hostname = False
         ssl_context.load_verify_locations("ca.cer")
-        ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer", password='pass')
+        ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
 
         con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database, ssl_context=ssl_context)
         return con
