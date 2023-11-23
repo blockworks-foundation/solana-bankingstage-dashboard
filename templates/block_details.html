@@ -20,7 +20,7 @@
         <div class="container mt-n2">
             <div class="header">
                 <div class="header-body"><h6 class="header-pretitle">Details</h6>
-                    <h2 class="header-title">Block</h2></div>
+                    <h2 class="header-title">Block {{block.slot}}</h2></div>
             </div>
             <div class="card">
                 <div class="card-header"><h3 class="card-header-title mb-0 d-flex align-items-center">Overview</h3>
@@ -29,44 +29,25 @@
                     <table class="table table-sm table-nowrap card-table">
                         <tbody class="list">
                         <tr>
+                            <td class="w-100">Slot</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace">{{block.slot}}</span></td>
+                        </tr>
+                        <tr>
                             <td class="w-100">Blockhash</td>
                             <td class="text-lg-end font-monospace">
-                                <span>J7EtazUWXubCtvVtdzRChMiW8PB6KpNttR1f2cWFc73K</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Slot</td>
-                            <td class="text-lg-end font-monospace"><span class="font-monospace">3,429,432</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Timestamp</td>
-                            <td class="text-lg-end">Unavailable</td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Epoch</td>
-                            <td class="text-lg-end font-monospace">
-                                1212
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Parent Blockhash</td>
-                            <td class="text-lg-end font-monospace">
-                                <span>8nJraxkxhdrWGcNxCqWvq3HdfpiDHoQJQvHdhvp2odgB</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Parent Slot</td>
-                            <td class="text-lg-end font-monospace">
-                                230,000,000
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Child Slot</td>
-                            <td class="text-lg-end font-monospace">
-                                230,000,000
-                            </td>
+                                <span>{{block.block_hash}}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Processed Transactions</td>
-                            <td class="text-lg-end font-monospace"><span>128</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.processed_transactions}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Successful Transactions</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.successful_transactions}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Banking Stage Errors</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.banking_stage_errors}}</span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -76,17 +57,14 @@
                 <div class="header">
                     <div class="header-body pt-0">
                         <ul class="nav nav-tabs nav-overflow header-tabs">
-                            <li class="nav-item"><a class="active nav-link" href="/block/3429432">Transactions</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/block/3429432/rewards">Rewards</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/block/3429432/programs">Programs</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/block/3429432/accounts">Accounts</a></li>
+                            <li class="nav-item"><a class="active nav-link">Accounts</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header align-items-center"><h3 class="card-header-title">Block Account Usage</h3></div>
+                <div class="card-header align-items-center"><h3 class="card-header-title">Heavily Write-Locked Accounts</h3></div>
                 <div class="table-responsive mb-0">
                     <table class="table table-sm table-nowrap card-table">
                         <thead>

@@ -7,6 +7,7 @@ import re
 
 import transaction_database
 import recent_blocks_database
+import block_details_database
 import config
 
 #
@@ -24,6 +25,7 @@ webapp.update_thread_started = False
 print("SOLANA_CLUSTER", config.get_config()['cluster'])
 transaction_database.run_query()
 recent_blocks_database.run_query()
+block_details_database.find_block_by_slotnumber(226352855)
 print("SELFTEST passed")
 
 #################gi#####
@@ -59,15 +61,20 @@ def recent_blocks():
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
     return render_template('recent_blocks.html', config=this_config, blocks=maprows)
 
-@webapp.route('/block')
-def get_block():
+
+@webapp.route('/block/<path:slot>')
+def get_block(slot):
     this_config = config.get_config()
     start = time.time()
-    maprows = list(recent_blocks_database.run_query())
+    maprows = list(block_details_database.find_block_by_slotnumber(slot))
     elapsed = time.time() - start
     if elapsed > .5:
-        print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
-    return render_template('block_details.html', config=this_config)
+        print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
+    if len(maprows):
+        print("found block", maprows[0])
+        return render_template('block_details.html', config=this_config, block=maprows[0])
+    else:
+        return "Block not found", 404
 
 def is_slot_number(raw_string):
     return re.fullmatch("[0-9]+", raw_string) is not None
