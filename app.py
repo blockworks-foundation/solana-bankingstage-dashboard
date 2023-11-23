@@ -28,6 +28,9 @@ print("SELFTEST passed")
 
 #################gi#####
 
+@webapp.route('/')
+def index():
+    return redirect("/tx-errors", code=302)
 
 @webapp.route('/dashboard')
 def dashboard():
