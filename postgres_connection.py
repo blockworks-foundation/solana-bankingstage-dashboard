@@ -34,16 +34,18 @@ def get_connection():
 
     populate_connections()
 
-    con = _global_connection_pool[_pool_round_robin_index]
 
     try:
+        con = _global_connection_pool[_pool_round_robin_index]
         con.cursor().execute("SELECT 1")
+        _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+        return con
     except (pg8000.exceptions.DatabaseError, pg8000.exceptions.InterfaceError) as ex:
         print("PostgreSQL connection not working - create new: ", ex)
-        _global_connection_pool[_pool_round_robin_index] = _create_new_connection()
-
-    _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
-    return con
+        new_con = _create_new_connection()
+        _global_connection_pool[_pool_round_robin_index] = new_con
+        _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+        return new_con
 
 
 def populate_connections():

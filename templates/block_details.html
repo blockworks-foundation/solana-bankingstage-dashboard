@@ -57,7 +57,8 @@
                 <div class="header">
                     <div class="header-body pt-0">
                         <ul class="nav nav-tabs nav-overflow header-tabs">
-                            <li class="nav-item"><a class="active nav-link">Accounts</a></li>
+                            <li class="nav-item"><a class="active nav-link">Write locked accounts</a></li>
+                            <li class="nav-item"><a class="nav-link">Read locked accounts</a></li>
                         </ul>
                     </div>
                 </div>
@@ -69,7 +70,7 @@
                     <table class="table table-sm table-nowrap card-table">
                         <thead>
                         <tr>
-                            <th class="text-muted">Account</th>
+                            <th class="text-muted">s</th>
                             <th class="text-muted">CU requested</th>
                             <th class="text-muted">CU consumed</th>
                         </tr>
@@ -78,17 +79,32 @@
                         {% for write_account in block.heavily_writelocked_accounts_parsed %}
                             <tr>
                                 <td>
-                                    <a href="https://explorer.solana.com/account/{{ write_account.k }}?cluster={{config.cluster}}">
+                                    <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
                                         <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
                                                 class=""></span></span><span
-                                                class="font-monospace"><span class="">{{write_account.k}}</span></span>
+                                                class="font-monospace"><span class="">{{write_account.key}}</span></span>
                                         </div>
                                     </a></td>
-                                <td>{{write_account.cu_req}}</td>
-                                <td>{{write_account.cu_con}}</td>
+                                <td>{{write_account.cu_requested}}</td>
+                                <td>{{write_account.cu_consumed}}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
+                        <!-- <tbody>
+                            {% for read_account in block.heavily_readlocked_accounts_parsed %}
+                                <tr>
+                                    <td>
+                                        <a href="https://explorer.solana.com/account/{{ read_account.k }}?cluster={{config.cluster}}">
+                                            <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
+                                                    class=""></span></span><span
+                                                    class="font-monospace"><span class="">{{read_account.key}}</span></span>
+                                            </div>
+                                        </a></td>
+                                    <td>{{read_account.cu_requested}}</td>
+                                    <td>{{read_account.cu_consumed}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody> -->
                     </table>
                 </div>
             </div>
