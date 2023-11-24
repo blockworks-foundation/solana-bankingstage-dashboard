@@ -12,7 +12,7 @@ def find_block_by_slotnumber(slot_number: int):
         SELECT * FROM (
             SELECT
                 slot,
-                block_hash,e
+                block_hash,
                 leader_identity,
                 processed_transactions,
                 successful_transactions,
@@ -20,7 +20,7 @@ def find_block_by_slotnumber(slot_number: int):
                 total_cu_used,
                 total_cu_requested,
                 heavily_writelocked_accounts,
-                heavily_readlocked_accounts,
+                heavily_readlocked_accounts
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot
             WHERE slot = %s
@@ -36,11 +36,11 @@ def find_block_by_slotnumber(slot_number: int):
         # format see BankingStageErrorsTrackingSidecar -> block_info.rs
         # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
 
-        parsed_accounts = row["heavily_writelocked_accounts"]
+        parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
         parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
         row["heavily_writelocked_accounts_parsed"] = parsed_accounts
 
-        parsed_accounts = row["heavily_readlocked_accounts"]
+        parsed_accounts = json.loads(row["heavily_readlocked_accounts"])
         parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
         row["heavily_readlocked_accounts_parsed"] = parsed_accounts
 

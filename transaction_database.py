@@ -9,7 +9,6 @@ def run_query():
         SELECT * FROM (
             SELECT
                 signature,
-                message,
                 errors,
                 is_executed,
                 is_confirmed,
@@ -52,7 +51,6 @@ def find_transaction_by_sig(tx_sig: str):
         SELECT * FROM (
             SELECT
                 signature,
-                message,
                 errors,
                 is_executed,
                 is_confirmed,
