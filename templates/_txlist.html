@@ -31,9 +31,9 @@
             <div class="align-items-center text-truncate" style="width:300px">
                 <span class="font-monospace">
                     {% if tx.is_executed %}
-                        <a href="https://explorer.solana.com/tx/{{ tx.signature }}?cluster={{config.cluster}}">{{ tx.signature }}</a>
+                        <a href="https://explorer.solana.com/tx/{{tx.signature}}?cluster={{config.cluster}}">{{tx.signature}}</a>
                     {% else %}
-                        {{ tx.signature }}
+                        {{tx.signature}}
                     {% endif %}
                 </span>
             </div>
@@ -45,7 +45,22 @@
                     <tr>
                         <td>
                             <span class="font-monospace text-danger">
-                                {{ error }}
+                                {{error}}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </td>
+        <td>
+            <div class="d-flex align-items-left">
+                <table>
+                    {% for account_used in tx.account_used_array %}
+                    <tr>
+                        <td>
+                            <span class="font-monospace text-danger">
+                                {{account_used}}
                             </span>
                         </td>
                     </tr>

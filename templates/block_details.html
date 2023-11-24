@@ -89,6 +89,21 @@
                             </tr>
                         {% endfor %}
                         </tbody>
+                        <tbody>
+                            {% for read_account in block.heavily_readlocked_accounts_parsed %}
+                                <tr>
+                                    <td>
+                                        <a href="https://explorer.solana.com/account/{{ write_account.k }}?cluster={{config.cluster}}">
+                                            <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
+                                                    class=""></span></span><span
+                                                    class="font-monospace"><span class="">{{read_account.k}}</span></span>
+                                            </div>
+                                        </a></td>
+                                    <td>{{read_account.cu_req}}</td>
+                                    <td>{{read_account.cu_con}}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
                     </table>
                 </div>
             </div>
