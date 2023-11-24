@@ -1,5 +1,5 @@
 import postgres_connection
-
+import json
 
 def run_query():
     con = postgres_connection.create_connection()
@@ -9,7 +9,6 @@ def run_query():
         SELECT * FROM (
             SELECT
                 signature,
-                message,
                 errors,
                 is_executed,
                 is_confirmed,
@@ -37,8 +36,8 @@ def run_query():
 
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
-        # note: type changed from 'text' to 'text[]'
-        row['errors_array'] = row['errors']
+        row['errors_array'] = json.loads(row['errors'])
+        row['accounts_used_array'] = json.loads(row['accounts_used'])
 
     return maprows
 
@@ -52,7 +51,6 @@ def find_transaction_by_sig(tx_sig: str):
         SELECT * FROM (
             SELECT
                 signature,
-                message,
                 errors,
                 is_executed,
                 is_confirmed,
@@ -74,8 +72,8 @@ def find_transaction_by_sig(tx_sig: str):
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
     for row in maprows:
-        # note: type changed from 'text' to 'text[]'
-        row['errors_array'] = row['errors']
+        row['errors_array'] = json.loads(row['errors'])
+        row['accounts_used_array'] = json.loads(row['accounts_used'])
 
     return maprows
 

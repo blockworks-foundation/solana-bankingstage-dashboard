@@ -12,14 +12,14 @@ def format_width_percentage(x):
 def calc_figures(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
-    banking_stage_errors = row['banking_stage_errors']
+    banking_stage_errors = row['banking_stage_errors'] or 0
     txerrors = processed_transactions - successful_transactions
     row['txerrors'] = txerrors
 
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
-    banking_stage_errors = row['banking_stage_errors']
+    banking_stage_errors = row['banking_stage_errors'] or 0
     total = processed_transactions + banking_stage_errors
     if total > 0:
         row['hide_bar'] = False
@@ -81,6 +81,7 @@ def run_query():
 
     for row in maprows:
         calc_bars(row)
+        row['banking_stage_errors'] = row['banking_stage_errors'] or 0
         calc_figures(row)
 
     return maprows
