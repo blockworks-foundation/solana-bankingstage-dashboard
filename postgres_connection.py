@@ -1,9 +1,12 @@
 import pg8000
 from os import environ
+import time
 
+# global
+_global_connection_pool = [None] * 6
+_pool_round_robin_index = 0
 
-# note: passwordless auth is not supported
-def create_connection():
+def _create_new_connection():
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
     assert password is not None, "PGPASSWORD environment variable must be set"
@@ -12,3 +15,26 @@ def create_connection():
     database = environ.get('PGDATABASE', 'mangolana')
     con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database)
     return con
+
+def get_connection():
+    global _global_connection_pool
+    global _pool_round_robin_index
+
+    populate_connections()
+
+    con = _global_connection_pool[_pool_round_robin_index]
+
+    try:
+        con.cursor().execute("SELECT 1")
+    except (pg8000.exceptions.DatabaseError, pg8000.exceptions.InterfaceError) as ex:
+        print("PostgreSQL connection not working - create new: ", ex)
+        _global_connection_pool[_pool_round_robin_index] = _create_new_connection()
+
+    _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+    return con
+
+
+def populate_connections():
+    for index, con in enumerate(_global_connection_pool):
+        if con is None:
+            _global_connection_pool[index] = _create_new_connection()

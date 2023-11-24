@@ -51,7 +51,7 @@ def calc_bars(row):
 
 
 def run_query():
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -87,7 +87,7 @@ def run_query():
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -118,7 +118,7 @@ def find_block_by_slotnumber(slot_number: int):
 
 
 def find_block_by_blockhash(block_hash: str):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """

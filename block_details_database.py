@@ -5,7 +5,7 @@ import re
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -36,13 +36,14 @@ def find_block_by_slotnumber(slot_number: int):
         # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
 
         parsed_accounts = []
-        for acc in row["heavily_writelocked_accounts"]:
-            (k, cu_req, cu_con) = parse_accounts(acc)
-            parsed = {'k': k, 'cu_req': cu_req, 'cu_con': cu_con}
-            parsed_accounts.append(parsed)
+        # for acc in row["heavily_writelocked_accounts"]:
+        #     (k, cu_req, cu_con) = parse_accounts(acc)
+        #     parsed = {'k': k, 'cu_req': cu_req, 'cu_con': cu_con}
+        #     parsed_accounts.append(parsed)
 
-        parsed_accounts.sort(key=lambda acc: int(acc['cu_con']), reverse=True)
-        row["heavily_writelocked_accounts_parsed"] = parsed_accounts
+        # parsed_accounts.sort(key=lambda acc: int(acc['cu_con']), reverse=True)
+        # row["heavily_writelocked_accounts_parsed"] = parsed_accounts
+        # TODO need new parser
 
     return maprows
 
