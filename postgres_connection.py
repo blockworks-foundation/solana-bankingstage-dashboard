@@ -1,4 +1,6 @@
 import pg8000
+import ssl
+import base64
 from os import environ
 import time
 
@@ -13,8 +15,18 @@ def _create_new_connection():
     host = environ.get('PGHOST', 'localhost')
     port = environ.get('PGPORT', '5432')
     database = environ.get('PGDATABASE', 'mangolana')
-    con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database)
-    return con
+    if environ.get('PGSSL', 'false') == 'true':
+        ssl_context = ssl.create_default_context()
+        ssl_context.verify_mode = ssl.CERT_REQUIRED
+        ssl_context.check_hostname = False
+        ssl_context.load_verify_locations("ca.cer")
+        ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
+
+        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database, ssl_context=ssl_context)
+        return con
+    else:
+        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database)
+        return con
 
 def get_connection():
     global _global_connection_pool

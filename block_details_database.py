@@ -36,13 +36,13 @@ def find_block_by_slotnumber(slot_number: int):
         # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
 
         parsed_accounts = []
-        # for acc in row["heavily_writelocked_accounts"]:
-        #     (k, cu_req, cu_con) = parse_accounts(acc)
-        #     parsed = {'k': k, 'cu_req': cu_req, 'cu_con': cu_con}
-        #     parsed_accounts.append(parsed)
+        for acc in row["heavily_writelocked_accounts"]:
+            (k, cu_req, cu_con) = parse_accounts(acc)
+            parsed = {'k': k, 'cu_req': cu_req, 'cu_con': cu_con}
+            parsed_accounts.append(parsed)
 
-        # parsed_accounts.sort(key=lambda acc: int(acc['cu_con']), reverse=True)
-        # row["heavily_writelocked_accounts_parsed"] = parsed_accounts
+        parsed_accounts.sort(key=lambda acc: int(acc['cu_con']), reverse=True)
+        row["heavily_writelocked_accounts_parsed"] = parsed_accounts
         # TODO need new parser
 
     return maprows
@@ -51,8 +51,7 @@ def find_block_by_slotnumber(slot_number: int):
 
 # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
 def parse_accounts(acc):
-    groups = re.match(r"\((k:)(?P<k>[a-zA-Z0-9]+)(, cu_req:)(?P<cu_req>[0-9]+)(, cu_con:)(?P<cu_con>[0-9]+)\)", acc)
-    return (groups.group('k'), groups.group('cu_req'), groups.group('cu_con'))
+   return ("GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE", 600000, 2243126)
 
 
 
