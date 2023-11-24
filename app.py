@@ -71,7 +71,6 @@ def get_block(slot):
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
     if len(maprows):
-        print("found block", maprows[0])
         return render_template('block_details.html', config=this_config, block=maprows[0])
     else:
         return "Block not found", 404
