@@ -10,7 +10,11 @@
     <tbody class="list">
         {% for block in blocks %}
         <tr>
-            <td><span class="text-primary"> {{ block.slot }} </span></td>
+            <td>
+                <span class="text-primary">
+                    <a href="/block/{{ block.slot }}">{{ block.slot }}</a>
+                </span>
+            </td>
             <td>
                 <div style="width:20em">
 
