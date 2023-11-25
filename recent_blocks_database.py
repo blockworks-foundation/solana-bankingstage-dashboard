@@ -16,6 +16,7 @@ def calc_figures(row):
     txerrors = processed_transactions - successful_transactions
     row['txerrors'] = txerrors
 
+
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
@@ -51,7 +52,7 @@ def calc_bars(row):
 
 
 def run_query():
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -88,7 +89,7 @@ def run_query():
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -119,7 +120,7 @@ def find_block_by_slotnumber(slot_number: int):
 
 
 def find_block_by_blockhash(block_hash: str):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """

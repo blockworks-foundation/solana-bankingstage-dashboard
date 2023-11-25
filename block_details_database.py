@@ -5,7 +5,7 @@ import re
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -39,6 +39,7 @@ def find_block_by_slotnumber(slot_number: int):
         parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
         parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
         row["heavily_writelocked_accounts_parsed"] = parsed_accounts
+        # TODO need new parser
 
         parsed_accounts = json.loads(row["heavily_readlocked_accounts"])
         parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)

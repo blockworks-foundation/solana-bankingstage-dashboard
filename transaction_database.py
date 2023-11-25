@@ -2,7 +2,7 @@ import postgres_connection
 import json
 
 def run_query():
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     cursor.execute(
         """
@@ -43,7 +43,7 @@ def run_query():
 
 
 def find_transaction_by_sig(tx_sig: str):
-    con = postgres_connection.create_connection()
+    con = postgres_connection.get_connection()
     cursor = con.cursor()
     # transaction table primary key is uses
     cursor.execute(
