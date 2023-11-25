@@ -1,12 +1,11 @@
 import pg8000
 import ssl
-import base64
 from os import environ
-import time
 
 # global
 _global_connection_pool = [None] * 6
 _pool_round_robin_index = 0
+
 
 def _create_new_connection():
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
@@ -28,26 +27,33 @@ def _create_new_connection():
         con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database)
         return con
 
+
 def get_connection():
     global _global_connection_pool
     global _pool_round_robin_index
 
     populate_connections()
 
-
     try:
         con = _global_connection_pool[_pool_round_robin_index]
         con.cursor().execute("SELECT 1")
-        _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+        increment_index()
         return con
     except (pg8000.exceptions.DatabaseError, pg8000.exceptions.InterfaceError) as ex:
         print("PostgreSQL connection not working - create new: ", ex)
         new_con = _create_new_connection()
         _global_connection_pool[_pool_round_robin_index] = new_con
-        _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+        increment_index()
         return new_con
 
 
+def increment_index():
+    global _global_connection_pool
+    global _pool_round_robin_index
+    _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
+
+
+# note: this is quite slow as it requires N full TLS handshakes
 def populate_connections():
     for index, con in enumerate(_global_connection_pool):
         if con is None:

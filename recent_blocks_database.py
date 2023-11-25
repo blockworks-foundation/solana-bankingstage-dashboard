@@ -16,6 +16,7 @@ def calc_figures(row):
     txerrors = processed_transactions - successful_transactions
     row['txerrors'] = txerrors
 
+
 def calc_bars(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
