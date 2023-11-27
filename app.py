@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, make_response, redirect
+from flask_sock import Sock
 from turbo_flask import Turbo
 import threading
 import time
 from flask_htmx import HTMX
 import re
+import flask
 
 import transaction_database
 import recent_blocks_database
@@ -17,6 +19,7 @@ import config
 webapp = Flask(__name__)
 # https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
 turbo = Turbo(webapp)
+sock = Sock(webapp)
 htmx = HTMX(webapp)
 
 webapp.update_thread_started = False
