@@ -21,7 +21,7 @@ def run_query():
             FROM banking_stage_results.transaction_infos
             WHERE true
             ORDER BY utc_timestamp DESC
-            LIMIT 50
+            LIMIT 500
         ) AS data
         """)
 
@@ -31,6 +31,7 @@ def run_query():
     # print("...")
 
     for index, row in enumerate(maprows):
+        accounts = json.loads(row['accounts_used'])
         row['pos'] = index + 1
         map_jsons_in_row(row)
 
@@ -62,7 +63,6 @@ def find_transaction_by_sig(tx_sig: str):
 
     for row in maprows:
         map_jsons_in_row(row)
-
     return maprows
 
 
@@ -70,7 +70,9 @@ def map_jsons_in_row(row):
     if row['errors']:
         row['errors_array'] = json.loads(row['errors'])
     if row['accounts_used']:
-        row['accounts_used_array'] = json.loads(row['accounts_used'])
+        accounts = json.loads(row['accounts_used'])
+        row['writable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == True, accounts)))
+        row['readable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == False, accounts)))
 
 
 def main():
