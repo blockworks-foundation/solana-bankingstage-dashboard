@@ -16,6 +16,8 @@ def query(statement, args=[]):
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, row)) for row in cursor]
 
+    con.close()
+
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
 
