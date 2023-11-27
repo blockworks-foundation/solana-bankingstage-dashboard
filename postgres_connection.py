@@ -67,7 +67,7 @@ def _get_connection():
         con.cursor().execute("SELECT 1")
         increment_index()
         return con
-    except (pg8000.exceptions.DatabaseError, pg8000.exceptions.InterfaceError) as ex:
+    except Exception as ex:
         print("PostgreSQL connection not working - create new: ", ex)
         new_con = _create_new_connection()
         _global_connection_pool[_pool_round_robin_index] = new_con
