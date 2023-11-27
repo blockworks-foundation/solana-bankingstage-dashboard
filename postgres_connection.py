@@ -43,7 +43,6 @@ def _create_new_connection():
 
 def configure_sslcontext():
     if environ.get('PGSSL', 'false') == 'true':
-        print("Configuring SSL for postgres connection using .cer files")
         ssl_context = ssl.create_default_context()
         ssl_context.verify_mode = ssl.CERT_REQUIRED
         ssl_context.check_hostname = False
@@ -51,5 +50,4 @@ def configure_sslcontext():
         ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
         return ssl_context
     else:
-        print("Configuring postgres connection without SSL")
         return None
