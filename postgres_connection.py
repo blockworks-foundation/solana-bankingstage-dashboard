@@ -3,13 +3,18 @@ import time
 import ssl
 from os import environ
 
+
 def query(statement, args=[]):
     start = time.time()
     con = _create_new_connection()
     cursor = con.cursor()
     elapsed_connect = time.time() - start
 
-    cursor.execute(statement, args=args)
+    try:
+        cursor.execute(statement, args=args)
+    except Exception as ex:
+        print("Exception executing query:", ex)
+        return []
 
     elapsed_total = time.time() - start
 
