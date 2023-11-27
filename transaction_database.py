@@ -36,8 +36,7 @@ def run_query():
 
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
-        row['errors_array'] = json.loads(row['errors'])
-        row['accounts_used_array'] = json.loads(row['accounts_used'])
+        map_jsons_in_row(row)
 
     return maprows
 
@@ -72,10 +71,16 @@ def find_transaction_by_sig(tx_sig: str):
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
     for row in maprows:
-        row['errors_array'] = json.loads(row['errors'])
-        row['accounts_used_array'] = json.loads(row['accounts_used'])
+        map_jsons_in_row(row)
 
     return maprows
+
+
+def map_jsons_in_row(row):
+    if row['errors']:
+        row['errors_array'] = json.loads(row['errors'])
+    if row['accounts_used']:
+        row['accounts_used_array'] = json.loads(row['accounts_used'])
 
 
 def main():

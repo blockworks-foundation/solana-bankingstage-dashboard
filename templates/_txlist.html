@@ -28,7 +28,7 @@
             </div>
         </td>
         <td>
-            <div class="align-items-center text-truncate" style="width:300px">
+            <div class="d-flex align-items-center text-truncate" style="width:300px">
                 <span class="font-monospace">
                     {% if tx.is_executed %}
                         <a href="https://explorer.solana.com/tx/{{tx.signature}}?cluster={{config.cluster}}">{{tx.signature}}</a>
@@ -44,8 +44,8 @@
                     {% for error in tx.errors_array %}
                     <tr>
                         <td>
-                            <span class="font-monospace text-danger">
-                                {{error}}
+                            <span class="font-monospace text-danger" title="Slot {{error.slot}}">
+                                {{error.count}}x&nbsp;&nbsp;{{error.error}}
                             </span>
                         </td>
                     </tr>
