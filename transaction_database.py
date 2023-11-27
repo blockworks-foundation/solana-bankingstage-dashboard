@@ -31,7 +31,6 @@ def run_query():
     # print("...")
 
     for index, row in enumerate(maprows):
-        accounts = json.loads(row['accounts_used'])
         row['pos'] = index + 1
         map_jsons_in_row(row)
 
