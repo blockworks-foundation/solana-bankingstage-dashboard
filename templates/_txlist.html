@@ -8,6 +8,8 @@
         <th class="text-muted">Errors</th>
         <th class="text-muted text-end c-pointer">CU requested</th>
         <th class="text-muted text-end c-pointer">Prio Fees</th>
+        <th class="text-muted text-end c-pointer">Writable Accounts</th>
+        <th class="text-muted text-end c-pointer">Readable Accounts</th>
     </tr>
     </thead>
     <tbody class="list">
@@ -53,14 +55,16 @@
                 </table>
             </div>
         </td>
+        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
+        <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
         <td>
             <div class="d-flex align-items-left">
                 <table>
-                    {% for account_used in tx.account_used_array %}
+                    {% for writable_account in tx.writable_accounts_used %}
                     <tr>
                         <td>
                             <span class="font-monospace text-danger">
-                                {{account_used}}
+                                {{writable_account}}
                             </span>
                         </td>
                     </tr>
@@ -68,8 +72,21 @@
                 </table>
             </div>
         </td>
-        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
-        <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
+        <td>
+            <div class="d-flex align-items-left">
+                <table>
+                    {% for readable_account in tx.readable_accounts_used %}
+                    <tr>
+                        <td>
+                            <span class="font-monospace text-danger">
+                                {{readable_account}}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </td>
     </tr>
     {% endfor %}
 

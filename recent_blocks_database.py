@@ -68,7 +68,7 @@ def run_query():
             -- this critera uses index idx_blocks_slot_errors
             WHERE true
             ORDER BY slot DESC
-            LIMIT 30
+            LIMIT 100
         ) AS data
         """)
 
