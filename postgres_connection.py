@@ -3,18 +3,9 @@ import time
 import ssl
 from os import environ
 
-# global
-_global_connection_pool = [None] * 6
-_pool_round_robin_index = 0
-
-# 2: share modules and connections but not cursors
-# (https://peps.python.org/pep-0249/#threadsafety, default=1)
-pg8000.dbapi.threadsafety=2
-
-
 def query(statement, args=[]):
     start = time.time()
-    con = _get_connection()
+    con = _create_new_connection()
     cursor = con.cursor()
     elapsed_connect = time.time() - start
 
@@ -55,34 +46,3 @@ def _create_new_connection():
                                     application_name="bankingstage-dashboard")
         return con
 
-
-def _get_connection():
-    global _global_connection_pool
-    global _pool_round_robin_index
-
-    populate_connections()
-
-    try:
-        con = _global_connection_pool[_pool_round_robin_index]
-        con.cursor().execute("SELECT 1")
-        increment_index()
-        return con
-    except Exception as ex:
-        print("PostgreSQL connection not working - create new: ", ex)
-        new_con = _create_new_connection()
-        _global_connection_pool[_pool_round_robin_index] = new_con
-        increment_index()
-        return new_con
-
-
-def increment_index():
-    global _global_connection_pool
-    global _pool_round_robin_index
-    _pool_round_robin_index = (_pool_round_robin_index + 1) % len(_global_connection_pool)
-
-
-# note: this is quite slow as it requires N full TLS handshakes
-def populate_connections():
-    for index, con in enumerate(_global_connection_pool):
-        if con is None:
-            _global_connection_pool[index] = _create_new_connection()
