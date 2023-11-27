@@ -47,7 +47,7 @@ def tx_errors():
     elapsed = time.time() - start
     if elapsed > .5:
         print("transaction_database.RunQuery() took", elapsed, "seconds")
-    return render_template('dashboard.html', config=this_config, transactions=maprows)
+    return render_template('tx-errors.html', config=this_config, transactions=maprows)
 
 
 @webapp.route('/recent-blocks')
