@@ -99,33 +99,32 @@ def search():
         search_string = request.form.get("search").strip()
 
         if search_string == "":
-            return render_template('_search_noresult.html')
+            return render_template('_search_noresult.html', config=this_config)
 
         if is_slot_number(search_string):
-            print("slot search=", search_string)
             maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
-                return render_template('_search_noresult.html')
+                return render_template('_search_noresult.html', config=this_config)
         elif is_block_hash(search_string):
             print("blockhash search=", search_string)
             maprows = list(recent_blocks_database.find_block_by_blockhash(search_string))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
-                return render_template('_search_noresult.html')
+                return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
             print("txsig search=", search_string)
             maprows = list(transaction_database.find_transaction_by_sig(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows)
             else:
-                return render_template('_search_noresult.html')
+                return render_template('_search_noresult.html', config=this_config)
         else:
-            return render_template('_search_unsupported.html', search_string=search_string)
+            return render_template('_search_unsupported.html', config=this_config, search_string=search_string)
 
-    return render_template('search.html')
+    return render_template('search.html', config=this_config)
 
 
 # uid INTEGER,
