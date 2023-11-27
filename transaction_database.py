@@ -1,10 +1,9 @@
 import postgres_connection
 import json
 
+
 def run_query():
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -26,9 +25,6 @@ def run_query():
         ) AS data
         """)
 
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
-
     # print some samples
     # for row in maprows[:3]:
     #     print(row)
@@ -42,10 +38,7 @@ def run_query():
 
 
 def find_transaction_by_sig(tx_sig: str):
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    # transaction table primary key is uses
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -64,9 +57,6 @@ def find_transaction_by_sig(tx_sig: str):
             WHERE signature = %s
         ) AS data
         """, args=[tx_sig])
-
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 

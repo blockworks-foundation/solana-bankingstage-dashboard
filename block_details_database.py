@@ -1,13 +1,9 @@
 import postgres_connection
 import json
-import re
-
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -26,9 +22,6 @@ def find_block_by_slotnumber(slot_number: int):
             WHERE slot = %s
         ) AS data
         """, args=[slot_number])
-
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
 

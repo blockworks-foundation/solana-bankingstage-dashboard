@@ -1,4 +1,5 @@
 import pg8000
+import time
 import ssl
 from os import environ
 
@@ -7,6 +8,26 @@ _global_connection_pool = [None] * 6
 _pool_round_robin_index = 0
 
 
+def query(statement, args=[]):
+    start = time.time()
+    con = _get_connection()
+    cursor = con.cursor()
+    elapsed_connect = time.time() - start
+
+    cursor.execute(statement, args=args)
+
+    elapsed_total = time.time() - start
+
+    keys = [k[0] for k in cursor.description]
+    maprows = [dict(zip(keys, row)) for row in cursor]
+
+    if elapsed_total > .5:
+        print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
+
+    return maprows
+
+
+# caution: must not expose this due to "pg8000 is designed to be used with one thread per connection."
 def _create_new_connection():
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
@@ -28,7 +49,7 @@ def _create_new_connection():
         return con
 
 
-def get_connection():
+def _get_connection():
     global _global_connection_pool
     global _pool_round_robin_index
 

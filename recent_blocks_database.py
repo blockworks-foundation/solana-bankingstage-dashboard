@@ -52,9 +52,7 @@ def calc_bars(row):
 
 
 def run_query():
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -72,26 +70,21 @@ def run_query():
         ) AS data
         """)
 
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
-
     # print some samples
     # for row in maprows[:3]:
     #     print(row)
     # print("...")
 
     for row in maprows:
+        fixup_row(row)
         calc_bars(row)
-        row['banking_stage_errors'] = row['banking_stage_errors'] or 0
         calc_figures(row)
 
     return maprows
 
 
 def find_block_by_slotnumber(slot_number: int):
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -107,22 +100,23 @@ def find_block_by_slotnumber(slot_number: int):
         ) AS data
         """, args=[slot_number])
 
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
-
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
 
     for row in maprows:
+        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
+
 
     return maprows
 
 
+def fixup_row(row):
+    row['banking_stage_errors'] = row['banking_stage_errors'] or 0
+
+
 def find_block_by_blockhash(block_hash: str):
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -138,12 +132,10 @@ def find_block_by_blockhash(block_hash: str):
         ) AS data
         """, args=[block_hash])
 
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
-
     assert len(maprows) <= 1, "Block hash is unique - find zero or one"
 
     for row in maprows:
+        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
 
