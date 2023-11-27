@@ -98,6 +98,9 @@ def search():
     if htmx:
         search_string = request.form.get("search").strip()
 
+        if search_string == "":
+            return render_template('_search_noresult.html')
+
         if is_slot_number(search_string):
             print("slot search=", search_string)
             maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
