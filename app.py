@@ -5,7 +5,7 @@ import threading
 import time
 from flask_htmx import HTMX
 import re
-import flask
+import copy
 
 import transaction_database
 import recent_blocks_database
@@ -166,10 +166,10 @@ def update_load():
         while True:
             # note: the push sends update to all subscribed clients
 
-            maprows = list(transaction_database.run_query())
+            maprows = copy.deepcopy(transaction_database.run_query())
             turbo.push(turbo.replace(render_template('_txlist.html', config=this_config, transactions=maprows), 'txlist'))
 
-            maprows = list(recent_blocks_database.run_query())
+            maprows = copy.deepcopy(recent_blocks_database.run_query())
             turbo.push(turbo.replace(render_template('_blockslist.html', config=this_config, blocks=maprows), 'blockslist'))
 
             time.sleep(1)
