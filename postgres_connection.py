@@ -1,6 +1,7 @@
 import pg8000
 import time
 import ssl
+import copy
 from os import environ
 
 
@@ -19,7 +20,7 @@ def query(statement, args=[]):
     elapsed_total = time.time() - start
 
     keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
+    maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
 
     con.close()
 

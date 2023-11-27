@@ -11,4 +11,4 @@ COPY . /usr/src/app
 EXPOSE 8080
 CMD \
  echo "$PGCACERT" | base64 --decode > ca.cer && echo "$PGCLIENTCERT" | base64 --decode > client.cer && echo "$PGCLIENTKEY" | base64 --decode > client-key.cer && \
- flask run --host 0.0.0.0 --port 8080
+ gunicorn app:webapp --bind 0.0.0.0:8080
