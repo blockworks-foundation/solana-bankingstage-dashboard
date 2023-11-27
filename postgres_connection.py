@@ -16,7 +16,7 @@ def query(statement, args=[]):
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, row)) for row in cursor]
 
-    if elapsed_total > .5:
+    if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
 
     return maprows
@@ -24,7 +24,6 @@ def query(statement, args=[]):
 
 # caution: must not expose this due to "pg8000 is designed to be used with one thread per connection."
 def _create_new_connection():
-    print("pg8000.dbapi.threadsafety", pg8000.dbapi.threadsafety)
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
     assert password is not None, "PGPASSWORD environment variable must be set"
