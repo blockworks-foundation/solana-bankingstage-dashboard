@@ -30,18 +30,24 @@ def _create_new_connection():
     host = environ.get('PGHOST', 'localhost')
     port = environ.get('PGPORT', '5432')
     database = environ.get('PGDATABASE', 'mangolana')
+    timeout = 10 # seconds
+    ssl_context = configure_sslcontext()
+    application_name="bankingstage-dashboard"
+
+    con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
+                                  application_name=application_name, timeout=timeout, ssl_context=ssl_context)
+    return con
+
+
+def configure_sslcontext():
     if environ.get('PGSSL', 'false') == 'true':
+        print("Configuring SSL for postgres connection using .cer files")
         ssl_context = ssl.create_default_context()
         ssl_context.verify_mode = ssl.CERT_REQUIRED
         ssl_context.check_hostname = False
         ssl_context.load_verify_locations("ca.cer")
         ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
-
-        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
-                                      application_name="bankingstage-dashboard", ssl_context=ssl_context)
-        return con
+        return ssl_context
     else:
-        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
-                                    application_name="bankingstage-dashboard")
-        return con
-
+        print("Configuring postgres connection without SSL")
+        return None

@@ -34,6 +34,13 @@ print("SELFTEST passed")
 def index():
     return redirect("/tx-errors", code=302)
 
+
+# fly.io service health check
+@webapp.route('/health')
+def health():
+    return "UP\r\n", 200
+
+
 @webapp.route('/dashboard')
 def dashboard():
     return redirect("/tx-errors", code=302)

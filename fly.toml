@@ -10,3 +10,10 @@ primary_region = "nrt"
 [http_service]
   internal_port = 8080
   force_https = true
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/health"
