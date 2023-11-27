@@ -7,6 +7,10 @@ from os import environ
 _global_connection_pool = [None] * 6
 _pool_round_robin_index = 0
 
+# 2: share modules and connections but not cursors
+# (https://peps.python.org/pep-0249/#threadsafety, default=1)
+pg8000.dbapi.threadsafety=2
+
 
 def query(statement, args=[]):
     start = time.time()
@@ -29,6 +33,7 @@ def query(statement, args=[]):
 
 # caution: must not expose this due to "pg8000 is designed to be used with one thread per connection."
 def _create_new_connection():
+    print("pg8000.dbapi.threadsafety", pg8000.dbapi.threadsafety)
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
     assert password is not None, "PGPASSWORD environment variable must be set"
@@ -42,10 +47,12 @@ def _create_new_connection():
         ssl_context.load_verify_locations("ca.cer")
         ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
 
-        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database, ssl_context=ssl_context)
+        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
+                                      application_name="bankingstage-dashboard", ssl_context=ssl_context)
         return con
     else:
-        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database)
+        con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
+                                    application_name="bankingstage-dashboard")
         return con
 
 
