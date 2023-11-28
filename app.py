@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, make_response, redirect
-from flask_sock import Sock
-from turbo_flask import Turbo
 import time
 from flask_htmx import HTMX
 import re
@@ -15,7 +13,6 @@ import config
 #
 
 webapp = Flask(__name__)
-turbo = Turbo(webapp)
 htmx = HTMX(webapp)
 
 webapp.update_thread_started = False
