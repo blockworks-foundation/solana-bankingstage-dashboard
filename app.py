@@ -97,6 +97,10 @@ def is_tx_sig(raw_string):
 @webapp.route('/search', methods=["GET", "POST"])
 def search():
     this_config = config.get_config()
+
+    if request.method == "GET":
+        return render_template('search.html', config=this_config)
+
     if htmx:
         search_string = request.form.get("search").strip()
 
