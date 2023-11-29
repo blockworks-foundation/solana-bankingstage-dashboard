@@ -16,9 +16,9 @@
         }
     </style>
 </head>
-<body hx-boost="true" hx-trigger="every 2s" hx-get="/recent-blocks" hx-swap=".blocklist">
+<body hx-boost="true">
 
-    <div class="main-content pb-6">
+    <div class="main-content pb-6" hx-trigger="every 2s" hx-get="/recent-blocks" hx-swap=".blocklist">
 
         {% include "_navbar.html" %}
 
