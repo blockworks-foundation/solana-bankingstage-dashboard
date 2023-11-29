@@ -21,7 +21,7 @@ def run_query():
             FROM banking_stage_results.transaction_infos
             WHERE true
             ORDER BY utc_timestamp DESC
-            LIMIT 500
+            LIMIT 50
         ) AS data
         """)
 

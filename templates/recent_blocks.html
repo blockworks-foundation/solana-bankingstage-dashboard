@@ -16,7 +16,7 @@
         }
     </style>
 </head>
-<body hx-boost="true">
+<body hx-boost="true" hx-trigger="every 2s" hx-get="/recent-blocks" hx-swap=".blocklist">
 
     <div class="main-content pb-6">
 
@@ -28,7 +28,7 @@
                 <div class="card-header align-items-center"><h3 class="card-header-title">Recent Blocks ({{config.cluster_label}})</h3>
                 </div>
                 <!-- mb-0 = margin+padding bottom -->
-                <div id="search-result" class="card-body mb-0 table-responsive">
+                <div id="blocklist" class="card-body mb-0 table-responsive">
 
                     {% include "_blockslist.html" %}
 
