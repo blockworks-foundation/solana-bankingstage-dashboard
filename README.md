@@ -19,12 +19,12 @@ Pre-alpha / demo only
 # Unix/macOS
 python3 -m venv .venv
 source .venv/bin/activate
-SOLANA_CLUSTER=testnet PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
+SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=8 PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
 ```
 
 Use this to test with _gunicorn_: 
 ```
-SOLANA_CLUSTER=testnet PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True gunicorn app:webapp --bind :5050 --reload
+SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=8 PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True gunicorn app:webapp --bind :5050 --reload
 ```
 
 Open Firefox Browser and navigate to ...
