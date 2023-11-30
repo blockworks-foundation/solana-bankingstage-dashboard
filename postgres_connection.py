@@ -3,11 +3,45 @@ import time
 import ssl
 import copy
 from os import environ
+from dbutils.pooled_db import PooledDB
+
+
+def _configure_sslcontext():
+    if environ.get('PGSSL', 'false') == 'true':
+        ssl_context = ssl.create_default_context()
+        ssl_context.verify_mode = ssl.CERT_REQUIRED
+        ssl_context.check_hostname = False
+        ssl_context.load_verify_locations("ca.cer")
+        ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
+        return ssl_context
+    else:
+        return None
+
+
+# see https://webwareforpython.github.io/DBUtils/main.html#pooleddb-pooled-db
+def _init_pool():
+    pool_size = environ.get('POOLED_DB_MAX_SIZE', 4)
+    username = environ.get('PGUSER', 'mev_dashboard_query_user')
+    password = environ.get('PGPASSWORD')
+    assert password is not None, "PGPASSWORD environment variable must be set"
+    host = environ.get('PGHOST', 'localhost')
+    port = environ.get('PGPORT', '5432')
+    database = environ.get('PGDATABASE', 'mangolana')
+    ssl_context = _configure_sslcontext()
+    application_name = "bankingstage-dashboard"
+    pool = PooledDB(pg8000, pool_size,
+                    database=database, user=username, password=password, host=host, port=port, application_name=application_name, ssl_context=ssl_context)
+    print("Initialized database connection pool with size ", pool_size)
+    return pool
+
+
+pool = _init_pool()
 
 
 def query(statement, args=[]):
     start = time.time()
-    con = _create_new_connection()
+
+    con = pool.connection()
     cursor = con.cursor()
     elapsed_connect = time.time() - start
 
@@ -22,6 +56,7 @@ def query(statement, args=[]):
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
 
+    cursor.close()
     con.close()
 
     if elapsed_total > .2:
@@ -29,31 +64,3 @@ def query(statement, args=[]):
 
     return maprows
 
-
-# caution: must not expose this due to "pg8000 is designed to be used with one thread per connection."
-def _create_new_connection():
-    username = environ.get('PGUSER', 'mev_dashboard_query_user')
-    password = environ.get('PGPASSWORD')
-    assert password is not None, "PGPASSWORD environment variable must be set"
-    host = environ.get('PGHOST', 'localhost')
-    port = environ.get('PGPORT', '5432')
-    database = environ.get('PGDATABASE', 'mangolana')
-    timeout = 10 # seconds
-    ssl_context = configure_sslcontext()
-    application_name="bankingstage-dashboard"
-
-    con = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
-                                  application_name=application_name, timeout=timeout, ssl_context=ssl_context)
-    return con
-
-
-def configure_sslcontext():
-    if environ.get('PGSSL', 'false') == 'true':
-        ssl_context = ssl.create_default_context()
-        ssl_context.verify_mode = ssl.CERT_REQUIRED
-        ssl_context.check_hostname = False
-        ssl_context.load_verify_locations("ca.cer")
-        ssl_context.load_cert_chain("client.cer", keyfile="client-key.cer")
-        return ssl_context
-    else:
-        return None
