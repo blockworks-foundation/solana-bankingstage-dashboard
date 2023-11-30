@@ -5,24 +5,28 @@ import copy
 from os import environ
 
 
+# global
+_global_connection = None
+
 def query(statement, args=[]):
+    global _global_connection
     start = time.time()
-    con = _create_new_connection()
-    cursor = con.cursor()
+    if _global_connection is None:
+        _global_connection = _create_new_connection()
+    cursor = _global_connection.cursor()
     elapsed_connect = time.time() - start
 
     try:
         cursor.execute(statement, args=args)
     except Exception as ex:
         print("Exception executing query:", ex)
+        _global_connection = None
         return []
 
     elapsed_total = time.time() - start
 
     keys = [k[0] for k in cursor.description]
     maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
-
-    con.close()
 
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
