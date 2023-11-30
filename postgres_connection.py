@@ -20,7 +20,7 @@ def _configure_sslcontext():
 
 # see https://webwareforpython.github.io/DBUtils/main.html#pooleddb-pooled-db
 def _init_pool():
-    pool_size = environ.get('POOLED_DB_MAX_SIZE', 4)
+    pool_size = int(environ.get('POOLED_DB_MAX_SIZE', '4'))
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
     assert password is not None, "PGPASSWORD environment variable must be set"
