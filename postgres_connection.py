@@ -29,10 +29,10 @@ def _init_pool():
     database = environ.get('PGDATABASE', 'mangolana')
     ssl_context = _configure_sslcontext()
     application_name = "bankingstage-dashboard"
-    pool = PooledDB(pg8000, pool_size,
+    the_pool = PooledDB(pg8000, pool_size,
                     database=database, user=username, password=password, host=host, port=port, application_name=application_name, ssl_context=ssl_context)
     print("Initialized database connection pool with size ", pool_size)
-    return pool
+    return the_pool
 
 
 pool = _init_pool()
@@ -47,17 +47,15 @@ def query(statement, args=[]):
 
     try:
         cursor.execute(statement, args=args)
+        elapsed_total = time.time() - start
+        keys = [k[0] for k in cursor.description]
+        maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
     except Exception as ex:
         print("Exception executing query:", ex)
         return []
-
-    elapsed_total = time.time() - start
-
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
-
-    cursor.close()
-    con.close()
+    finally:
+        cursor.close()
+        con.close()
 
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
