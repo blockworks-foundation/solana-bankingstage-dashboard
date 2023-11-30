@@ -17,7 +17,6 @@ def run_query():
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
                 to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used
             FROM banking_stage_results.transaction_infos
             WHERE true
             ORDER BY utc_timestamp DESC
@@ -52,7 +51,6 @@ def find_transaction_by_sig(tx_sig: str):
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
                 to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used
             FROM banking_stage_results.transaction_infos
             WHERE signature = %s
         ) AS data
@@ -64,15 +62,43 @@ def find_transaction_by_sig(tx_sig: str):
         map_jsons_in_row(row)
     return maprows
 
+def find_transaction_by_sig_with_details(tx_sig: str):
+    con = postgres_connection.get_connection()
+    cursor = con.cursor()
+    # transaction table primary key is uses
+    cursor.execute(
+        """
+        SELECT * FROM (
+            SELECT
+                signature,
+                errors,
+                is_executed,
+                is_confirmed,
+                first_notification_slot,
+                cu_requested,
+                prioritization_fees,
+                processed_slot,
+                utc_timestamp,
+                -- e.g. "OCT 17 12:29:17.5127"
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
+                accounts_used,
+            FROM banking_stage_results.transaction_infos
+            WHERE signature = %s
+        ) AS data
+        """, args=[tx_sig])
+
+    keys = [k[0] for k in cursor.description]
+    maprows = [dict(zip(keys, row)) for row in cursor]
+
+    assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
+
+    for row in maprows:
+        map_jsons_in_row(row)
+    return maprows
 
 def map_jsons_in_row(row):
     if row['errors']:
         row['errors_array'] = json.loads(row['errors'])
-    if row['accounts_used']:
-        accounts = json.loads(row['accounts_used'])
-        row['writable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == True, accounts)))
-        row['readable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == False, accounts)))
-
 
 def main():
     run_query()

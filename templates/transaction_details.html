@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Transaction Details</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+        body {
+            font-family: 'Rubik';
+            --explorer-default-font: 'Rubik';
+        }
+    </style>
+    <!-- no turbo.js -->
+</head>
+<body>
+
+    <div class="main-content pb-6">
+        <div class="container mt-n2">
+            <div class="header">
+                <div class="header-body"><h6 class="header-pretitle">Details</h6>
+                    <h2 class="header-title">Transaction {{transaction.signature}}</h2></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3 class="card-header-title mb-0 d-flex align-items-center">Overview</h3>
+                </div>
+                <div class="table-responsive mb-0">
+                    <table class="table table-sm table-nowrap card-table">
+                        <tbody class="list">
+                        <tr>
+                            <td class="w-100">Signature</td>
+                            <td class="text-lg-end font-monospace">
+                                <span class="font-monospace">
+                                    <a href="https://explorer.solana.com/tx/{{tx.signature}}?cluster={{config.cluster}}">
+                                        {{tx.signature}}{{transasction.signature}}
+                                    </a>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Executed</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transasction.is_executed}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Confirmed</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transasction.is_confirmed}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Processed slot</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transasction.processed_slot}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">First notification slot</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transasction.first_notification_slot}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">CU Requested</td>
+                            <td class="text-lg-end font-monospace"><span>{{transasction.cu_requested}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees</td>
+                            <td class="text-lg-end font-monospace"><span>{{transasction.prioritization_fees}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">UTC timestamp</td>
+                            <td class="text-lg-end font-monospace"><span>{{transasction.utc_timestamp}}</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="container">
+                <div class="header">
+                    <div class="header-body pt-0">
+                        <ul class="nav nav-tabs nav-overflow header-tabs">
+                            <li class="nav-item"><a class="nav-link" href="#write-locked-accounts">Write locked accounts</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#read-locked-accounts">Read locked accounts</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+</html>
