@@ -1,32 +1,36 @@
+import threading
 import pg8000
 import time
 import ssl
 import copy
 from os import environ
-
+from contextlib import closing
 
 # global
 _global_connection = None
+_global_lock = threading.Lock()
 
 def query(statement, args=[]):
     global _global_connection
+    global _global_lock
     start = time.time()
-    if _global_connection is None:
-        _global_connection = _create_new_connection()
-    cursor = _global_connection.cursor()
-    elapsed_connect = time.time() - start
+    with  _global_lock:
+        if _global_connection is None:
+            _global_connection = _create_new_connection()
+        with closing(_global_connection.cursor()) as cursor:
+            elapsed_connect = time.time() - start
 
-    try:
-        cursor.execute(statement, args=args)
-    except Exception as ex:
-        print("Exception executing query:", ex)
-        _global_connection = None
-        return []
+            try:
+                cursor.execute(statement, args=args)
+            except Exception as ex:
+                print("Exception executing query:", ex)
+                _global_connection = None
+                return []
 
-    elapsed_total = time.time() - start
+            elapsed_total = time.time() - start
 
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
+            keys = [k[0] for k in cursor.description]
+            maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
 
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
