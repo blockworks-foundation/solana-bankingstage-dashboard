@@ -51,7 +51,7 @@ def calc_bars(row):
         row['hide_bar'] = True
 
 
-def run_query():
+def run_query(to_slot=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -64,11 +64,14 @@ def run_query():
                 total_cu_requested
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot_errors
-            WHERE true
+            WHERE
+                -- short circuit if true
+                (%s or slot <= %s)
             ORDER BY slot DESC
             LIMIT 100
         ) AS data
-        """)
+        """,
+        [to_slot is None, to_slot])
 
     # print some samples
     # for row in maprows[:3]:

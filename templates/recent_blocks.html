@@ -14,7 +14,7 @@
 </head>
 <body>
 
-    <div class="main-content pb-6" hx-trigger="every 2s" hx-get="/recent-blocks">
+    <div class="main-content pb-6" hx-trigger="every 2s [{{enable_polling}}]" hx-get="/recent-blocks">
 
         {% include "_navbar.html" %}
 
@@ -22,6 +22,9 @@
             <div class="card">
 
                 <div class="card-header align-items-center"><h3 class="card-header-title">Recent Blocks ({{config.cluster_label}})</h3>
+                    {% if enable_polling!="true" %}
+                    <p class="card-text text-warning"><small class="text-body-secondary">Auto-refresh was disabled</small></p>
+                    {% endif %}
                 </div>
                 <!-- mb-0 = margin+padding bottom -->
                 <div id="blocklist" class="card-body mb-0 table-responsive">
