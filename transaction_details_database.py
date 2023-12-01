@@ -34,8 +34,8 @@ def find_transaction_details_by_sig(tx_sig: str):
         relevent_slots_dict = {row['first_notification_slot']}
         for error in row['errors_array']:
             relevent_slots_dict.add(error['slot'])
-        relevent_slots = list(relevent_slots_dict)
-        row['relevent_slots'] = relevent_slots
+        relevant_slots = list(relevent_slots_dict)
+        row['relevant_slots'] = relevant_slots
 
         blockrows = postgres_connection.query(
             """
@@ -48,7 +48,7 @@ def find_transaction_details_by_sig(tx_sig: str):
                 -- see pg8000 docs for unnest hack
                 WHERE slot IN (SELECT unnest(CAST(%s as bigint[])))
             ) AS data
-            """, args=[relevent_slots])
+            """, args=[relevant_slots])
 
         wai = []
         rai = []
