@@ -28,7 +28,7 @@
             </div>
         </td>
         <td>
-            <div class="d-flex align-items-center text-truncate" style="width:300px">
+            <div class="d-flex align-items-center text-truncate" style="width:600px">
                 <span class="font-monospace">
                     <a href="/transaction/{{tx.signature}}">{{tx.signature}}</a>
                 </span>
@@ -49,8 +49,8 @@
                 </table>
             </div>
         </td>
-        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
-        <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
+        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('', True) }}</span></td>
+        <td class="text-end">{{ tx.prioritization_fees|default('', True) }}</td>
     </tr>
     {% endfor %}
 

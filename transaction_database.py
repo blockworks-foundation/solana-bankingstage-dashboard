@@ -16,7 +16,7 @@ def run_query():
                 prioritization_fees,
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
             FROM banking_stage_results.transaction_infos
             WHERE true
             ORDER BY utc_timestamp DESC
@@ -50,7 +50,7 @@ def find_transaction_by_sig(tx_sig: str):
                 prioritization_fees,
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
             FROM banking_stage_results.transaction_infos
             WHERE signature = %s
         ) AS data
@@ -63,10 +63,8 @@ def find_transaction_by_sig(tx_sig: str):
     return maprows
 
 def find_transaction_by_sig_with_details(tx_sig: str):
-    con = postgres_connection.get_connection()
-    cursor = con.cursor()
     # transaction table primary key is uses
-    cursor.execute(
+    maprows = postgres_connection.query(
         """
         SELECT * FROM (
             SELECT
@@ -79,16 +77,12 @@ def find_transaction_by_sig_with_details(tx_sig: str):
                 prioritization_fees,
                 processed_slot,
                 utc_timestamp,
-                -- e.g. "OCT 17 12:29:17.5127"
                 to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used,
+                accounts_used
             FROM banking_stage_results.transaction_infos
             WHERE signature = %s
         ) AS data
         """, args=[tx_sig])
-
-    keys = [k[0] for k in cursor.description]
-    maprows = [dict(zip(keys, row)) for row in cursor]
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
