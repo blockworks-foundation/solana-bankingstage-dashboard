@@ -1,2 +1,4 @@
-h1 {
+body {
+    font-family: 'Rubik';
+    --explorer-default-font: 'Rubik';
 }

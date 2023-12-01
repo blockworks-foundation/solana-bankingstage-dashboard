@@ -6,15 +6,10 @@
     <link rel="preconnect" href="https://api.fonts.coollabs.io" crossorigin>
     <link href="https://api.fonts.coollabs.io/css2?family=Rubik&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <style>
-        body {
-            font-family: 'Rubik';
-            --explorer-default-font: 'Rubik';
-        }
-    </style>
 </head>
-<body hx-boost="true">
+<body>
 
     <div class="main-content pb-6">
 
@@ -61,8 +56,8 @@
                     <div class="header-body pt-0">
                         <ul class="nav nav-tabs nav-overflow header-tabs">
                             <!-- note: local anchors are not hx-boost'ed -->
-                            <li class="nav-item"><a class="nav-link" href="#write-locked-accounts">Write locked accounts</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#read-locked-accounts">Read locked accounts</a></li>
+                            <li class="nav-item"><a hx-boost="false" class="nav-link" href="#write-locked-accounts">Write locked accounts</a></li>
+                            <li class="nav-item"><a hx-boost="false" class="nav-link" href="#read-locked-accounts">Read locked accounts</a></li>
                         </ul>
                     </div>
                 </div>
