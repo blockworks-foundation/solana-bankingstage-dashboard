@@ -38,7 +38,8 @@ def _init_pool():
     application_name = "bankingstage-dashboard"
     timeout = 10
 
-    the_pool = PooledDB(pg8000, maxconnections=pool_size,
+    # note: for some unknown reason, database sees maxconnections+1 connections
+    the_pool = PooledDB(pg8000, maxconnections=pool_size, blocking=True, maxusage=100,
                     database=database, user=username, password=password, host=host, port=port,
                     application_name=application_name, timeout=timeout, ssl_context=ssl_context)
     print("Initialized database connection pool with size ", pool_size)
