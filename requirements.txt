@@ -4,7 +4,6 @@ click==8.1.7
 DBUtils==3.0.3
 Flask==2.3.3
 flask-htmx==0.3.1
-flask-sock==0.7.0
 gunicorn==21.2.0
 h11==0.14.0
 itsdangerous==2.1.2
@@ -16,6 +15,5 @@ python-dateutil==2.8.2
 scramp==1.4.4
 simple-websocket==1.0.0
 six==1.16.0
-Turbo-Flask==0.8.4
 Werkzeug==3.0.1
 wsproto==1.2.0
