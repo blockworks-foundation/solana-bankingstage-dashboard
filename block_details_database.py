@@ -16,7 +16,8 @@ def find_block_by_slotnumber(slot_number: int):
                 total_cu_used,
                 total_cu_requested,
                 heavily_writelocked_accounts,
-                heavily_readlocked_accounts
+                heavily_readlocked_accounts,
+                supp_infos
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot
             WHERE slot = %s
@@ -30,6 +31,7 @@ def find_block_by_slotnumber(slot_number: int):
         # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
 
         parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
+        row['supp_infos'] =json.loads(row['supp_infos'])
         parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
         row["heavily_writelocked_accounts_parsed"] = parsed_accounts
         # TODO need new parser

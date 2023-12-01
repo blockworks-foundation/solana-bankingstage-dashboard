@@ -144,4 +144,15 @@ def getusers(search):
     results = [row, row ,row]
     return results
 
-
+@webapp.route('/transaction/<path:signature>')
+def get_transaction_detail(signature):
+    this_config = config.get_config()
+    start = time.time()
+    maprows = list(transaction_database.find_transaction_by_sig_with_details(signature))
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("transaction_database.find_transaction_by_sig_with_details() took", elapsed, "seconds")
+    if len(maprows):
+        return render_template('transaction_details.html', config=this_config, transaction=maprows[0])
+    else:
+        return "Transaction not found", 404
