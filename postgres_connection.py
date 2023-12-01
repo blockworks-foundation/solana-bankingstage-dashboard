@@ -1,10 +1,14 @@
 import pg8000
-import time
-import ssl
-import copy
-from os import environ
 from dbutils.pooled_db import PooledDB
+import ssl
+import time
+from os import environ
 
+# keep default threadsafety
+# If the underlying DB-API module is not thread-safe,
+# thread locks will be used to ensure that the pooled_db connections are thread-safe.
+# So you don't need to worry about that, but you should be careful to use dedicated
+# connections whenever you change the database session or perform transactions spreading over more than one SQL command.
 
 def _configure_sslcontext():
     if environ.get('PGSSL', 'false') == 'true':
@@ -29,11 +33,22 @@ def _init_pool():
     port = environ.get('PGPORT', '5432')
     database = environ.get('PGDATABASE', 'mangolana')
     ssl_context = _configure_sslcontext()
+    if ssl_context is not None:
+        print("... use SSL for database connection")
     application_name = "bankingstage-dashboard"
-    the_pool = PooledDB(pg8000, pool_size,
+    timeout = 10
+
+    test_conn = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
+                            application_name=application_name, timeout=timeout, ssl_context=ssl_context)
+    cur = test_conn.cursor()
+    cur.execute("SELECT 1")
+    print("test query result=", cur.fetchone())
+    cur.close()
+    test_conn.close()
+
+    the_pool = PooledDB(pg8000, maxconnections=pool_size,
                     database=database, user=username, password=password, host=host, port=port,
-                    application_name=application_name, ssl_context=ssl_context,
-                    timeout=5)
+                    application_name=application_name, timeout=timeout, ssl_context=ssl_context)
     print("Initialized database connection pool with size ", pool_size)
     return the_pool
 
@@ -54,7 +69,7 @@ def query(statement, args=[]):
                 cursor.execute(statement, args=args)
                 elapsed_total = time.time() - start
                 keys = [k[0] for k in cursor.description]
-                maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
+                maprows = [dict(zip(keys, row)) for row in cursor]
             except Exception as ex:
                 print("Exception executing query:", ex)
                 return []
