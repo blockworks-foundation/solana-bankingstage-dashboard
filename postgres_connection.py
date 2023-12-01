@@ -38,14 +38,6 @@ def _init_pool():
     application_name = "bankingstage-dashboard"
     timeout = 10
 
-    test_conn = pg8000.dbapi.Connection(username, host=host, port=port, password=password, database=database,
-                            application_name=application_name, timeout=timeout, ssl_context=ssl_context)
-    cur = test_conn.cursor()
-    cur.execute("SELECT 1")
-    print("test query result=", cur.fetchone())
-    cur.close()
-    test_conn.close()
-
     the_pool = PooledDB(pg8000, maxconnections=pool_size,
                     database=database, user=username, password=password, host=host, port=port,
                     application_name=application_name, timeout=timeout, ssl_context=ssl_context)
