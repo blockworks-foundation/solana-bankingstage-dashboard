@@ -6,6 +6,7 @@ primary_region = "nrt"
 
 [env]
   PORT = "8080"
+  POOLED_DB_MAX_SIZE = 4
 
 [http_service]
   internal_port = 8080

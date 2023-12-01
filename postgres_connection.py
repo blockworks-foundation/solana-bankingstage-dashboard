@@ -20,6 +20,7 @@ def _configure_sslcontext():
 
 # see https://webwareforpython.github.io/DBUtils/main.html#pooleddb-pooled-db
 def _init_pool():
+    print("Setting up database connection pool...")
     pool_size = int(environ.get('POOLED_DB_MAX_SIZE', '4'))
     username = environ.get('PGUSER', 'mev_dashboard_query_user')
     password = environ.get('PGPASSWORD')
@@ -30,7 +31,9 @@ def _init_pool():
     ssl_context = _configure_sslcontext()
     application_name = "bankingstage-dashboard"
     the_pool = PooledDB(pg8000, pool_size,
-                    database=database, user=username, password=password, host=host, port=port, application_name=application_name, ssl_context=ssl_context)
+                    database=database, user=username, password=password, host=host, port=port,
+                    application_name=application_name, ssl_context=ssl_context,
+                    timeout=5)
     print("Initialized database connection pool with size ", pool_size)
     return the_pool
 
@@ -45,17 +48,16 @@ def query(statement, args=[]):
     cursor = con.cursor()
     elapsed_connect = time.time() - start
 
-    try:
-        cursor.execute(statement, args=args)
-        elapsed_total = time.time() - start
-        keys = [k[0] for k in cursor.description]
-        maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
-    except Exception as ex:
-        print("Exception executing query:", ex)
-        return []
-    finally:
-        cursor.close()
-        con.close()
+    with pool.connection() as db:
+        with db.cursor() as cursor:
+            try:
+                cursor.execute(statement, args=args)
+                elapsed_total = time.time() - start
+                keys = [k[0] for k in cursor.description]
+                maprows = [dict(zip(keys, copy.deepcopy(row))) for row in cursor]
+            except Exception as ex:
+                print("Exception executing query:", ex)
+                return []
 
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
