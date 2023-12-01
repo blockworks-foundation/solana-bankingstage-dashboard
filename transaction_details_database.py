@@ -90,6 +90,7 @@ def find_transaction_details_by_sig(tx_sig: str):
     return maprows
 
 
+# see https://codereview.stackexchange.com/questions/188918/creating-an-inverted-index-in-python
 #  {'slot': 233397518, 'key': 'Ap5pxfhTsW8bW4SvbezbrGdaSWRDmNSMycgCu11ba4i', 'cu_requested': 700000, 'cu_consumed': 53861, 'max_pf': 1, 'min_pf': 0, 'median_pf': 1}
 def invert_by_slot(rows):
     inv_indx = defaultdict(list)
