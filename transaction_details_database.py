@@ -1,6 +1,7 @@
 import postgres_connection
 import json
 import transaction_database
+from collections import defaultdict
 
 
 def find_transaction_details_by_sig(tx_sig: str):
@@ -82,6 +83,16 @@ def find_transaction_details_by_sig(tx_sig: str):
                     if len(acc) > 1:
                         print("WARNING: multiple accounts with same key in same block")
                 rai.append(info)
-        row['write_lock_info'] = wai
-        row['read_lock_info'] = rai
+        row['write_lock_info'] = invert_by_slot(wai)
+        row['read_lock_info'] = invert_by_slot(rai)
+
+
     return maprows
+
+
+#  {'slot': 233397518, 'key': 'Ap5pxfhTsW8bW4SvbezbrGdaSWRDmNSMycgCu11ba4i', 'cu_requested': 700000, 'cu_consumed': 53861, 'max_pf': 1, 'min_pf': 0, 'median_pf': 1}
+def invert_by_slot(rows):
+    inv_indx = defaultdict(list)
+    for row in rows:
+        inv_indx[row["slot"]].append(row)
+    return inv_indx

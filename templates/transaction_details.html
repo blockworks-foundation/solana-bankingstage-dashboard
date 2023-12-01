@@ -131,8 +131,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for write_account in transaction.write_lock_info %}
-                                {% if write_account.slot == slot %}
+                                {% for write_account in transaction.write_lock_info[slot] %}
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
@@ -149,7 +148,6 @@
                                     <td>{{write_account.max_pf}}</td>
 
                                 </tr>
-                                {% endif %}
                                 {% endfor %}
                                 </tbody>
                             </table>
@@ -172,8 +170,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {% for read_account in transaction.read_lock_info %}
-                                {% if read_account.slot == slot %}
+                                {% for read_account in transaction.read_lock_info[slot] %}
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
@@ -191,7 +188,6 @@
                                     <td>{{read_account.max_pf}}</td>
 
                                 </tr>
-                                {% endif %}
                                 {% endfor %}
                                 </tbody>
                             </table>
