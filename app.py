@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, make_response, redirect
-import time
 from flask_htmx import HTMX
+import time
 import re
 
 import transaction_database
@@ -12,10 +12,9 @@ import config
 # MAIN
 #
 
+print("Setting up Flask webapp...")
 webapp = Flask(__name__)
 htmx = HTMX(webapp)
-
-webapp.update_thread_started = False
 
 
 print("SOLANA_CLUSTER", config.get_config()['cluster'])
@@ -24,7 +23,6 @@ recent_blocks_database.run_query()
 block_details_database.find_block_by_slotnumber(226352855)
 print("SELFTEST passed")
 
-#################gi#####
 
 @webapp.route('/')
 def index():
