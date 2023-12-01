@@ -51,8 +51,6 @@ pool = _init_pool()
 def query(statement, args=[]):
     start = time.time()
 
-    con = pool.connection()
-    cursor = con.cursor()
     elapsed_connect = time.time() - start
 
     with pool.connection() as db:
