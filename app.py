@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
 import re
-
 import transaction_database
 import transaction_details_database
 import recent_blocks_database
