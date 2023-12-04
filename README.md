@@ -1,35 +1,56 @@
-## Solana Tx Error Page!
+## Solana Banking Stage Inspection Dashboard
 
 ### Status
-Pre-alpha / demo only
+Production - contact us for Link
 
 ### Screenshots
 
-#### Transaction errors with messages
-![Transaction Errors](docs/tx-errors.png "Transaction Errors")
+#### List of Transaction errors
 
-##### Blocks fill rate / errors / total tx
-![Recent Blocks](docs/blocks.png "Blocks Content")
+![Transaction Errors](docs/tx-errors-list.png "Transaction Errors")
+
+##### Transaction details with heavily write-locked accounts
+
+![Transaction Details](docs/tx-details-writelocked-accounts.png "Blocks Content")
+
+##### List of Blocks with fill rate / errors / total tx
+
+![Recent Blocks](docs/recent-blocks-list.png "Blocks Content")
+
+##### Block details
+
+![Block Details](docs/block-details.png "Block Details")
+
+##### Block details with heavily write-locked accounts
+
+![Block Details Heavy Locked Accounts](docs/block-details-writelocked-accounts.png "Block Details Write-Locked Accounts")
 
 
-### Development
+#### Search for a Block/Transaction by Slot Number/Signature
+
+![Search Block](docs/search-block.png "Search")
+
+
+
+### Local Development
 **Caution:** Port `5000` cannot be used on MacOS.
 
 ```
 # Unix/macOS
 python3 -m venv .venv
 source .venv/bin/activate
-SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=8 PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
+SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=4 PGDATABASE=da11copy PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True flask run --port 5050 --debug --reload
 ```
 
 Use this to test with _gunicorn_: 
 ```
-SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=8 PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True gunicorn app:webapp --workers 1 --threads 30 --bind :5050 --reload
+SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=4 PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True gunicorn app:webapp --workers 1 --threads 30 --bind :5050 --reload
 ```
 
 Open Firefox Browser and navigate to ...
 * [Dashboard](http://localhost:5050/dashboard)
-* [Blocks and Tx Errors](http://localhost:5050/recent-blocks)
+* [Tx Errors](http://localhost:5050/tx-errors)
+* [Recent Blocks](http://localhost:5050/recent-blocks)
 * [Search for one Block or Transaction](http://localhost:5050/search)
 
 ### Deployment
