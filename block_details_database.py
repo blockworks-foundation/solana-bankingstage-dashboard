@@ -53,11 +53,3 @@ def main():
     find_block_by_slotnumber(226352855)
 
 
-def map_row_to_block_details():
-    heavily_writelocked_accounts = r'{"(k:maCYbwXrJDnnP5ft3ySoH4ogwv5yFph8fFacgMa51de, cu_req:16000000, cu_con:1937292)","(k:C3zz2AutxkULZPafPdBrBLiuSV25AMi9vEqWjCsja4Dj, cu_req:400000, cu_con:1485802)","(k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:400000, cu_con:1485802)"}'
-    json_object = json.loads(heavily_writelocked_accounts)
-    print("json_object", json_object)
-
-if __name__=="__main__":
-    map_row_to_block_details()
-
