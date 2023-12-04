@@ -19,10 +19,10 @@ htmx = HTMX(webapp)
 
 
 print("SOLANA_CLUSTER", config.get_config()['cluster'])
-transaction_database.run_query()
-recent_blocks_database.run_query()
-block_details_database.find_block_by_slotnumber(226352855)
-print("SELFTEST passed")
+# transaction_database.run_query()
+# recent_blocks_database.run_query()
+# block_details_database.find_block_by_slotnumber(226352855)
+# print("SELFTEST passed")
 
 
 @webapp.route('/')
