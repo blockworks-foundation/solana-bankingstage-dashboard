@@ -141,11 +141,11 @@
                                             </div>
                                         </a>
                                     </td>
-                                    <td>{{write_account.cu_requested}}</td>
-                                    <td>{{write_account.cu_consumed}}</td>
-                                    <td>{{write_account.median_pf}}</td>
-                                    <td>{{write_account.min_pf}}</td>
-                                    <td>{{write_account.max_pf}}</td>
+                                    <td>{{ write_account.cu_requested | lamports }}</td>
+                                    <td>{{ write_account.cu_consumed | lamports }}</td>
+                                    <td>{{ write_account.median_pf | lamports }}</td>
+                                    <td>{{ write_account.min_pf | lamports }}</td>
+                                    <td>{{ write_account.max_pf | lamports }}</td>
 
                                 </tr>
                                 {% endfor %}
