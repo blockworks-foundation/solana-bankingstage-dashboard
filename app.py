@@ -19,9 +19,6 @@ htmx = HTMX(webapp)
 
 
 print("SOLANA_CLUSTER", config.get_config()['cluster'])
-# inspect WEB_CONCURRENCY which impacts the number of proccesses spawned by gunicorn https://docs.gunicorn.org/en/stable/settings.html)
-# impacts db pool
-print("WEB_CONCURRENCY", environ.get("WEB_CONCURRENCY"))
 transaction_database.run_query()
 recent_blocks_database.run_query()
 block_details_database.find_block_by_slotnumber(226352855)
