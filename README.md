@@ -32,3 +32,12 @@ Open Firefox Browser and navigate to ...
 * [Blocks and Tx Errors](http://localhost:5050/recent-blocks)
 * [Search for one Block or Transaction](http://localhost:5050/search)
 
+### Deployment
+#### Limits
+| Description                         | System      | Variable               | Config     |
+|-------------------------------------|-------------|------------------------|------------|
+| Max number of PostgreSQL connections | Application | POOLED_DB_MAX_SIZE     | fly.toml   |
+| Limit of HTTP Requests              | fly.io      | soft_limit             | fly.toml   |
+| Hard Limit of HTTP Requests         | fly.io      | hard_limit             | fly.toml   |
+| Python HTTP Server                  | gunicorn    | --workers, --threads | Dockerfile |
+
