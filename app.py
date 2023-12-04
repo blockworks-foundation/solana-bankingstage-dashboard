@@ -3,7 +3,6 @@ from flask_htmx import HTMX
 import time
 import re
 from os import environ
-
 import transaction_database
 import transaction_details_database
 import recent_blocks_database
@@ -59,12 +58,19 @@ def tx_errors():
 @webapp.route('/recent-blocks')
 def recent_blocks():
     this_config = config.get_config()
+    to_slot = request.args.get('to_slot', default = 0, type = int)
+    if to_slot == 0:
+        to_slot = None
+
     start = time.time()
-    maprows = list(recent_blocks_database.run_query())
+    maprows = list(recent_blocks_database.run_query(to_slot))
     elapsed = time.time() - start
     if elapsed > .5:
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
-    return render_template('recent_blocks.html', config=this_config, blocks=maprows)
+
+    enable_polling = "true" if to_slot is None else "false"
+
+    return render_template('recent_blocks.html', config=this_config, blocks=maprows, enable_polling=enable_polling)
 
 
 @webapp.route('/block/<path:slot>')
