@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Transaction Details</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="preconnect" href="https://api.fonts.coollabs.io" crossorigin>
+    <link href="https://api.fonts.coollabs.io/css2?family=Rubik&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+
+    <div class="main-content pb-6">
+        {% include "_navbar.html" %}
+
+        <div class="container mt-n2">
+            <div class="header">
+                <div class="header-body"><h6 class="header-pretitle">Details</h6>
+                    <h2 class="header-title">Transaction details</h2></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3 class="card-header-title mb-0 d-flex align-items-center">Overview</h3>
+                </div>
+                <div class="table-responsive mb-0">
+                    <table class="table table-sm table-nowrap card-table">
+                        <tbody class="list">
+                        <tr>
+                            <td class="w-100">Signature</td>
+                            <td class="text-lg-end font-monospace">
+                                <span class="font-monospace">
+                                    <a href="https://explorer.solana.com/tx/{{transaction.signature}}?cluster={{config.cluster}}">
+                                        {{transaction.signature}}
+                                    </a>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Executed</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transaction.is_executed}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Confirmed</td>
+                            <td class="text-lg-end font-monospace">
+                                <span>{{transaction.is_confirmed}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Processed slot</td>
+                            <td class="text-lg-end font-monospace">
+                                <span><a hx-boost="true" href="/block/{{transaction.processed_slot}}">{{transaction.processed_slot}}</a></span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">First notification slot</td>
+                            <td class="text-lg-end font-monospace">
+                                <span><a hx-boost="true" href="/block/{{transaction.first_notification_slot}}">{{transaction.first_notification_slot}}</a></span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">CU Requested</td>
+                            <td class="text-lg-end font-monospace"><span>{{transaction.cu_requested}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees</td>
+                            <td class="text-lg-end font-monospace"><span>{{transaction.prioritization_fees}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">UTC timestamp</td>
+                            <td class="text-lg-end font-monospace"><span>{{transaction.timestamp_formatted}}</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="container">
+                <div class="header">
+                    <div class="header-body pt-0">
+                        <ul class="nav nav-tabs nav-overflow header-tabs">
+                            <!-- note: local anchors are not hx-boost'ed -->
+                            {% for slot in transaction.relevant_slots %}
+                                <li class="nav-item"><a class="nav-link" href="#relevant-slot-{{slot}}">Slot: {{slot}}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {% for slot in transaction.relevant_slots %}
+                <div id="relevant-slot-{{slot}}" class="card">
+                    <div class="card-header align-items-center"><h3 class="card-header-title">Errors in Slot {{slot}}</h3></div>
+
+                    <div class="table-responsive mb-0">
+                        <table class="table table-sm table-nowrap card-table">
+                            <thead>
+                            <tr>
+                                <th class="text-muted">Error</th>
+                                <th class="text-muted">Count</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for error in transaction.errors_array %}
+                                {% if error.slot == slot %}
+                                <tr>
+                                    <td>
+                                        <span class="text-danger">{{error.error}}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-danger">{{error.count}}</span>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="write-locked-accounts">
+                        <div class="card-header align-items-center"><h3 class="card-header-title">Write-Locked Accounts</h3></div>
+
+                        <div class="table-responsive mb-0">
+                            <table class="table table-sm table-nowrap card-table">
+                                <thead>
+                                <tr>
+                                    <th class="text-muted">Account</th>
+                                    <th class="text-muted">CU Requested</th>
+                                    <th class="text-muted">CU Consumed</th>
+                                    <th class="text-muted">Median Prio Fees</th>
+                                    <th class="text-muted">Min Prio Fees</th>
+                                    <th class="text-muted">Max Prio Fees</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for write_account in transaction.write_lock_info[slot] %}
+                                <tr>
+                                    <td>
+                                        <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
+                                            <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
+                                                    class=""></span></span><span
+                                                    class="font-monospace"><span class="">{{write_account.key}}</span></span>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{write_account.cu_requested}}</td>
+                                    <td>{{write_account.cu_consumed}}</td>
+                                    <td>{{write_account.median_pf}}</td>
+                                    <td>{{write_account.min_pf}}</td>
+                                    <td>{{write_account.max_pf}}</td>
+
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="read-locked-accounts">
+                        <div class="card-header align-items-center"><h3 class="card-header-title">Read-Locked Accounts</h3></div>
+
+                        <div class="table-responsive mb-0">
+                            <table class="table table-sm table-nowrap card-table">
+                                <thead>
+                                <tr>
+                                    <th class="text-muted">Account</th>
+                                    <th class="text-muted">CU Requested</th>
+                                    <th class="text-muted">CU Consumed</th>
+                                    <th class="text-muted">Median Prio Fees</th>
+                                    <th class="text-muted">Min Prio Fees</th>
+                                    <th class="text-muted">Max Prio Fees</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for read_account in transaction.read_lock_info[slot] %}
+                                <tr>
+                                    <td>
+                                        <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
+                                            <div class="d-none d-lg-flex align-items-center">
+                                                <span class="font-size-tiny me-2">
+                                                    <span class="font-monospace">{{read_account.key}}</span>
+                                                </span>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td>{{read_account.cu_requested}}</td>
+                                    <td>{{read_account.cu_consumed}}</td>
+                                    <td>{{read_account.median_pf}}</td>
+                                    <td>{{read_account.min_pf}}</td>
+                                    <td>{{read_account.max_pf}}</td>
+
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border border-dark border-3 opacity-75">
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+
+</body>
+</html>

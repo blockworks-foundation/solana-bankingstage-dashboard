@@ -1,3 +1,4 @@
+import json
 import pg8000
 import log_scale
 import postgres_connection
@@ -61,7 +62,8 @@ def run_query(to_slot=None):
                 successful_transactions,
                 banking_stage_errors,
                 total_cu_used,
-                total_cu_requested
+                total_cu_requested,
+                supp_infos
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot_errors
             WHERE
@@ -96,7 +98,8 @@ def find_block_by_slotnumber(slot_number: int):
                 successful_transactions,
                 banking_stage_errors,
                 total_cu_used,
-                total_cu_requested
+                total_cu_requested,
+                supp_infos
             FROM banking_stage_results.blocks
             -- this critera uses index idx_blocks_slot
             WHERE slot = %s
@@ -116,6 +119,7 @@ def find_block_by_slotnumber(slot_number: int):
 
 def fixup_row(row):
     row['banking_stage_errors'] = row['banking_stage_errors'] or 0
+    row['prioritization_fees'] = json.loads(row['supp_infos'])
 
 
 def find_block_by_blockhash(block_hash: str):
@@ -128,7 +132,8 @@ def find_block_by_blockhash(block_hash: str):
                 successful_transactions,
                 banking_stage_errors,
                 total_cu_used,
-                total_cu_requested
+                total_cu_requested,
+                supp_infos
             FROM banking_stage_results.blocks
             -- uses index on primary key
             WHERE block_hash = %s

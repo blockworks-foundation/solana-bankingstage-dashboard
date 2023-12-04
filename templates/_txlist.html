@@ -8,8 +8,6 @@
         <th class="text-muted">Errors</th>
         <th class="text-muted text-end c-pointer">CU requested</th>
         <th class="text-muted text-end c-pointer">Prio Fees</th>
-        <th class="text-muted text-end c-pointer">Writable Accounts</th>
-        <th class="text-muted text-end c-pointer">Readable Accounts</th>
     </tr>
     </thead>
     <tbody class="list">
@@ -30,14 +28,10 @@
             </div>
         </td>
         <td>
-            <div class="d-flex align-items-center text-truncate" style="width:300px">
-                <span class="font-monospace">
-                    {% if tx.is_executed %}
-                        <a hx-boost="false" href="https://explorer.solana.com/tx/{{tx.signature}}?cluster={{config.cluster}}">{{tx.signature}}</a>
-                    {% else %}
-                        {{tx.signature}}
-                    {% endif %}
-                </span>
+            <div class="d-flex align-items-center font-monospace" style="width:400px">
+                <div class="text-truncate">
+                    <a href="/transaction/{{tx.signature}}">{{tx.signature}}</a>
+                </div>
             </div>
         </td>
         <td>
@@ -55,38 +49,8 @@
                 </table>
             </div>
         </td>
-        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('no CU', True) }}</span></td>
-        <td class="text-end">{{ tx.prioritization_fees|default('no fees', True) }}</td>
-        <td>
-            <div class="d-flex align-items-left">
-                <table>
-                    {% for writable_account in tx.writable_accounts_used %}
-                    <tr>
-                        <td>
-                            <span class="font-monospace text-danger">
-                                {{writable_account}}
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </td>
-        <td>
-            <div class="d-flex align-items-left">
-                <table>
-                    {% for readable_account in tx.readable_accounts_used %}
-                    <tr>
-                        <td>
-                            <span class="font-monospace text-danger">
-                                {{readable_account}}
-                            </span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            </div>
-        </td>
+        <td class="text-end"><span class="font-monospace">{{ tx.cu_requested|default('', True) }}</span></td>
+        <td class="text-end">{{ tx.prioritization_fees|default('', True) }}</td>
     </tr>
     {% endfor %}
 
