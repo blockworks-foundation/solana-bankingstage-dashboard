@@ -15,7 +15,7 @@ Production - contact us for Link
 
 ##### List of Blocks with fill rate / errors / total tx
 
-![Recent Blocks](docs/recent-blocks-list.png "Blocks Content")
+![Recent Blocks](docs/recent-blocks-list.png "Recent Blocks")
 
 ##### Block details
 
@@ -30,7 +30,8 @@ Production - contact us for Link
 
 ![Search Block](docs/search-block.png "Search")
 
-
+### Recent Blocks - stop refreshing
+The auto-refresh can be stopped by appending parameter `to_slot` to the URL: `/recent-blocks?to_slot=232135000`
 
 ### Local Development
 **Caution:** Port `5000` cannot be used on MacOS.
