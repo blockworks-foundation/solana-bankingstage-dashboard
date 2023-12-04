@@ -44,8 +44,9 @@ SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=4 PGDATABASE=da11copy PGUSER=query_use
 ```
 
 Use this to test with _gunicorn_: 
+* ___CAUTION___: did not figure out how to enable template reloading
 ```
-SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=4 PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret TEMPLATES_AUTO_RELOAD=True gunicorn app:webapp --workers 1 --threads 30 --bind :5050 --reload
+SOLANA_CLUSTER=testnet POOLED_DB_MAX_SIZE=4 PGDATABASE=da11copy PGPORT=5432 PGUSER=query_user PGPASSWORD=secret gunicorn app:webapp --workers 1 --threads 30 --bind :5050 --reload
 ```
 
 Open Firefox Browser and navigate to ...
