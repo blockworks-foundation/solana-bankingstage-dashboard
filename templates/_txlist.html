@@ -30,7 +30,7 @@
         <td>
             <div class="d-flex align-items-center font-monospace" style="width:400px">
                 <div class="text-truncate">
-                    <a href="/transaction/{{tx.signature}}">{{tx.signature}}</a>
+                    <a href="/transaction/{{tx.signature}}">{{ tx.signature }}</a>
                 </div>
             </div>
         </td>
@@ -40,8 +40,8 @@
                     {% for error in tx.errors_array %}
                     <tr>
                         <td>
-                            <span class="font-monospace text-danger" title="Slot {{error.slot}}">
-                                {{error.count}}x&nbsp;&nbsp;{{error.error}}
+                            <span class="font-monospace text-danger" title="Slot {{ error.slot | slotnumber }}">
+                                {{ error.count | count }}x&nbsp;&nbsp;{{ error.error }}
                             </span>
                         </td>
                     </tr>
