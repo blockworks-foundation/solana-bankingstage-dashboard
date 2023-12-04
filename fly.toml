@@ -13,7 +13,7 @@ primary_region = "nrt"
   internal_port = 8080
   force_https = true
   [http_service.concurrency]
-  type = "requests"
+  type = "connections"
   soft_limit = 50
   hard_limit = 150
 
