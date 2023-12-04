@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
 import re
-from os import environ
 import transaction_database
 import transaction_details_database
 import recent_blocks_database
@@ -151,3 +150,14 @@ def get_transaction_details(signature):
         return render_template('transaction_details.html', config=this_config, transaction=maprows[0])
     else:
         return "Transaction not found", 404
+
+
+# format 123456789 to "123,456,789"
+@webapp.template_filter('lamports')
+def lamports_filter(number: int):
+    if number is None:
+        return ""
+    else:
+        # https://realpython.com/python-formatted-output/#the-group-subcomponent
+        # return format(number, ",.2f")
+        return format(number, ",")
