@@ -16,8 +16,7 @@ def run_query():
                 prioritization_fees,
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
             FROM banking_stage_results.transaction_infos
             WHERE true
             ORDER BY utc_timestamp DESC
@@ -51,8 +50,7 @@ def find_transaction_by_sig(tx_sig: str):
                 prioritization_fees,
                 utc_timestamp,
                 -- e.g. "OCT 17 12:29:17.5127"
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used
+                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
             FROM banking_stage_results.transaction_infos
             WHERE signature = %s
         ) AS data
@@ -68,14 +66,11 @@ def find_transaction_by_sig(tx_sig: str):
 def map_jsons_in_row(row):
     if row['errors']:
         row['errors_array'] = json.loads(row['errors'])
-    if row['accounts_used']:
-        accounts = json.loads(row['accounts_used'])
-        row['writable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == True, accounts)))
-        row['readable_accounts_used'] = list(map(lambda x: x['key'], filter(lambda x: x['writable'] == False, accounts)))
 
 
 def main():
     run_query()
+
 
 if __name__=="__main__":
     main()

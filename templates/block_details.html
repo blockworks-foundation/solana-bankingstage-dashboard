@@ -28,7 +28,7 @@
                         <tbody class="list">
                         <tr>
                             <td class="w-100">Slot</td>
-                            <td class="text-lg-end font-monospace"><span class="font-monospace">{{block.slot}}</span></td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="https://explorer.solana.com//block/{{block.slot}}?cluster={{config.cluster}}">{{block.slot}}</a></span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Blockhash</td>
@@ -45,7 +45,27 @@
                         </tr>
                         <tr>
                             <td class="w-100">Banking Stage Errors</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.banking_stage_errors or 'n/a' }}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.banking_stage_errors or 'n/a'}}</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees Median</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_median}} lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees Min</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_min}} lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees Max</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_max}} lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees p75</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_75}} lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees p90</td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_90}} lamports/CU</span></td>
                         </tr>
                         </tbody>
                     </table>

@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
 import re
+
 import transaction_database
+import transaction_details_database
 import recent_blocks_database
 import block_details_database
 import config
@@ -137,17 +139,15 @@ def search():
     return render_template('search.html', config=this_config)
 
 
-# uid INTEGER,
-# name TEXT NOT NULL,
-# email TEXT NOT NULL,
-# tel TEXT NOT NULL,
-def getusers(search):
-    row = dict()
-    row["uid"] = 42
-    row["name"] = "John, Doe"
-    row["email"] = "foo@bar.com"
-    row["tel"] = "0121212"
-    results = [row, row ,row]
-    return results
-
-
+@webapp.route('/transaction/<path:signature>')
+def get_transaction_details(signature):
+    this_config = config.get_config()
+    start = time.time()
+    maprows = list(transaction_details_database.find_transaction_details_by_sig(signature))
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("transaction_database.find_transaction_details_by_sig() took", elapsed, "seconds")
+    if len(maprows):
+        return render_template('transaction_details.html', config=this_config, transaction=maprows[0])
+    else:
+        return "Transaction not found", 404
