@@ -118,6 +118,7 @@
                     <div id="write-locked-accounts">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Write-Locked Accounts</h3></div>
 
+<<<<<<< Updated upstream
                         <div class="table-responsive mb-0">
                             <table class="table table-sm table-nowrap card-table">
                                 <thead>
@@ -132,6 +133,23 @@
                                 </thead>
                                 <tbody>
                                 {% for write_account in transaction.write_lock_info[slot] %}
+=======
+                    <div class="table-responsive mb-0">
+                        <table class="table table-sm table-nowrap card-table">
+                            <thead>
+                            <tr>
+                                <th class="text-muted">Account</th>
+                                <th class="text-muted">CU Requested</th>
+                                <th class="text-muted">CU Consumed</th>
+                                <th class="text-muted">Min Prio Fees</th>
+                                <th class="text-muted">Median Prio Fees</th>
+                                <th class="text-muted">Max Prio Fees</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for write_account in transaction.write_lock_info %}
+                                {% if write_account.slot == slot %}
+>>>>>>> Stashed changes
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
@@ -143,8 +161,8 @@
                                     </td>
                                     <td>{{write_account.cu_requested}}</td>
                                     <td>{{write_account.cu_consumed}}</td>
-                                    <td>{{write_account.median_pf}}</td>
                                     <td>{{write_account.min_pf}}</td>
+                                    <td>{{write_account.median_pf}}</td>
                                     <td>{{write_account.max_pf}}</td>
 
                                 </tr>
@@ -157,6 +175,7 @@
                     <div id="read-locked-accounts">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Read-Locked Accounts</h3></div>
 
+<<<<<<< Updated upstream
                         <div class="table-responsive mb-0">
                             <table class="table table-sm table-nowrap card-table">
                                 <thead>
@@ -171,6 +190,23 @@
                                 </thead>
                                 <tbody>
                                 {% for read_account in transaction.read_lock_info[slot] %}
+=======
+                    <div class="table-responsive mb-0">
+                        <table class="table table-sm table-nowrap card-table">
+                            <thead>
+                            <tr>
+                                <th class="text-muted">Account</th>
+                                <th class="text-muted">CU Requested</th>
+                                <th class="text-muted">CU Consumed</th>
+                                <th class="text-muted">Min Prio Fees</th>
+                                <th class="text-muted">Median Prio Fees</th>
+                                <th class="text-muted">Max Prio Fees</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for read_account in transaction.read_lock_info %}
+                                {% if read_account.slot == slot %}
+>>>>>>> Stashed changes
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
@@ -183,8 +219,8 @@
                                     </td>
                                     <td>{{read_account.cu_requested}}</td>
                                     <td>{{read_account.cu_consumed}}</td>
-                                    <td>{{read_account.median_pf}}</td>
                                     <td>{{read_account.min_pf}}</td>
+                                    <td>{{read_account.median_pf}}</td>
                                     <td>{{read_account.max_pf}}</td>
 
                                 </tr>

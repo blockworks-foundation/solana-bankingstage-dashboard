@@ -49,23 +49,23 @@
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Median</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_median}} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_median}} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Min</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_min}} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_min}} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Max</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_max}} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_max}} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees p75</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_75}} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_75}} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees p90</td>
-                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_90}} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{block.supp_infos.p_90}} micro-lamports/CU</span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -93,9 +93,9 @@
                             <th class="text-muted">Account</th>
                             <th class="text-muted">CU requested</th>
                             <th class="text-muted">CU consumed</th>
-                            <th class="text-muted">Max prio fees</th>
                             <th class="text-muted">Min prio fees</th>
                             <th class="text-muted">Median prio fees</th>
+                            <th class="text-muted">Max prio fees</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -110,9 +110,9 @@
                                     </a></td>
                                 <td>{{write_account.cu_requested}}</td>
                                 <td>{{write_account.cu_consumed}}</td>
-                                <td>{{write_account.max_pf}}</td>
                                 <td>{{write_account.min_pf}}</td>
                                 <td>{{write_account.median_pf}}</td>
+                                <td>{{write_account.max_pf}}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -130,9 +130,9 @@
                             <th class="text-muted">Account</th>
                             <th class="text-muted">CU requested</th>
                             <th class="text-muted">CU consumed</th>
-                            <th class="text-muted">Max prio fees</th>
                             <th class="text-muted">Min prio fees</th>
                             <th class="text-muted">Median prio fees</th>
+                            <th class="text-muted">Max prio fees</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -147,9 +147,9 @@
                                     </a></td>
                                 <td>{{write_account.cu_requested}}</td>
                                 <td>{{write_account.cu_consumed}}</td>
-                                <td>{{write_account.max_pf}}</td>
                                 <td>{{write_account.min_pf}}</td>
                                 <td>{{write_account.median_pf}}</td>
+                                <td>{{write_account.max_pf}}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
