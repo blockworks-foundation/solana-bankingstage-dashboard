@@ -2,24 +2,26 @@
 
 app = "solana-bankingstage-dashboard"
 # Tokyo, Japan
-primary_region = "nrt"
+primary_region = "fra"
+kill_timeout = 30
 
 [env]
   PORT = "8080"
   # be careful; with gunicorn this will be multiplied by the number of workers
-  POOLED_DB_MAX_SIZE = 4
+  # in production we use pgbouncer, so this 24 connections will be reduced to 1 on the backend
+  POOLED_DB_MAX_SIZE = 24
 
 [http_service]
   internal_port = 8080
   force_https = true
   [http_service.concurrency]
   type = "connections"
-  soft_limit = 50
-  hard_limit = 150
+  soft_limit = 150
+  hard_limit = 300
 
-[[http_service.checks]]
-  grace_period = "10s"
-  interval = "30s"
-  method = "GET"
-  timeout = "5s"
-  path = "/health"
+# [[http_service.checks]]
+#   grace_period = "10s"
+#   interval = "30s"
+#   method = "GET"
+#   timeout = "5s"
+#   path = "/health"
