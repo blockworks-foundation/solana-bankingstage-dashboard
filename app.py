@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
 import re
-from os import environ
 import transaction_database
 import transaction_details_database
 import recent_blocks_database
@@ -85,7 +84,7 @@ def get_block(slot):
 
 
 def is_slot_number(raw_string):
-    return re.fullmatch("[0-9]+", raw_string) is not None
+    return re.fullmatch("[0-9,]+", raw_string) is not None
 
 
 def is_block_hash(raw_string):
@@ -114,6 +113,7 @@ def search():
             return render_template('_search_noresult.html', config=this_config)
 
         if is_slot_number(search_string):
+            search_string = search_string.replace(',', '')
             maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
@@ -151,3 +151,40 @@ def get_transaction_details(signature):
         return render_template('transaction_details.html', config=this_config, transaction=maprows[0])
     else:
         return "Transaction not found", 404
+
+
+# format 123456789 to "123,456,789"
+@webapp.template_filter('lamports')
+def lamports_filter(number: int):
+    if number is None:
+        return ""
+    else:
+        # https://realpython.com/python-formatted-output/#the-group-subcomponent
+        # return format(number, ",.2f")
+        return format(number, ",")
+
+
+@webapp.template_filter('slotnumber')
+def slotnumber_filter(number: int):
+    if number is None:
+        return ""
+    else:
+        return format(number, ",")
+
+
+@webapp.template_filter('count')
+def count_filter(number: int):
+    if number is None:
+        return ""
+    else:
+        return format(number, ",")
+
+
+# railway version: None -> None
+@webapp.template_filter('map_count')
+def mapcount_filter(number: int):
+    if number is None:
+        return None
+    else:
+        return format(number, ",")
+

@@ -32,7 +32,7 @@
                             <td class="text-lg-end font-monospace">
                                 <span class="font-monospace">
                                     <a href="https://explorer.solana.com/tx/{{transaction.signature}}?cluster={{config.cluster}}">
-                                        {{transaction.signature}}
+                                        {{ transaction.signature }}
                                     </a>
                                 </span>
                             </td>
@@ -40,34 +40,34 @@
                         <tr>
                             <td class="w-100">Executed</td>
                             <td class="text-lg-end font-monospace">
-                                <span>{{transaction.is_executed}}</span></td>
+                                <span>{{ transaction.is_executed }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Confirmed</td>
                             <td class="text-lg-end font-monospace">
-                                <span>{{transaction.is_confirmed}}</span></td>
+                                <span>{{ transaction.is_confirmed }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Processed slot</td>
                             <td class="text-lg-end font-monospace">
-                                <span><a hx-boost="true" href="/block/{{transaction.processed_slot}}">{{transaction.processed_slot}}</a></span></td>
+                                <span><a hx-boost="true" href="/block/{{transaction.processed_slot}}">{{ transaction.processed_slot | slotnumber }}</a></span></td>
                         </tr>
                         <tr>
                             <td class="w-100">First notification slot</td>
                             <td class="text-lg-end font-monospace">
-                                <span><a hx-boost="true" href="/block/{{transaction.first_notification_slot}}">{{transaction.first_notification_slot}}</a></span></td>
+                                <span><a hx-boost="true" href="/block/{{transaction.first_notification_slot}}">{{ transaction.first_notification_slot | slotnumber }}</a></span></td>
                         </tr>
                         <tr>
                             <td class="w-100">CU Requested</td>
-                            <td class="text-lg-end font-monospace"><span>{{transaction.cu_requested}}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ transaction.cu_requested | lamports }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees</td>
-                            <td class="text-lg-end font-monospace"><span>{{transaction.prioritization_fees}}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ transaction.prioritization_fees | lamports }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">UTC timestamp</td>
-                            <td class="text-lg-end font-monospace"><span>{{transaction.timestamp_formatted}}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ transaction.timestamp_formatted }}</span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -79,7 +79,7 @@
                         <ul class="nav nav-tabs nav-overflow header-tabs">
                             <!-- note: local anchors are not hx-boost'ed -->
                             {% for slot in transaction.relevant_slots %}
-                                <li class="nav-item"><a class="nav-link" href="#relevant-slot-{{slot}}">Slot: {{slot}}</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#relevant-slot-{{slot}}">Slot: {{ slot | slotnumber }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -88,7 +88,7 @@
 
             {% for slot in transaction.relevant_slots %}
                 <div id="relevant-slot-{{slot}}" class="card">
-                    <div class="card-header align-items-center"><h3 class="card-header-title">Errors in Slot {{slot}}</h3></div>
+                    <div class="card-header align-items-center"><h3 class="card-header-title">Errors in Slot {{ slot | slotnumber }}</h3></div>
 
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
@@ -103,10 +103,10 @@
                                 {% if error.slot == slot %}
                                 <tr>
                                     <td>
-                                        <span class="text-danger">{{error.error}}</span>
+                                        <span class="text-danger">{{ error.error }}</span>
                                     </td>
                                     <td>
-                                        <span class="text-danger">{{error.count}}</span>
+                                        <span class="text-danger">{{ error.count | count }}</span>
                                     </td>
                                 </tr>
                                 {% endif %}
@@ -118,22 +118,6 @@
                     <div id="write-locked-accounts">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Write-Locked Accounts</h3></div>
 
-<<<<<<< Updated upstream
-                        <div class="table-responsive mb-0">
-                            <table class="table table-sm table-nowrap card-table">
-                                <thead>
-                                <tr>
-                                    <th class="text-muted">Account</th>
-                                    <th class="text-muted">CU Requested</th>
-                                    <th class="text-muted">CU Consumed</th>
-                                    <th class="text-muted">Median Prio Fees</th>
-                                    <th class="text-muted">Min Prio Fees</th>
-                                    <th class="text-muted">Max Prio Fees</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for write_account in transaction.write_lock_info[slot] %}
-=======
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
                             <thead>
@@ -148,22 +132,20 @@
                             </thead>
                             <tbody>
                             {% for write_account in transaction.write_lock_info %}
-                                {% if write_account.slot == slot %}
->>>>>>> Stashed changes
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
                                             <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
                                                     class=""></span></span><span
-                                                    class="font-monospace"><span class="">{{write_account.key}}</span></span>
+                                                    class="font-monospace"><span class="">{{ write_account.key }}</span></span>
                                             </div>
                                         </a>
                                     </td>
-                                    <td>{{write_account.cu_requested}}</td>
-                                    <td>{{write_account.cu_consumed}}</td>
-                                    <td>{{write_account.min_pf}}</td>
-                                    <td>{{write_account.median_pf}}</td>
-                                    <td>{{write_account.max_pf}}</td>
+                                    <td>{{ write_account.cu_requested | lamports }}</td>
+                                    <td>{{ write_account.cu_consumed | lamports }}</td>
+                                    <td>{{ write_account.min_pf | lamports }}</td>
+                                    <td>{{ write_account.median_pf | lamports }}</td>
+                                    <td>{{ write_account.max_pf | lamports }}</td>
 
                                 </tr>
                                 {% endfor %}
@@ -175,22 +157,6 @@
                     <div id="read-locked-accounts">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Read-Locked Accounts</h3></div>
 
-<<<<<<< Updated upstream
-                        <div class="table-responsive mb-0">
-                            <table class="table table-sm table-nowrap card-table">
-                                <thead>
-                                <tr>
-                                    <th class="text-muted">Account</th>
-                                    <th class="text-muted">CU Requested</th>
-                                    <th class="text-muted">CU Consumed</th>
-                                    <th class="text-muted">Median Prio Fees</th>
-                                    <th class="text-muted">Min Prio Fees</th>
-                                    <th class="text-muted">Max Prio Fees</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for read_account in transaction.read_lock_info[slot] %}
-=======
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
                             <thead>
@@ -205,23 +171,21 @@
                             </thead>
                             <tbody>
                             {% for read_account in transaction.read_lock_info %}
-                                {% if read_account.slot == slot %}
->>>>>>> Stashed changes
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
                                             <div class="d-none d-lg-flex align-items-center">
                                                 <span class="font-size-tiny me-2">
-                                                    <span class="font-monospace">{{read_account.key}}</span>
+                                                    <span class="font-monospace">{{ read_account.key }}</span>
                                                 </span>
                                             </div>
                                         </a>
                                     </td>
-                                    <td>{{read_account.cu_requested}}</td>
-                                    <td>{{read_account.cu_consumed}}</td>
-                                    <td>{{read_account.min_pf}}</td>
-                                    <td>{{read_account.median_pf}}</td>
-                                    <td>{{read_account.max_pf}}</td>
+                                    <td>{{ read_account.cu_requested | lamports }}</td>
+                                    <td>{{ read_account.cu_consumed | lamports }}</td>
+                                    <td>{{ read_account.min_pf | lamports }}</td>
+                                    <td>{{ read_account.median_pf | lamports }}</td>
+                                    <td>{{ read_account.max_pf | lamports }}</td>
 
                                 </tr>
                                 {% endfor %}
