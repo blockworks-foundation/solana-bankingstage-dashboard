@@ -13,7 +13,7 @@
         <tr>
             <td>
                 <span class="text-primary">
-                    <a hx-boost="true" href="/block/{{ block.slot }}">{{ block.slot }}</a>
+                    <a hx-boost="true" href="/block/{{ block.slot }}">{{ block.slot | slotnumber }}</a>
                 </span>
             </td>
             <td>
@@ -67,10 +67,10 @@
                 
                 <div class="font-monospace">
                     <span class="d-inline-block" style="min-width:6em">
-                        <span class="text-primary">min:{{ block.prioritization_fees.p_min }}</span>
+                        <span class="text-primary">min:{{ block.prioritization_fees.p_min | lamports }}</span>
                     </span>
                     <span class="d-inline-block" style="min-width:6em">
-                        <span class="text-primary">max:{{ block.prioritization_fees.p_max }}</span>
+                        <span class="text-primary">max:{{ block.prioritization_fees.p_max | lamports }}</span>
                     </span>
                 </div>
 
