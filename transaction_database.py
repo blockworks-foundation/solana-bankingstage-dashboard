@@ -5,23 +5,30 @@ import json
 def run_query():
     maprows = postgres_connection.query(
         """
-        SELECT * FROM (
+        WITH tx_aggregated AS (
             SELECT
-                signature,
-                errors,
-                is_executed,
-                is_confirmed,
-                first_notification_slot,
-                cu_requested,
-                prioritization_fees,
-                utc_timestamp,
-                -- e.g. "OCT 17 12:29:17.5127"
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
+                signature as sig,
+                min(first_notification_slot) as min_slot,
+                ARRAY_AGG(errors) as all_errors
             FROM banking_stage_results.transaction_infos
             WHERE true
-            ORDER BY utc_timestamp DESC
+            GROUP BY signature
+            ORDER BY min(utc_timestamp)
             LIMIT 50
-        ) AS data
+        )
+        SELECT
+            signature,
+            tx_aggregated.all_errors,
+            is_executed,
+            is_confirmed,
+            first_notification_slot,
+            cu_requested,
+            prioritization_fees,
+            utc_timestamp,
+            -- e.g. "OCT 17 12:29:17.5127"
+            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
+        FROM banking_stage_results.transaction_infos txi
+        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
         """)
 
     # print some samples
@@ -64,9 +71,12 @@ def find_transaction_by_sig(tx_sig: str):
 
 
 def map_jsons_in_row(row):
-    if row['errors']:
-        row['errors_array'] = json.loads(row['errors'])
-
+    errors = []
+    # flatmap postgres array of json strings which contain array (of errors, usually one)
+    for errors_json in row["all_errors"]:
+        for error in json.loads(errors_json):
+            errors.append(error)
+    row["errors_array"] = errors
 
 def main():
     run_query()
