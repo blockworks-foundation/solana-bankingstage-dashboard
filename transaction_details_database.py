@@ -8,7 +8,6 @@ def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
         """
-        
         WITH tx_aggregated AS (
             SELECT
                 signature as sig,

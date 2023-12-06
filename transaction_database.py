@@ -13,7 +13,7 @@ def run_query():
             FROM banking_stage_results.transaction_infos
             WHERE true
             GROUP BY signature
-            ORDER BY min(utc_timestamp)
+            ORDER BY min(utc_timestamp) DESC
             LIMIT 50
         )
         SELECT
