@@ -8,21 +8,28 @@ def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
         """
-        SELECT * FROM (
+        WITH tx_aggregated AS (
             SELECT
-                signature,
-                errors,
-                is_executed,
-                is_confirmed,
-                first_notification_slot,
-                cu_requested,
-                prioritization_fees,
-                processed_slot,
-                to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-                accounts_used
+                signature as sig,
+                min(first_notification_slot) as min_slot,
+                ARRAY_AGG(errors) as all_errors
             FROM banking_stage_results.transaction_infos
             WHERE signature = %s
-        ) AS data
+            GROUP BY signature
+        )
+        SELECT
+            signature,
+            tx_aggregated.all_errors,
+            is_executed,
+            is_confirmed,
+            first_notification_slot,
+            cu_requested,
+            prioritization_fees,
+            processed_slot,
+            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
+            accounts_used
+        FROM banking_stage_results.transaction_infos txi
+        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
