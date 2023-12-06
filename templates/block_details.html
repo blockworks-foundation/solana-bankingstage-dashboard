@@ -49,23 +49,23 @@
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Median</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_median | lamports }} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_median | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Min</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_min | lamports }} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_min | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Max</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_max | lamports }} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_max | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees p75</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_75 | lamports }} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_75 | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees p90</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_90 | lamports }} lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_90 | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         </tbody>
                     </table>
@@ -76,8 +76,8 @@
                     <div class="header-body pt-0">
                         <ul class="nav nav-tabs nav-overflow header-tabs">
                             <!-- note: local anchors are not hx-boost'ed -->
-                            <li class="nav-item"><a hx-boost="false" class="nav-link" href="#write-locked-accounts">Write locked accounts</a></li>
-                            <li class="nav-item"><a hx-boost="false" class="nav-link" href="#read-locked-accounts">Read locked accounts</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#write-locked-accounts">Write locked accounts</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#read-locked-accounts">Read locked accounts</a></li>
                         </ul>
                     </div>
                 </div>
@@ -93,9 +93,9 @@
                             <th class="text-muted">Account</th>
                             <th class="text-muted">CU requested</th>
                             <th class="text-muted">CU consumed</th>
-                            <th class="text-muted">Max prio fees</th>
                             <th class="text-muted">Min prio fees</th>
                             <th class="text-muted">Median prio fees</th>
+                            <th class="text-muted">Max prio fees</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -110,9 +110,9 @@
                                     </a></td>
                                 <td>{{ write_account.cu_requested | lamports }}</td>
                                 <td>{{ write_account.cu_consumed | lamports }}</td>
-                                <td>{{ write_account.max_pf | lamports }}</td>
                                 <td>{{ write_account.min_pf | lamports }}</td>
                                 <td>{{ write_account.median_pf | lamports }}</td>
+                                <td>{{ write_account.max_pf | lamports }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -130,9 +130,9 @@
                             <th class="text-muted">Account</th>
                             <th class="text-muted">CU requested</th>
                             <th class="text-muted">CU consumed</th>
-                            <th class="text-muted">Max prio fees</th>
                             <th class="text-muted">Min prio fees</th>
                             <th class="text-muted">Median prio fees</th>
+                            <th class="text-muted">Max prio fees</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -147,9 +147,9 @@
                                     </a></td>
                                 <td>{{ write_account.cu_requested | lamports }}</td>
                                 <td>{{ write_account.cu_consumed | lamports }}</td>
-                                <td>{{ write_account.max_pf | lamports }}</td>
                                 <td>{{ write_account.min_pf | lamports }}</td>
                                 <td>{{ write_account.median_pf | lamports }}</td>
+                                <td>{{ write_account.max_pf | lamports }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

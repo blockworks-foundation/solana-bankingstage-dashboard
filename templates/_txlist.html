@@ -2,7 +2,7 @@
     <thead>
     <tr>
         <th class="text-muted c-pointer">#</th>
-        <th class="text-muted">Execution</th>
+        <th class="text-muted">Included in block</th>
         <th class="text-muted">Timestamp</th>
         <th class="text-muted">Transaction Signature</th>
         <th class="text-muted">Errors</th>
@@ -16,9 +16,9 @@
         <td>{{ tx.pos }}</td>
 
         {% if tx.is_executed %}
-        <td><span class="badge bg-success-soft">Executed</span></td>
+        <td><span class="badge bg-success-soft">Included</span></td>
         {% elif not tx.is_executed %}
-        <td><span class="badge bg-warning-soft">Failed</span></td>
+        <td><span class="badge bg-warning-soft">Excluded</span></td>
         {% endif %}
         <td>
             <div class="align-items-center">
