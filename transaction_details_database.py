@@ -66,29 +66,41 @@ def find_transaction_details_by_sig(tx_sig: str):
             for writed in row['writelocked_accounts']:
                 info = {'slot' : block_data['slot'], 'key' : writed['key'] }
                 acc = list(filter(lambda acc_: acc_['key'] == writed['key'], hwl))
+                if len(acc) > 1:
+                    print("WARNING: multiple accounts with same key in same block")
                 if len(acc) > 0:
                     acc = defaultdict(lambda: 0, acc[0])
                     info['cu_requested'] = acc['cu_requested']
                     info['cu_consumed'] = acc['cu_consumed']
-                    info['max_pf'] = acc['max_pf']
                     info['min_pf'] = acc['min_pf']
                     info['median_pf'] = acc['median_pf']
-                    if len(acc) > 1:
-                        print("WARNING: multiple accounts with same key in same block")
+                    info['max_pf'] = acc['max_pf']
+                else:
+                    info['cu_requested'] = 0
+                    info['cu_consumed'] = 0
+                    info['min_pf'] = 0
+                    info['median_pf'] = 0
+                    info['max_pf'] = 0
                 wai.append(info)
 
             for readed in row['readlocked_accounts']:
                 info = {'slot' : block_data['slot'], 'key' : readed['key'] }
                 acc = list(filter(lambda x: x['key'] == readed['key'],hrl))
+                if len(acc) > 1:
+                    print("WARNING: multiple accounts with same key in same block")
                 if len(acc) > 0:
                     acc = defaultdict(lambda: 0, acc[0])
                     info['cu_requested'] = acc['cu_requested']
                     info['cu_consumed'] = acc['cu_consumed']
-                    info['max_pf'] = acc['max_pf']
                     info['min_pf'] = acc['min_pf']
                     info['median_pf'] = acc['median_pf']
-                    if len(acc) > 1:
-                        print("WARNING: multiple accounts with same key in same block")
+                    info['max_pf'] = acc['max_pf']
+                else:
+                    info['cu_requested'] = 0
+                    info['cu_consumed'] = 0
+                    info['min_pf'] = 0
+                    info['median_pf'] = 0
+                    info['max_pf'] = 0
                 rai.append(info)
         row['write_lock_info'] = invert_by_slot(wai)
         row['read_lock_info'] = invert_by_slot(rai)
