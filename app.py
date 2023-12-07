@@ -7,6 +7,7 @@ import transaction_details_database
 import recent_blocks_database
 import block_details_database
 import config
+import locale
 
 #
 # MAIN
@@ -18,6 +19,7 @@ htmx = HTMX(webapp)
 
 
 print("SOLANA_CLUSTER", config.get_config()['cluster'])
+print("LOCALE", locale.getlocale())
 # transaction_database.run_query()
 # recent_blocks_database.run_query()
 # block_details_database.find_block_by_slotnumber(226352855)
@@ -161,7 +163,7 @@ def lamports_filter(number: int):
     else:
         # https://realpython.com/python-formatted-output/#the-group-subcomponent
         # return format(number, ",.2f")
-        return format(number, ",")
+        return format(number, "_")
 
 
 @webapp.template_filter('slotnumber')
@@ -169,7 +171,7 @@ def slotnumber_filter(number: int):
     if number is None:
         return ""
     else:
-        return format(number, ",")
+        return format(number, "_")
 
 
 @webapp.template_filter('count')
@@ -177,7 +179,7 @@ def count_filter(number: int):
     if number is None:
         return ""
     else:
-        return format(number, ",")
+        return format(number, "_")
 
 
 # railway version: None -> None
@@ -186,5 +188,5 @@ def mapcount_filter(number: int):
     if number is None:
         return None
     else:
-        return format(number, ",")
+        return format(number, "_")
 
