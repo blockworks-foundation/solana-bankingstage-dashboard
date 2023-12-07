@@ -161,9 +161,11 @@ def lamports_filter(number: int):
     if number is None:
         return ""
     else:
-        # https://realpython.com/python-formatted-output/#the-group-subcomponent
-        # return format(number, ",.2f")
-        return format(number, "_")
+        try:
+            return format(number, ",")
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"
 
 
 @webapp.template_filter('slotnumber')
@@ -171,7 +173,11 @@ def slotnumber_filter(number: int):
     if number is None:
         return ""
     else:
-        return format(number, "_")
+        try:
+            return format(number, ",")
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"
 
 
 @webapp.template_filter('count')
@@ -179,7 +185,11 @@ def count_filter(number: int):
     if number is None:
         return ""
     else:
-        return format(number, "_")
+        try:
+            return format(number, ",")
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"
 
 
 # railway version: None -> None
@@ -188,5 +198,9 @@ def mapcount_filter(number: int):
     if number is None:
         return None
     else:
-        return format(number, "_")
+        try:
+            return format(number, ",")
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"
 
