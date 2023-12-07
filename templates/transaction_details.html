@@ -131,7 +131,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for write_account in transaction.write_lock_info %}
+                            {% for write_account in transaction.write_lock_info[slot] %}
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
@@ -170,7 +170,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% for read_account in transaction.read_lock_info %}
+                            {% for read_account in transaction.read_lock_info[slot] %}
                                 <tr>
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
