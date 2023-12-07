@@ -13,6 +13,8 @@ import locale
 # MAIN
 #
 
+locale.setlocale(locale.LC_ALL, 'en_US')
+
 print("Setting up Flask webapp...")
 webapp = Flask(__name__)
 htmx = HTMX(webapp)
