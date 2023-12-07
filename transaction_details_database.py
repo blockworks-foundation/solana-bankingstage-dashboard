@@ -67,7 +67,7 @@ def find_transaction_details_by_sig(tx_sig: str):
                 info = {'slot' : block_data['slot'], 'key' : writed['key'] }
                 acc = list(filter(lambda acc_: acc_['key'] == writed['key'], hwl))
                 if len(acc) > 0:
-                    acc = acc[0]
+                    acc = defaultdict(lambda: 0, acc[0])
                     info['cu_requested'] = acc['cu_requested']
                     info['cu_consumed'] = acc['cu_consumed']
                     info['max_pf'] = acc['max_pf']
@@ -81,7 +81,7 @@ def find_transaction_details_by_sig(tx_sig: str):
                 info = {'slot' : block_data['slot'], 'key' : readed['key'] }
                 acc = list(filter(lambda x: x['key'] == readed['key'],hrl))
                 if len(acc) > 0:
-                    acc = acc[0]
+                    acc = defaultdict(lambda: 0, acc[0])
                     info['cu_requested'] = acc['cu_requested']
                     info['cu_consumed'] = acc['cu_consumed']
                     info['max_pf'] = acc['max_pf']
