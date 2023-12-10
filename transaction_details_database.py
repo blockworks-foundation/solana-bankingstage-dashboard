@@ -34,6 +34,7 @@ def find_transaction_details_by_sig(tx_sig: str):
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
+    # FIXME: maprows
     for row in maprows:
         transaction_database.map_jsons_in_row(row)
         accounts = json.loads(row['accounts_used'])
@@ -104,6 +105,21 @@ def find_transaction_details_by_sig(tx_sig: str):
                 rai.append(info)
         row['write_lock_info'] = invert_by_slot(wai)
         row['read_lock_info'] = invert_by_slot(rai)
+
+        print("- transaction details for sig: " + tx_sig)
+        print("- relevant slots: " + str(relevant_slots))
+        for relevant_slot in relevant_slots:
+            print("- slot: ", relevant_slot)
+            print("  - errors in slot:")
+            for error in row['errors_array']:
+                if error['slot'] == relevant_slot:
+                    print("    - " + error['error'])
+            print("  - write-locked accounts: ")
+            for account in row['write_lock_info'][relevant_slot]:
+                print("    - " + account['key'])
+            print("  - read-locked accounts:")
+            for account in row['read_lock_info'][relevant_slot]:
+                print("    - " + account['key'])
 
 
     return maprows
