@@ -6,28 +6,31 @@ def run_query():
     maprows = postgres_connection.query(
         """
         SELECT
-            signature,
-            (
-                SELECT ARRAY_AGG(json_object('error' VALUE err.error,'count':count)::text)
-                FROM banking_stage_results_2.transaction_slot txslot
-                INNER JOIN banking_stage_results_2.errors err ON err.error_code=txslot.error
-                WHERE txslot.transaction_id=txi.transaction_id
-            ) AS all_errors,
-            --is_executed,
-            --is_confirmed,
-            processed_slot,
-            --first_notification_slot,
-            cu_requested,
-            prioritization_fees,
-            (
-                SELECT min(utc_timestamp)
-                FROM banking_stage_results_2.transaction_slot txslot
-                WHERE txslot.transaction_id=txi.transaction_id
-            ) AS utc_timestamp
-        FROM banking_stage_results_2.transaction_infos txi
-        INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
-        WHERE signature='5sCSTNuqvnFdgvryusZQPyTyz85JUYC37iL3cb88X6vTrwEPQJm9D1TsJetcgAyZEgFWrpza77Uvji3CrupGw1SU'
-        ORDER BY processed_slot DESC
+            *
+        FROM (
+            SELECT
+                signature,
+                (
+                    SELECT ARRAY_AGG(json_object('error' VALUE err.error,'count':count)::text)
+                    FROM banking_stage_results_2.transaction_slot txslot
+                    INNER JOIN banking_stage_results_2.errors err ON err.error_code=txslot.error
+                    WHERE txslot.transaction_id=txi.transaction_id
+                ) AS all_errors,
+                is_successful,
+                processed_slot,
+                --first_notification_slot,
+                cu_requested,
+                prioritization_fees,
+                (
+                    SELECT min(utc_timestamp)
+                    FROM banking_stage_results_2.transaction_slot txslot
+                    WHERE txslot.transaction_id=txi.transaction_id
+                ) AS utc_timestamp
+            FROM banking_stage_results_2.transaction_infos txi
+            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
+            WHERE true
+        ) as data
+        ORDER BY processed_slot, utc_timestamp, signature DESC
         LIMIT 50
         """)
 
