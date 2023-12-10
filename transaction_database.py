@@ -5,30 +5,30 @@ import json
 def run_query():
     maprows = postgres_connection.query(
         """
-        WITH tx_aggregated AS (
-            SELECT
-                signature as sig,
-                min(first_notification_slot) as min_slot,
-                ARRAY_AGG(errors) as all_errors
-            FROM banking_stage_results.transaction_infos
-            WHERE true
-            GROUP BY signature
-            ORDER BY min(utc_timestamp) DESC
-            LIMIT 50
-        )
         SELECT
             signature,
-            tx_aggregated.all_errors,
-            is_executed,
-            is_confirmed,
-            first_notification_slot,
+            (
+                SELECT ARRAY_AGG(json_object('error' VALUE err.error,'count':count)::text)
+                FROM banking_stage_results_2.transaction_slot txslot
+                INNER JOIN banking_stage_results_2.errors err ON err.error_code=txslot.error
+                WHERE txslot.transaction_id=txi.transaction_id
+            ) AS all_errors,
+            --is_executed,
+            --is_confirmed,
+            processed_slot,
+            --first_notification_slot,
             cu_requested,
             prioritization_fees,
-            utc_timestamp,
-            -- e.g. "OCT 17 12:29:17.5127"
-            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
-        FROM banking_stage_results.transaction_infos txi
-        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
+            (
+                SELECT min(utc_timestamp)
+                FROM banking_stage_results_2.transaction_slot txslot
+                WHERE txslot.transaction_id=txi.transaction_id
+            ) AS utc_timestamp
+        FROM banking_stage_results_2.transaction_infos txi
+        INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
+        WHERE signature='5sCSTNuqvnFdgvryusZQPyTyz85JUYC37iL3cb88X6vTrwEPQJm9D1TsJetcgAyZEgFWrpza77Uvji3CrupGw1SU'
+        ORDER BY processed_slot DESC
+        LIMIT 50
         """)
 
     # print some samples
@@ -39,6 +39,7 @@ def run_query():
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
         map_jsons_in_row(row)
+        map_timestamp(row)
 
     return maprows
 
@@ -63,9 +64,7 @@ def find_transaction_by_sig(tx_sig: str):
             first_notification_slot,
             cu_requested,
             prioritization_fees,
-            utc_timestamp,
-            -- e.g. "OCT 17 12:29:17.5127"
-            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
+            utc_timestamp
         FROM banking_stage_results.transaction_infos txi
         INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
         """, args=[tx_sig])
@@ -74,15 +73,25 @@ def find_transaction_by_sig(tx_sig: str):
 
     for row in maprows:
         map_jsons_in_row(row)
+        map_timestamp(row)
+
     return maprows
+
+
+# TODO format to MON DD HH24:MI:SS.MS
+def map_timestamp(row):
+    row['timestamp_formatted'] = row['utc_timestamp']
+    return row
 
 
 def map_jsons_in_row(row):
     errors = []
-    # flatmap postgres array of json strings which contain array (of errors, usually one)
+    if row["all_errors"] is None:
+        row["all_errors"] = []
+        return
     for errors_json in row["all_errors"]:
-        for error in json.loads(errors_json):
-            errors.append(error)
+        # {"{\"error\" : \"TransactionError::AccountInUse\", \"count\" : 1}"}
+        errors.append(json.loads(errors_json))
     row["errors_array"] = errors
 
 def main():
