@@ -3,7 +3,6 @@ import json
 
 
 def find_block_by_slotnumber(slot_number: int):
-    # TODO where to get banking_stage_errors from?
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -48,8 +47,6 @@ def find_block_by_slotnumber(slot_number: int):
                 WHERE slot = %s
                 """, args=[slot])
         )
-        # TODO sort by cu_consumed ref
-        # parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
         account_info_expanded = []
         for account_info in accountinfos:
             prio_fee_data = json.loads(account_info['prioritization_fees_info'])
@@ -64,6 +61,7 @@ def find_block_by_slotnumber(slot_number: int):
                 'max_pf': prio_fee_data['max']
             }
             account_info_expanded.append(info)
+        account_info_expanded.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
 
         row["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
         row["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
