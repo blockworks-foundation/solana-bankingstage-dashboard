@@ -28,7 +28,6 @@ def find_block_by_slotnumber(slot_number: int):
         """, args=[slot_number])
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
-    print("maprows", maprows)
 
     for row in maprows:
         slot = row["slot"]
@@ -36,7 +35,7 @@ def find_block_by_slotnumber(slot_number: int):
         row['supp_infos'] = json.loads(row['supp_infos'])
 
         # note: sort order is undefined
-        accountinfos =(
+        accountinfos = (
             postgres_connection.query(
                 """
                 SELECT

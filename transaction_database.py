@@ -5,9 +5,7 @@ import json
 def run_query():
     maprows = postgres_connection.query(
         """
-        SELECT
-            *
-        FROM (
+        SELECT * FROM (
             SELECT
                 signature,
                 (
@@ -38,15 +36,10 @@ def run_query():
         LIMIT 50
         """)
 
-    # print some samples
-    # for row in maprows[:3]:
-    #     print(row)
-    # print("...")
-
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
         map_jsons_in_row(row)
-        map_timestamp(row)
+        map_timestamps(row)
 
     return maprows
 
@@ -80,15 +73,16 @@ def find_transaction_by_sig(tx_sig: str):
 
     for row in maprows:
         map_jsons_in_row(row)
-        map_timestamp(row)
+        map_timestamps(row)
 
     return maprows
 
 
-# TODO format to MON DD HH24:MI:SS.MS
-def map_timestamp(row):
-    row['timestamp_formatted'] = row['utc_timestamp']
-    return row
+def map_timestamps(row):
+    # type datetime.datetime
+    dt = row['utc_timestamp']
+    if dt is not None:
+        row['timestamp_formatted'] = dt.strftime('%a %d %H:%M:%S.%f')
 
 
 def map_jsons_in_row(row):

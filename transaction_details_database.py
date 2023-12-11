@@ -4,10 +4,6 @@ import transaction_database
 from collections import defaultdict
 
 
-def format_timestamps(row):
-    return print(row["utc_timestamp"])
-
-
 def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
@@ -38,8 +34,8 @@ def find_transaction_details_by_sig(tx_sig: str):
 
     if maprows:
         row = maprows[0]
-        
-        format_timestamps(row)
+
+        map_timestamps(row)
 
         # {'transaction_id': 1039639, 'slot': 234765028, 'error': 34, 'count': 1, 'utc_timestamp': datetime.datetime(2023, 12, 8, 18, 29, 23, 861619)}
         tx_slots = postgres_connection.query(
@@ -110,3 +106,11 @@ def invert_by_slot(rows):
     for row in rows:
         inv_indx[row["slot"]].append(row)
     return inv_indx
+
+# TODO format to MON DD HH24:MI:SS.MS
+def map_timestamps(row):
+    # type datetime.datetime
+    dt = row['utc_timestamp']
+    if dt is not None:
+        row['timestamp_formatted'] = dt.strftime('%a %d %H:%M:%S.%f')
+
