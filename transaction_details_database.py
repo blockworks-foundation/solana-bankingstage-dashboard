@@ -62,6 +62,8 @@ def find_transaction_details_by_sig(tx_sig: str):
 
         print("- transaction details for sig: " + tx_sig)
         print("- relevant slots: " + str(relevant_slots))
+        heavy_write_accounts = []
+        heavy_read_accounts = []
         for relevant_slot in relevant_slots:
             accountinfos = accountinfos_per_slot.get(relevant_slot, [])
             print("  - slot: ", relevant_slot)
@@ -70,13 +72,25 @@ def find_transaction_details_by_sig(tx_sig: str):
                 if tx_slots_row['slot'] == relevant_slot:
                     print("    - " + tx_slots_row['error'])
             print("  - write-locked accounts: ")
-            for account in accountinfos:
-                if account['is_write_locked']:
-                    print("    - ", account['account_key'])
+            for writed in accountinfos:
+                if writed['is_write_locked']:
+                    prio_fee_data = json.loads(writed['prioritization_fees_info'])
+                    info = {
+                        'slot': writed['slot'],
+                        'key': writed['account_key'],
+                        'cu_requested': writed['total_cu_requested'],
+                        'cu_consumed': writed['total_cu_consumed'],
+                        'min_pf': prio_fee_data['min'],
+                        'median_pf': prio_fee_data['med'],
+                        'max_pf': prio_fee_data['max']
+                    }
+                    heavy_write_accounts.append(info)
             print("  - read-locked accounts:")
-            for account in accountinfos:
-                if not account['is_write_locked']:
-                    print("    - ", account['account_key'])
+            for readed in accountinfos:
+                if not readed['is_write_locked']:
+                    print("    - ", readed['account_key'])
+        row["write_lock_info"] = heavy_write_accounts
+        row["read_lock_info"] = heavy_read_accounts
 
     return maprows
 
