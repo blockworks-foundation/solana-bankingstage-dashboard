@@ -66,15 +66,6 @@ def find_block_by_slotnumber(slot_number: int):
         row["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
         row["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
 
-        # parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
-        # row['supp_infos'] = json.loads(row['supp_infos'])
-        # row["heavily_writelocked_accounts_parsed"] = parsed_accounts
-        # # TODO need new parser
-        #
-        # parsed_accounts = json.loads(row["heavily_readlocked_accounts"])
-        # parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
-        # row["heavily_readlocked_accounts_parsed"] = parsed_accounts
-
     return maprows
 
 

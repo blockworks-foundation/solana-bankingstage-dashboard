@@ -112,7 +112,6 @@ def find_block_by_slotnumber(slot_number: int):
         calc_bars(row)
         calc_figures(row)
 
-
     return maprows
 
 
