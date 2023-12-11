@@ -39,7 +39,6 @@ def run_query():
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
         map_jsons_in_row(row)
-        map_timestamps(row)
 
     return maprows
 
@@ -73,16 +72,8 @@ def find_transaction_by_sig(tx_sig: str):
 
     for row in maprows:
         map_jsons_in_row(row)
-        map_timestamps(row)
 
     return maprows
-
-
-def map_timestamps(row):
-    # type datetime.datetime
-    dt = row['utc_timestamp']
-    if dt is not None:
-        row['timestamp_formatted'] = dt.strftime('%a %d %H:%M:%S.%f')
 
 
 def map_jsons_in_row(row):

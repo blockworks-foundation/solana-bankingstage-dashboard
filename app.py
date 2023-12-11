@@ -8,6 +8,7 @@ import recent_blocks_database
 import block_details_database
 import config
 import locale
+from datetime import datetime
 
 #
 # MAIN
@@ -204,3 +205,14 @@ def mapcount_filter(number: int):
             print("FIELD_ERROR in template filter")
             return "FIELD_ERROR"
 
+
+@webapp.template_filter('timestamp')
+def timestamp_filter(dt: datetime):
+    if dt is None:
+        return None
+    else:
+        try:
+            return dt.strftime('%a %d %H:%M:%S.%f')
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"
