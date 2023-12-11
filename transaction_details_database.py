@@ -47,6 +47,8 @@ def find_transaction_details_by_sig(tx_sig: str):
         # ordered by slots ascending
         relevant_slots = set([txslot["slot"] for txslot in tx_slots])
 
+        row["relevant_slots"] = relevant_slots
+
         accountinfos_per_slot =(
             invert_by_slot(
                 postgres_connection.query(
@@ -60,37 +62,42 @@ def find_transaction_details_by_sig(tx_sig: str):
                 """, args=[relevant_slots]))
         )
 
-        print("- transaction details for sig: " + tx_sig)
-        print("- relevant slots: " + str(relevant_slots))
-        heavy_write_accounts = []
-        heavy_read_accounts = []
+        # print("- transaction details for sig: " + tx_sig)
+        # print("- relevant slots: " + str(relevant_slots))
+
+        write_lock_info = dict()
+        read_lock_info = dict()
         for relevant_slot in relevant_slots:
             accountinfos = accountinfos_per_slot.get(relevant_slot, [])
-            print("  - slot: ", relevant_slot)
-            print("  - errors in slot:")
-            for tx_slots_row in tx_slots:
-                if tx_slots_row['slot'] == relevant_slot:
-                    print("    - " + tx_slots_row['error'])
-            print("  - write-locked accounts: ")
-            for writed in accountinfos:
-                if writed['is_write_locked']:
-                    prio_fee_data = json.loads(writed['prioritization_fees_info'])
-                    info = {
-                        'slot': writed['slot'],
-                        'key': writed['account_key'],
-                        'cu_requested': writed['total_cu_requested'],
-                        'cu_consumed': writed['total_cu_consumed'],
-                        'min_pf': prio_fee_data['min'],
-                        'median_pf': prio_fee_data['med'],
-                        'max_pf': prio_fee_data['max']
-                    }
-                    heavy_write_accounts.append(info)
-            print("  - read-locked accounts:")
-            for readed in accountinfos:
-                if not readed['is_write_locked']:
-                    print("    - ", readed['account_key'])
-        row["write_lock_info"] = heavy_write_accounts
-        row["read_lock_info"] = heavy_read_accounts
+            # print("  - slot: ", relevant_slot)
+            # print("  - errors in slot:")
+            # for tx_slots_row in tx_slots:
+            #     if tx_slots_row['slot'] == relevant_slot:
+            #         print("    - " + tx_slots_row['error'])
+
+            account_info_expanded = []
+            for account_info in accountinfos:
+                prio_fee_data = json.loads(account_info['prioritization_fees_info'])
+                info = {
+                    'slot': account_info['slot'],
+                    'key': account_info['account_key'],
+                    'is_write_locked': account_info['is_write_locked'],
+                    'cu_requested': account_info['total_cu_requested'],
+                    'cu_consumed': account_info['total_cu_consumed'],
+                    'min_pf': prio_fee_data['min'],
+                    'median_pf': prio_fee_data['med'],
+                    'max_pf': prio_fee_data['max']
+                }
+                account_info_expanded.append(info)
+            write_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
+            read_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
+            # for wli in write_lock_info[relevant_slot]:
+            #     print("- write lock info: " + wli["key"])
+            # for rli in read_lock_info[relevant_slot]:
+            #     print("- read lock info: " + rli["key"])
+
+        row["write_lock_info"] = write_lock_info
+        row["read_lock_info"] = read_lock_info
 
     return maprows
 
