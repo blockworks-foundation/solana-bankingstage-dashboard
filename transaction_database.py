@@ -10,9 +10,9 @@ def run_query(filter_txsig=None):
             SELECT
                 signature,
                 (
-                    SELECT ARRAY_AGG(json_object('error' VALUE err.error,'count':count)::text)
+                    SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
                     FROM banking_stage_results_2.transaction_slot tx_slot
-                    INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error
+                    INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
                     WHERE tx_slot.transaction_id=txi.transaction_id
                 ) AS all_errors,
                 is_successful,
@@ -61,7 +61,7 @@ def map_jsons_in_row(row):
         row["all_errors"] = []
         return
     for errors_json in row["all_errors"]:
-        # {"{\"error\" : \"TransactionError::AccountInUse\", \"count\" : 1}"}
+        # {"{\"error_text\" : \"TransactionError::AccountInUse\", \"count\" : 1}"}
         errors.append(json.loads(errors_json))
     row["errors_array"] = errors
 

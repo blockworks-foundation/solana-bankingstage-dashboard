@@ -40,10 +40,9 @@ def find_transaction_details_by_sig(tx_sig: str):
             """
             SELECT
              tx_slot.slot,
-             tx_slot.error,
-             err.error
+             err.error_text
             FROM banking_stage_results_2.transaction_slot tx_slot
-            INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error
+            INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
             WHERE transaction_id=%s
             """, args=[row["transaction_id"]])
         # ordered by slots ascending
