@@ -64,3 +64,15 @@ Open Firefox Browser and navigate to ...
 | Hard Limit of HTTP Requests         | fly.io      | hard_limit             | fly.toml   |
 | Python HTTP Server                  | gunicorn    | --workers, --threads | Dockerfile |
 
+### Data Model
+Conventions:
+
+| Table Name       | Alias   |
+|------------------|---------|
+| transaction_slot | tx_slot |
+| accounts_map_blocks | amb     |
+| transaction_infos | txi     |
+| blocks | blocks  |
+| accounts_map_transaction | amt     |
+| transaction_slot | tx_slot |
+|                  |         |
