@@ -80,9 +80,9 @@ def run_query(to_slot=None):
         [to_slot is None, to_slot])
 
     for row in maprows:
-        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
+        row["prioritization_fees"] = json.loads(row['supp_infos'])
 
     return maprows
 
@@ -108,16 +108,10 @@ def find_block_by_slotnumber(slot_number: int):
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
 
     for row in maprows:
-        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
 
     return maprows
-
-
-def fixup_row(row):
-    row['banking_stage_errors'] = row['banking_stage_errors'] or 0
-    row['prioritization_fees'] = json.loads(row['supp_infos'])
 
 
 def find_block_by_blockhash(block_hash: str):
@@ -141,7 +135,6 @@ def find_block_by_blockhash(block_hash: str):
     assert len(maprows) <= 1, "Block hash is unique - find zero or one"
 
     for row in maprows:
-        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
 

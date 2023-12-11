@@ -69,12 +69,6 @@ def find_block_by_slotnumber(slot_number: int):
     return maprows
 
 
-
-# parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
-# def parse_accounts(acc):
-#     groups = re.match(r"\((k:)(?P<k>[a-zA-Z0-9]+)(, cu_req:)(?P<cu_req>[0-9]+)(, cu_con:)(?P<cu_con>[0-9]+)\)", acc)
-#     return (groups.group('k'), groups.group('cu_req'), groups.group('cu_con'))
-
 def main():
     find_block_by_slotnumber(226352855)
 
