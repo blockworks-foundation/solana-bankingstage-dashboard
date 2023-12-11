@@ -47,12 +47,12 @@ def find_transaction_details_by_sig(tx_sig: str):
             WHERE transaction_id=%s
             """, args=[row["transaction_id"]])
         # ordered by slots ascending
-        relevant_slots = set([txslot["slot"] for txslot in tx_slots])
+        relevant_slots = [txslot["slot"] for txslot in tx_slots]
 
         row["relevant_slots"] = relevant_slots
 
         # note: sort order is undefined
-        accountinfos_per_slot =(
+        accountinfos_per_slot = (
             invert_by_slot(
                 postgres_connection.query(
                 """
@@ -65,12 +65,9 @@ def find_transaction_details_by_sig(tx_sig: str):
                 """, args=[relevant_slots]))
         )
 
-        # print("- transaction details for sig: " + tx_sig)
-        # print("- relevant slots: " + str(relevant_slots))
-
         write_lock_info = dict()
         read_lock_info = dict()
-        for relevant_slot in relevant_slots:
+        for relevant_slot in set(relevant_slots):
             accountinfos = accountinfos_per_slot.get(relevant_slot, [])
 
             account_info_expanded = []
