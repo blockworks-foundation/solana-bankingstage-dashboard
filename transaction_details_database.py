@@ -8,118 +8,29 @@ def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
         """
-        WITH tx_aggregated AS (
-            SELECT
-                signature as sig,
-                min(first_notification_slot) as min_slot,
-                ARRAY_AGG(errors) as all_errors
-            FROM banking_stage_results.transaction_infos
-            WHERE signature = %s
-            GROUP BY signature
-        )
         SELECT
             signature,
-            tx_aggregated.all_errors,
-            is_executed,
-            is_confirmed,
-            first_notification_slot,
+            '{}'::text[] all_errors,--  FIXME
+            is_successful,
+            processed_slot,
+            --first_notification_slot,
             cu_requested,
             prioritization_fees,
-            processed_slot,
-            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted,
-            accounts_used
-        FROM banking_stage_results.transaction_infos txi
-        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
+            (
+                SELECT min(utc_timestamp)
+                FROM banking_stage_results_2.transaction_slot txslot
+                WHERE txslot.transaction_id=txi.transaction_id
+            ) AS utc_timestamp
+        FROM banking_stage_results_2.transaction_infos txi
+        INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
+        WHERE signature=%s
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
-    # FIXME: maprows
-    for row in maprows:
-        transaction_database.map_jsons_in_row(row)
-        accounts = json.loads(row['accounts_used'])
-        row['writelocked_accounts'] = list(filter(lambda acc : acc['writable'], accounts))
-        row['readlocked_accounts'] = list(filter(lambda acc : not acc['writable'], accounts))
-        relevent_slots_dict = {row['first_notification_slot']}
-        for error in row['errors_array']:
-            relevent_slots_dict.add(error['slot'])
-        relevant_slots = list(relevent_slots_dict)
-        row['relevant_slots'] = relevant_slots
-
-        blockrows = postgres_connection.query(
-            """
-            SELECT * FROM (
-                SELECT
-                    slot,
-                    heavily_writelocked_accounts,
-                    heavily_readlocked_accounts
-                FROM banking_stage_results.blocks
-                -- see pg8000 docs for unnest hack
-                WHERE slot IN (SELECT unnest(CAST(%s as bigint[])))
-            ) AS data
-            """, args=[relevant_slots])
-
-        wai = []
-        rai = []
-        for block_data in blockrows:
-            hwl = json.loads(block_data['heavily_writelocked_accounts'])
-            hrl = json.loads(block_data['heavily_readlocked_accounts'])
-            for writed in row['writelocked_accounts']:
-                info = {'slot' : block_data['slot'], 'key' : writed['key'] }
-                acc = list(filter(lambda acc_: acc_['key'] == writed['key'], hwl))
-                if len(acc) > 1:
-                    print("WARNING: multiple accounts with same key in same block")
-                if len(acc) > 0:
-                    acc = defaultdict(lambda: 0, acc[0])
-                    info['cu_requested'] = acc['cu_requested']
-                    info['cu_consumed'] = acc['cu_consumed']
-                    info['min_pf'] = acc['min_pf']
-                    info['median_pf'] = acc['median_pf']
-                    info['max_pf'] = acc['max_pf']
-                else:
-                    info['cu_requested'] = 0
-                    info['cu_consumed'] = 0
-                    info['min_pf'] = 0
-                    info['median_pf'] = 0
-                    info['max_pf'] = 0
-                wai.append(info)
-
-            for readed in row['readlocked_accounts']:
-                info = {'slot' : block_data['slot'], 'key' : readed['key'] }
-                acc = list(filter(lambda x: x['key'] == readed['key'],hrl))
-                if len(acc) > 1:
-                    print("WARNING: multiple accounts with same key in same block")
-                if len(acc) > 0:
-                    acc = defaultdict(lambda: 0, acc[0])
-                    info['cu_requested'] = acc['cu_requested']
-                    info['cu_consumed'] = acc['cu_consumed']
-                    info['min_pf'] = acc['min_pf']
-                    info['median_pf'] = acc['median_pf']
-                    info['max_pf'] = acc['max_pf']
-                else:
-                    info['cu_requested'] = 0
-                    info['cu_consumed'] = 0
-                    info['min_pf'] = 0
-                    info['median_pf'] = 0
-                    info['max_pf'] = 0
-                rai.append(info)
-        row['write_lock_info'] = invert_by_slot(wai)
-        row['read_lock_info'] = invert_by_slot(rai)
-
-        print("- transaction details for sig: " + tx_sig)
-        print("- relevant slots: " + str(relevant_slots))
-        for relevant_slot in relevant_slots:
-            print("- slot: ", relevant_slot)
-            print("  - errors in slot:")
-            for error in row['errors_array']:
-                if error['slot'] == relevant_slot:
-                    print("    - " + error['error'])
-            print("  - write-locked accounts: ")
-            for account in row['write_lock_info'][relevant_slot]:
-                print("    - " + account['key'])
-            print("  - read-locked accounts:")
-            for account in row['read_lock_info'][relevant_slot]:
-                print("    - " + account['key'])
+    # TODO this is only one row
+    if maprows:
+        row = maprows[0]
 
 
     return maprows
