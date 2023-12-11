@@ -1,8 +1,9 @@
 import postgres_connection
 import json
 
+TXLIST_ROW_LIMIT = 50
 
-def run_query():
+def run_query(filter_txsig=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -31,10 +32,13 @@ def run_query():
             FROM banking_stage_results_2.transaction_infos txi
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
             WHERE true
+                AND (%s or signature = %s)
         ) as data
         ORDER BY processed_slot, utc_timestamp, signature DESC
         LIMIT 50
-        """)
+        """, [
+            filter_txsig is None, filter_txsig,
+        ])
 
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
@@ -44,34 +48,9 @@ def run_query():
 
 
 def find_transaction_by_sig(tx_sig: str):
-    maprows = postgres_connection.query(
-        """
-        WITH tx_aggregated AS (
-            SELECT
-                signature as sig,
-                min(first_notification_slot) as min_slot,
-                ARRAY_AGG(errors) as all_errors
-            FROM banking_stage_results.transaction_infos
-            WHERE signature = %s
-            GROUP BY signature
-        )
-        SELECT
-            signature,
-            tx_aggregated.all_errors,
-            is_executed,
-            is_confirmed,
-            first_notification_slot,
-            cu_requested,
-            prioritization_fees,
-            utc_timestamp
-        FROM banking_stage_results.transaction_infos txi
-        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
-        """, args=[tx_sig])
+    maprows = run_query(filter_txsig=tx_sig)
 
-    assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
-
-    for row in maprows:
-        map_jsons_in_row(row)
+    assert len(maprows) <= 1, "Signature is primary key - find zero or one"
 
     return maprows
 
