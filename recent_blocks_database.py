@@ -60,7 +60,12 @@ def run_query(to_slot=None):
                 slot,
                 processed_transactions,
                 successful_transactions,
-                999 as banking_stage_errors,
+                (
+                    SELECT
+                        count(tx_slot.error)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    WHERE tx_slot.slot=blocks.slot
+                ) AS banking_stage_errors,
                 total_cu_used,
                 total_cu_requested,
                 supp_infos
@@ -73,11 +78,6 @@ def run_query(to_slot=None):
         ) AS data
         """,
         [to_slot is None, to_slot])
-
-    # print some samples
-    # for row in maprows[:3]:
-    #     print(row)
-    # print("...")
 
     for row in maprows:
         fixup_row(row)

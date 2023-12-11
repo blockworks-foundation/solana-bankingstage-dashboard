@@ -3,6 +3,7 @@ import json
 
 
 def find_block_by_slotnumber(slot_number: int):
+    # TODO where to get banking_stage_errors from?
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -12,33 +13,69 @@ def find_block_by_slotnumber(slot_number: int):
                 leader_identity,
                 processed_transactions,
                 successful_transactions,
-                banking_stage_errors,
+                (
+                    SELECT
+                        count(tx_slot.error)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    WHERE tx_slot.slot=blocks.slot
+                ) AS banking_stage_errors,
                 total_cu_used,
                 total_cu_requested,
-                heavily_writelocked_accounts,
-                heavily_readlocked_accounts,
                 supp_infos
-            FROM banking_stage_results.blocks
+            FROM banking_stage_results_2.blocks
             -- this critera uses index idx_blocks_slot
             WHERE slot = %s
         ) AS data
         """, args=[slot_number])
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
+    print("maprows", maprows)
 
     for row in maprows:
-        # format see BankingStageErrorsTrackingSidecar -> block_info.rs
-        # parse (k:GubTBrbgk9JwkwX1FkXvsrF1UC2AP7iTgg8SGtgH14QE, cu_req:600000, cu_con:2243126)
+        slot = row["slot"]
 
-        parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
-        row['supp_infos'] =json.loads(row['supp_infos'])
-        parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
-        row["heavily_writelocked_accounts_parsed"] = parsed_accounts
-        # TODO need new parser
+        row['supp_infos'] = json.loads(row['supp_infos'])
 
-        parsed_accounts = json.loads(row["heavily_readlocked_accounts"])
-        parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
-        row["heavily_readlocked_accounts_parsed"] = parsed_accounts
+        # note: sort order is undefined
+        accountinfos =(
+            postgres_connection.query(
+                """
+                SELECT
+                 amb.*,
+                 acc.account_key
+                FROM banking_stage_results_2.accounts_map_blocks amb
+                INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amb.acc_id
+                WHERE slot = %s
+                """, args=[slot])
+        )
+        # TODO sort by cu_consumed ref
+        # parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
+        account_info_expanded = []
+        for account_info in accountinfos:
+            prio_fee_data = json.loads(account_info['prioritization_fees_info'])
+            info = {
+                'slot': account_info['slot'],
+                'key': account_info['account_key'],
+                'is_write_locked': account_info['is_write_locked'],
+                'cu_requested': account_info['total_cu_requested'],
+                'cu_consumed': account_info['total_cu_consumed'],
+                'min_pf': prio_fee_data['min'],
+                'median_pf': prio_fee_data['med'],
+                'max_pf': prio_fee_data['max']
+            }
+            account_info_expanded.append(info)
+
+        row["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
+        row["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
+
+        # parsed_accounts = json.loads(row["heavily_writelocked_accounts"])
+        # row['supp_infos'] = json.loads(row['supp_infos'])
+        # row["heavily_writelocked_accounts_parsed"] = parsed_accounts
+        # # TODO need new parser
+        #
+        # parsed_accounts = json.loads(row["heavily_readlocked_accounts"])
+        # parsed_accounts.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
+        # row["heavily_readlocked_accounts_parsed"] = parsed_accounts
 
     return maprows
 

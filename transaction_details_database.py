@@ -49,6 +49,7 @@ def find_transaction_details_by_sig(tx_sig: str):
 
         row["relevant_slots"] = relevant_slots
 
+        # note: sort order is undefined
         accountinfos_per_slot =(
             invert_by_slot(
                 postgres_connection.query(
