@@ -60,12 +60,11 @@ def run_query(to_slot=None):
                 slot,
                 processed_transactions,
                 successful_transactions,
-                banking_stage_errors,
+                999 as banking_stage_errors,
                 total_cu_used,
                 total_cu_requested,
                 supp_infos
-            FROM banking_stage_results.blocks
-            -- this critera uses index idx_blocks_slot_errors
+            FROM banking_stage_results_2.blocks
             WHERE
                 -- short circuit if true
                 (%s or slot <= %s)
