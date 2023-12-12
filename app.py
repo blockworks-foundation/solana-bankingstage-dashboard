@@ -8,6 +8,7 @@ import recent_blocks_database
 import block_details_database
 import config
 import locale
+from datetime import datetime
 
 #
 # MAIN
@@ -46,7 +47,7 @@ def dashboard():
 def tx_errors():
     this_config = config.get_config()
     start = time.time()
-    maprows = list(transaction_database.run_query())
+    maprows = list(transaction_database.run_query(transaction_row_limit=50))
     elapsed = time.time() - start
     if elapsed > .5:
         print("transaction_database.RunQuery() took", elapsed, "seconds")
@@ -89,16 +90,24 @@ def is_slot_number(raw_string):
     return re.fullmatch("[0-9,]+", raw_string) is not None
 
 
-def is_block_hash(raw_string):
-    # regex is not perfect - feel free to improve
+# used for blockhash AND account pubkey
+def is_b58_44(raw_string):
     return re.fullmatch("[0-9a-zA-Z]{43,44}", raw_string) is not None
 
 
 def is_tx_sig(raw_string):
     # regex is not perfect - feel free to improve
-    if is_block_hash(raw_string):
+    if is_b58_44(raw_string):
         return False
-    return re.fullmatch("[0-9a-zA-Z]{64,100}", raw_string) is not None
+    return re.fullmatch("[0-9a-zA-Z]{86,88}", raw_string) is not None
+
+
+# account address
+# if NOT blockhash
+def is_account_key(raw_string):
+    return re.fullmatch("[0-9a-zA-Z]{32,44}", raw_string) is not None
+
+
 
 
 @webapp.route('/search', methods=["GET", "POST"])
@@ -121,18 +130,28 @@ def search():
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html', config=this_config)
-        elif is_block_hash(search_string):
+
+        is_blockhash = block_details_database.is_matching_blockhash(search_string)
+
+        if is_blockhash:
             print("blockhash search=", search_string)
             maprows = list(recent_blocks_database.find_block_by_blockhash(search_string))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html', config=this_config)
+        elif not is_blockhash and is_b58_44(search_string):
+            print("account address search=", search_string)
+            (maprows, is_limit_exceeded) = list(transaction_database.query_transactions_by_address(search_string))
+            if len(maprows):
+                return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
+            else:
+                return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
             print("txsig search=", search_string)
             maprows = list(transaction_database.find_transaction_by_sig(search_string))
             if len(maprows):
-                return render_template('_txlist.html', config=this_config, transactions=maprows)
+                return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         else:
@@ -204,3 +223,14 @@ def mapcount_filter(number: int):
             print("FIELD_ERROR in template filter")
             return "FIELD_ERROR"
 
+
+@webapp.template_filter('timestamp')
+def timestamp_filter(dt: datetime):
+    if dt is None:
+        return None
+    else:
+        try:
+            return dt.strftime('%a %d %H:%M:%S.%f')
+        except TypeError:
+            print("FIELD_ERROR in template filter")
+            return "FIELD_ERROR"

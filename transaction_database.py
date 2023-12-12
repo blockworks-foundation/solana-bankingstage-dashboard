@@ -1,40 +1,50 @@
 import postgres_connection
 import json
 
-
-def run_query():
+def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_address=None):
     maprows = postgres_connection.query(
         """
-        WITH tx_aggregated AS (
+        SELECT * FROM (
             SELECT
-                signature as sig,
-                min(first_notification_slot) as min_slot,
-                ARRAY_AGG(errors) as all_errors
-            FROM banking_stage_results.transaction_infos
+                signature,
+                (
+                    SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
+                    WHERE tx_slot.transaction_id=txi.transaction_id
+                ) AS all_errors,
+                is_successful,
+                processed_slot,
+                (
+                    SELECT min(slot)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    WHERE tx_slot.transaction_id=txi.transaction_id
+                ) AS first_notification_slot,
+                cu_requested,
+                prioritization_fees,
+                (
+                    SELECT min(utc_timestamp)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    WHERE tx_slot.transaction_id=txi.transaction_id
+                ) AS utc_timestamp
+            FROM banking_stage_results_2.transaction_infos txi
+            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
             WHERE true
-            GROUP BY signature
-            ORDER BY min(utc_timestamp) DESC
-            LIMIT 50
-        )
-        SELECT
-            signature,
-            tx_aggregated.all_errors,
-            is_executed,
-            is_confirmed,
-            first_notification_slot,
-            cu_requested,
-            prioritization_fees,
-            utc_timestamp,
-            -- e.g. "OCT 17 12:29:17.5127"
-            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
-        FROM banking_stage_results.transaction_infos txi
-        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
-        """)
-
-    # print some samples
-    # for row in maprows[:3]:
-    #     print(row)
-    # print("...")
+                AND (%s or signature = %s)
+                AND (%s or txi.transaction_id in (
+						SELECT transaction_id
+						FROM banking_stage_results_2.accounts_map_transaction amt
+						INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+						WHERE account_key = %s
+					))
+        ) AS data
+        ORDER BY processed_slot, utc_timestamp, signature DESC
+        LIMIT %s
+        """, [
+            filter_txsig is None, filter_txsig,
+            filter_account_address is None, filter_account_address,
+            transaction_row_limit or 50,
+        ])
 
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
@@ -44,45 +54,32 @@ def run_query():
 
 
 def find_transaction_by_sig(tx_sig: str):
-    maprows = postgres_connection.query(
-        """
-        WITH tx_aggregated AS (
-            SELECT
-                signature as sig,
-                min(first_notification_slot) as min_slot,
-                ARRAY_AGG(errors) as all_errors
-            FROM banking_stage_results.transaction_infos
-            WHERE signature = %s
-            GROUP BY signature
-        )
-        SELECT
-            signature,
-            tx_aggregated.all_errors,
-            is_executed,
-            is_confirmed,
-            first_notification_slot,
-            cu_requested,
-            prioritization_fees,
-            utc_timestamp,
-            -- e.g. "OCT 17 12:29:17.5127"
-            to_char(utc_timestamp, 'MON DD HH24:MI:SS.MS') as timestamp_formatted
-        FROM banking_stage_results.transaction_infos txi
-        INNER JOIN tx_aggregated ON tx_aggregated.sig=txi.signature AND tx_aggregated.min_slot=txi.first_notification_slot
-        """, args=[tx_sig])
+    maprows = run_query(transaction_row_limit=10, filter_txsig=tx_sig)
 
-    assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
+    assert len(maprows) <= 1, "Signature is primary key - find zero or one"
 
-    for row in maprows:
-        map_jsons_in_row(row)
     return maprows
+
+
+# return (rows, is_limit_exceeded)
+def query_transactions_by_address(account_key: str) -> (list, bool):
+    maprows = run_query(transaction_row_limit=501, filter_account_address=account_key)
+
+    if len(maprows) == 501:
+        print("limit exceeded while searching for transactions by address")
+        return maprows, True
+
+    return maprows, False
 
 
 def map_jsons_in_row(row):
     errors = []
-    # flatmap postgres array of json strings which contain array (of errors, usually one)
+    if row["all_errors"] is None:
+        row["all_errors"] = []
+        return
     for errors_json in row["all_errors"]:
-        for error in json.loads(errors_json):
-            errors.append(error)
+        # {"{\"error_text\" : \"TransactionError::AccountInUse\", \"count\" : 1}"}
+        errors.append(json.loads(errors_json))
     row["errors_array"] = errors
 
 def main():

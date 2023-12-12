@@ -13,7 +13,6 @@ def format_width_percentage(x):
 def calc_figures(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
-    banking_stage_errors = row['banking_stage_errors'] or 0
     txerrors = processed_transactions - successful_transactions
     row['txerrors'] = txerrors
 
@@ -52,7 +51,7 @@ def calc_bars(row):
         row['hide_bar'] = True
 
 
-def run_query(to_slot=None):
+def run_query(to_slot=None, filter_slot=None, filter_blockhash=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -60,94 +59,50 @@ def run_query(to_slot=None):
                 slot,
                 processed_transactions,
                 successful_transactions,
-                banking_stage_errors,
+                (
+                    SELECT
+                        count(tx_slot.error_code)
+                    FROM banking_stage_results_2.transaction_slot tx_slot
+                    WHERE tx_slot.slot=blocks.slot
+                ) AS banking_stage_errors,
                 total_cu_used,
                 total_cu_requested,
                 supp_infos
-            FROM banking_stage_results.blocks
-            -- this critera uses index idx_blocks_slot_errors
-            WHERE
-                -- short circuit if true
-                (%s or slot <= %s)
+            FROM banking_stage_results_2.blocks
+            WHERE true
+                AND (%s or slot <= %s)
+                AND (%s or slot = %s)
+                AND (%s or block_hash = %s)
             ORDER BY slot DESC
             LIMIT 100
         ) AS data
         """,
-        [to_slot is None, to_slot])
-
-    # print some samples
-    # for row in maprows[:3]:
-    #     print(row)
-    # print("...")
+        [
+            to_slot is None, to_slot,
+            filter_slot is None, filter_slot,
+            filter_blockhash is None, filter_blockhash,
+        ])
 
     for row in maprows:
-        fixup_row(row)
         calc_bars(row)
         calc_figures(row)
+        row["prioritization_fees"] = json.loads(row['supp_infos'])
 
     return maprows
 
 
 def find_block_by_slotnumber(slot_number: int):
-    maprows = postgres_connection.query(
-        """
-        SELECT * FROM (
-            SELECT
-                slot,
-                processed_transactions,
-                successful_transactions,
-                banking_stage_errors,
-                total_cu_used,
-                total_cu_requested,
-                supp_infos
-            FROM banking_stage_results.blocks
-            -- this critera uses index idx_blocks_slot
-            WHERE slot = %s
-        ) AS data
-        """, args=[slot_number])
+    maprows = run_query(filter_slot=slot_number)
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
-
-    for row in maprows:
-        fixup_row(row)
-        calc_bars(row)
-        calc_figures(row)
-
 
     return maprows
 
 
-def fixup_row(row):
-    row['banking_stage_errors'] = row['banking_stage_errors'] or 0
-    row['prioritization_fees'] = json.loads(row['supp_infos'])
-
-
 def find_block_by_blockhash(block_hash: str):
-    maprows = postgres_connection.query(
-        """
-        SELECT * FROM (
-            SELECT
-                slot,
-                processed_transactions,
-                successful_transactions,
-                banking_stage_errors,
-                total_cu_used,
-                total_cu_requested,
-                supp_infos
-            FROM banking_stage_results.blocks
-            -- uses index on primary key
-            WHERE block_hash = %s
-        ) AS data
-        """, args=[block_hash])
+    maprows = run_query(filter_blockhash=block_hash)
 
     assert len(maprows) <= 1, "Block hash is unique - find zero or one"
-
-    for row in maprows:
-        fixup_row(row)
-        calc_bars(row)
-        calc_figures(row)
-
-    print("found ", maprows, block_hash)
 
     return maprows
 

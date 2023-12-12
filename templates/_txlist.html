@@ -11,19 +11,24 @@
     </tr>
     </thead>
     <tbody class="list">
+    {% if limit_exceeded %}
+    <tr>
+        <td colspan="7" class="text-warning">Result was truncated</td>
+    </tr>
+    {% endif %}
     {% for tx in transactions %}
     <tr>
         <td>{{ tx.pos }}</td>
 
-        {% if tx.is_executed %}
+        {% if tx.is_successful %}
         <td><span class="badge bg-success-soft">Included</span></td>
-        {% elif not tx.is_executed %}
+        {% else %}
         <td><span class="badge bg-warning-soft">Excluded</span></td>
         {% endif %}
         <td>
             <div class="align-items-center">
                 <span class="font-monospace text-muted">
-                    {{ tx.timestamp_formatted }}
+                    {{ tx.utc_timestamp or '--' }}
                 </span>
             </div>
         </td>
@@ -46,6 +51,13 @@
                         </td>
                     </tr>
                     {% endfor %}
+                    {% if not tx.errors_array %}
+                    <tr>
+                        <td>
+                            <span class="font-monospace text-muted">--</span>
+                        </td>
+                    </tr>
+                    {% endif %}
                 </table>
             </div>
         </td>

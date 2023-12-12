@@ -62,8 +62,8 @@ def query(statement, args=[]):
                 keys = [k[0] for k in cursor.description]
                 maprows = [dict(zip(keys, row)) for row in cursor]
             except Exception as ex:
-                print("Exception executing query:", ex)
-                return []
+                print("Exception executing statement:", ex, statement)
+                raise ex
 
     if elapsed_total > .2:
         print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
