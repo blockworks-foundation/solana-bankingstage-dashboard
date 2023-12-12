@@ -47,6 +47,9 @@ def dashboard():
 def tx_errors():
     this_config = config.get_config()
     rows_limit = request.args.get('limit', default = 50, type = int)
+    assert rows_limit > 0, "limit must be positive"
+    assert rows_limit <= 10000, "max limit is 10000"
+
     start = time.time()
     maprows = list(transaction_database.run_query(transaction_row_limit=rows_limit))
     elapsed = time.time() - start
