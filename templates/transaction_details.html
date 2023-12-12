@@ -79,7 +79,15 @@
                         <ul class="nav nav-tabs nav-overflow header-tabs">
                             <!-- note: local anchors are not hx-boost'ed -->
                             {% for slot in transaction.relevant_slots %}
-                                <li class="nav-item"><a class="nav-link" href="#relevant-slot-{{slot}}">Slot: {{ slot | slotnumber }}</a></li>
+                                <li class="nav-item">
+                                    <div class="d-flex">
+                                        <span class="nav-link">
+                                            Slot: {{ slot | slotnumber }}
+                                            <a href="#relevant-slot-{{slot}}-write">.write</a>
+                                            <a href="#relevant-slot-{{slot}}-read">.read</a>
+                                        </span>
+                                    </div>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -115,7 +123,7 @@
                         </table>
                     </div>
 
-                    <div id="write-locked-accounts">
+                    <div id="relevant-slot-{{slot}}-write">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Write-Locked Accounts</h3></div>
 
                     <div class="table-responsive mb-0">
@@ -154,7 +162,9 @@
                         </div>
                     </div>
 
-                    <div id="read-locked-accounts">
+                    <hr/>
+
+                    <div id="relevant-slot-{{slot}}-read">
                         <div class="card-header align-items-center"><h3 class="card-header-title">Read-Locked Accounts</h3></div>
 
                     <div class="table-responsive mb-0">
