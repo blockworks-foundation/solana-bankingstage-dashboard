@@ -9,9 +9,9 @@ def find_transaction_details_by_sig(tx_sig: str):
     maprows = postgres_connection.query(
         """
         SELECT
-            min_transaction_id, max_transaction_id,
+            tx_slot_agg.transaction_id,
             tx_slot_agg.signature,
-            tx_slot_agg.min_slot AS first_notification_slot,
+            tx_slot_agg.first_slot AS first_notification_slot,
             tx_slot_agg.min_utc_timestamp AS utc_timestamp,
             -- optional fields from transaction_infos
             txi.is_successful,
@@ -20,15 +20,15 @@ def find_transaction_details_by_sig(tx_sig: str):
             txi.prioritization_fees
         FROM (
             SELECT
-                signature, min(tx_slot.transaction_id) AS min_transaction_id, max(tx_slot.transaction_id) AS max_transaction_id,
-                min(slot) AS min_slot, min(utc_timestamp) AS min_utc_timestamp
+                signature, any_value(tx_slot.transaction_id) AS transaction_id,
+                min(slot) AS first_slot, min(utc_timestamp) AS min_utc_timestamp
             FROM banking_stage_results_2.transaction_slot tx_slot
 			INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE txs.signature = %s
             GROUP BY signature
         ) as tx_slot_agg
-        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot_agg.min_transaction_id
+        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot_agg.transaction_id
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
@@ -36,8 +36,7 @@ def find_transaction_details_by_sig(tx_sig: str):
     if maprows:
         row = maprows[0]
 
-        assert row["min_transaction_id"] == row["max_transaction_id"], "min_transaction_id and max_transaction_id must be equal"
-        transaction_id = row["min_transaction_id"]
+        transaction_id = row["transaction_id"]
 
         # {'transaction_id': 1039639, 'slot': 234765028, 'error': 34, 'count': 1, 'utc_timestamp': datetime.datetime(2023, 12, 8, 18, 29, 23, 861619)}
         tx_slots = postgres_connection.query(
