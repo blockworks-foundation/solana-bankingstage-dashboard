@@ -9,31 +9,35 @@ def find_transaction_details_by_sig(tx_sig: str):
     maprows = postgres_connection.query(
         """
         SELECT
-            txi.transaction_id,
-            signature,
-            is_successful,
-            processed_slot,
-            (
-                SELECT min(slot)
-                FROM banking_stage_results_2.transaction_slot tx_slot
-                WHERE tx_slot.transaction_id=txi.transaction_id
-            ) AS first_notification_slot,
-            cu_requested,
-            prioritization_fees,
-            (
-                SELECT min(utc_timestamp)
-                FROM banking_stage_results_2.transaction_slot tx_slot
-                WHERE tx_slot.transaction_id=txi.transaction_id
-            ) AS utc_timestamp
-        FROM banking_stage_results_2.transaction_infos txi
-        INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
-        WHERE signature=%s
+            min_transaction_id, max_transaction_id,
+            tx_slot_agg.signature,
+            tx_slot_agg.min_slot AS first_notification_slot,
+            tx_slot_agg.min_utc_timestamp AS utc_timestamp,
+            -- optional fields from transaction_infos
+            txi.is_successful,
+            txi.processed_slot,
+            txi.cu_requested,
+            txi.prioritization_fees
+        FROM (
+            SELECT
+                signature, min(tx_slot.transaction_id) AS min_transaction_id, max(tx_slot.transaction_id) AS max_transaction_id,
+                min(slot) AS min_slot, min(utc_timestamp) AS min_utc_timestamp
+            FROM banking_stage_results_2.transaction_slot tx_slot
+			INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
+            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
+            WHERE txs.signature = %s
+            GROUP BY signature
+        ) as tx_slot_agg
+        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot_agg.min_transaction_id
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
 
     if maprows:
         row = maprows[0]
+
+        assert row["min_transaction_id"] == row["max_transaction_id"], "min_transaction_id and max_transaction_id must be equal"
+        transaction_id = row["min_transaction_id"]
 
         # {'transaction_id': 1039639, 'slot': 234765028, 'error': 34, 'count': 1, 'utc_timestamp': datetime.datetime(2023, 12, 8, 18, 29, 23, 861619)}
         tx_slots = postgres_connection.query(
@@ -44,7 +48,7 @@ def find_transaction_details_by_sig(tx_sig: str):
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
             WHERE transaction_id=%s
-            """, args=[row["transaction_id"]])
+            """, args=[transaction_id])
         # ordered by slots ascending
         relevant_slots = [txslot["slot"] for txslot in tx_slots]
 
