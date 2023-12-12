@@ -34,8 +34,12 @@
         </td>
         <td>
             <div class="d-flex align-items-center font-monospace" style="width:400px">
-                <div class="text-truncate">
+                <div class="text-muted text-truncate">
+                    {% if tx.was_included_in_block %}
                     <a href="/transaction/{{tx.signature}}">{{ tx.signature }}</a>
+                    {% else %}
+                    {{ tx.signature }}
+                    {% endif %}
                 </div>
             </div>
         </td>
