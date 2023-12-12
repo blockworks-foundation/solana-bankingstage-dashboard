@@ -68,6 +68,16 @@ def find_block_by_slotnumber(slot_number: int):
     return maprows
 
 
+def is_matching_blockhash(block_hash):
+    maprows = postgres_connection.query(
+        """
+            SELECT 1 FROM banking_stage_results_2.blocks
+            WHERE block_hash = %s
+        """, [block_hash])
+
+    return len(maprows) > 0
+
+
 def main():
     find_block_by_slotnumber(226352855)
 

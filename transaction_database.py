@@ -1,9 +1,7 @@
 import postgres_connection
 import json
 
-TXLIST_ROW_LIMIT = 50
-
-def run_query(filter_txsig=None):
+def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_address=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -33,11 +31,19 @@ def run_query(filter_txsig=None):
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=txi.transaction_id
             WHERE true
                 AND (%s or signature = %s)
-        ) as data
+                AND (%s or txi.transaction_id in (
+						SELECT transaction_id
+						FROM banking_stage_results_2.accounts_map_transaction amt
+						INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+						WHERE account_key = %s
+					))
+        ) AS data
         ORDER BY processed_slot, utc_timestamp, signature DESC
-        LIMIT 50
+        LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
+            filter_account_address is None, filter_account_address,
+            transaction_row_limit or 50,
         ])
 
     for index, row in enumerate(maprows):
@@ -48,11 +54,22 @@ def run_query(filter_txsig=None):
 
 
 def find_transaction_by_sig(tx_sig: str):
-    maprows = run_query(filter_txsig=tx_sig)
+    maprows = run_query(transaction_row_limit=10, filter_txsig=tx_sig)
 
     assert len(maprows) <= 1, "Signature is primary key - find zero or one"
 
     return maprows
+
+
+# return (rows, is_limit_exceeded)
+def query_transactions_by_address(account_key: str) -> (list, bool):
+    maprows = run_query(transaction_row_limit=501, filter_account_address=account_key)
+
+    if len(maprows) == 501:
+        print("limit exceeded while searching for transactions by address")
+        return maprows, True
+
+    return maprows, False
 
 
 def map_jsons_in_row(row):

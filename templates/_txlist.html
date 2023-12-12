@@ -11,6 +11,11 @@
     </tr>
     </thead>
     <tbody class="list">
+    {% if limit_exceeded %}
+    <tr>
+        <td colspan="7" class="text-warning">Result was truncated</td>
+    </tr>
+    {% endif %}
     {% for tx in transactions %}
     <tr>
         <td>{{ tx.pos }}</td>
