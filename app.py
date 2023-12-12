@@ -46,8 +46,9 @@ def dashboard():
 @webapp.route('/tx-errors')
 def tx_errors():
     this_config = config.get_config()
+    rows_limit = request.args.get('limit', default = 50, type = int)
     start = time.time()
-    maprows = list(transaction_database.run_query(transaction_row_limit=50))
+    maprows = list(transaction_database.run_query(transaction_row_limit=rows_limit))
     elapsed = time.time() - start
     if elapsed > .5:
         print("transaction_database.RunQuery() took", elapsed, "seconds")
