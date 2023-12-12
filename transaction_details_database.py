@@ -20,7 +20,9 @@ def find_transaction_details_by_sig(tx_sig: str):
             txi.prioritization_fees
         FROM (
             SELECT
-                signature, any_value(tx_slot.transaction_id) AS transaction_id,
+                signature,
+                -- note: min() is arbitrary
+                min(tx_slot.transaction_id) AS transaction_id,
                 min(slot) AS first_slot, min(utc_timestamp) AS min_utc_timestamp
             FROM banking_stage_results_2.transaction_slot tx_slot
 			INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
