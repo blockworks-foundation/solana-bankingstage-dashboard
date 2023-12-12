@@ -28,7 +28,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
 						WHERE account_key = %s
 					))
         ) AS data
-        ORDER BY utc_timestamp, signature DESC
+        ORDER BY utc_timestamp DESC
         LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
