@@ -96,7 +96,7 @@
 
             {% for slot in transaction.relevant_slots %}
                 <div id="relevant-slot-{{slot}}" class="card">
-                    <div class="card-header align-items-center"><h3 class="card-header-title">Errors in Slot {{ slot | slotnumber }}</h3></div>
+                    <div class="card-header align-items-center"><h3 class="card-header-title">Slot {{ slot | slotnumber }} - Errors</h3></div>
 
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
@@ -124,7 +124,7 @@
                     </div>
 
                     <div id="relevant-slot-{{slot}}-write">
-                        <div class="card-header align-items-center"><h3 class="card-header-title">Write-Locked Accounts</h3></div>
+                        <div class="card-header align-items-center"><h3 class="card-header-title">Slot {{slot|slotnumber}} - Write-Locked Accounts</h3></div>
 
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
@@ -165,7 +165,7 @@
                     <hr/>
 
                     <div id="relevant-slot-{{slot}}-read">
-                        <div class="card-header align-items-center"><h3 class="card-header-title">Read-Locked Accounts</h3></div>
+                        <div class="card-header align-items-center"><h3 class="card-header-title">Slot {{slot|slotnumber}} - Read-Locked Accounts</h3></div>
 
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
