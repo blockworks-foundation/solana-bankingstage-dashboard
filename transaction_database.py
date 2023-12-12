@@ -12,7 +12,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
 					FROM banking_stage_results_2.errors err
 					WHERE err.error_code=tx_slot.error_code
 				) AS all_errors,
-				( txi is not null ) AS was_included,
+				( txi is not null ) AS was_included_in_block,
 				txi.cu_requested,
 				txi.prioritization_fees,
 				utc_timestamp
