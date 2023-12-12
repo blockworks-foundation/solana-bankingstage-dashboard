@@ -33,6 +33,11 @@ Production - contact us for Link
 ### Recent Blocks - stop refreshing
 The auto-refresh can be stopped by appending parameter `to_slot` to the URL: `/recent-blocks?to_slot=232135000`
 
+### Tx Errors List - show more rows
+The number of rows requested from Database can be changed by appending parameter `limit` to the URL: `/tx-errors?limit=300`.
+A value for `limit` restricted to 1-10000. Default is 50.
+
+
 ### Local Development
 **Caution:** Port `5000` cannot be used on MacOS.
 

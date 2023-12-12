@@ -38,19 +38,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="w-100">Executed</td>
+                            <td class="w-100">Successful</td>
                             <td class="text-lg-end font-monospace">
-                                <span>{{ transaction.is_executed }}</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Confirmed</td>
-                            <td class="text-lg-end font-monospace">
-                                <span>{{ transaction.is_confirmed }}</span></td>
+                                {% if transaction.is_successful %}
+                                    <span class="badge bg-success-soft">Success</span>
+                                {% else %}
+                                    <span class="text-warning">--</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         <tr>
                             <td class="w-100">Processed slot</td>
                             <td class="text-lg-end font-monospace">
-                                <span><a hx-boost="true" href="/block/{{transaction.processed_slot}}">{{ transaction.processed_slot | slotnumber }}</a></span></td>
+                                <span><a hx-boost="true" href="/block/{{transaction.processed_slot}}">{{ transaction.processed_slot | slotnumber or '--' }}</a></span></td>
                         </tr>
                         <tr>
                             <td class="w-100">First notification slot</td>
@@ -59,11 +59,11 @@
                         </tr>
                         <tr>
                             <td class="w-100">CU Requested</td>
-                            <td class="text-lg-end font-monospace"><span>{{ transaction.cu_requested | lamports }}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ transaction.cu_requested | lamports or '--' }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees</td>
-                            <td class="text-lg-end font-monospace"><span>{{ transaction.prioritization_fees | lamports }}</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ transaction.prioritization_fees | lamports or '--' }}</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">UTC timestamp</td>

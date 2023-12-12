@@ -7,6 +7,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
         SELECT * FROM (
             SELECT
 				signature,
+				( SELECT count(*) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
 				(
 					SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
 					FROM banking_stage_results_2.errors err
