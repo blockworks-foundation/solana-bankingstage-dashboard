@@ -65,6 +65,11 @@ Open Firefox Browser and navigate to ...
 | Python HTTP Server                  | gunicorn    | --workers, --threads | Dockerfile |
 
 ### Data Model
+
+Source:
+* transaction_infos: transaction in blocks
+* transaction_slot: transaction from banking stage plugin; reflecting errors
+
 Conventions:
 
 | Table Name       | Alias   |
@@ -75,4 +80,3 @@ Conventions:
 | blocks | blocks  |
 | accounts_map_transaction | amt     |
 | transaction_slot | tx_slot |
-|                  |         |
