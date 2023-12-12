@@ -20,7 +20,7 @@
     <tr>
         <td>{{ tx.pos }}</td>
 
-        {% if tx.is_successful %}
+        {% if tx.was_included %}
         <td><span class="badge bg-success-soft">Included</span></td>
         {% else %}
         <td><span class="badge bg-warning-soft">Excluded</span></td>
