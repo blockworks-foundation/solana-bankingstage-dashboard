@@ -129,16 +129,17 @@
                             <thead>
                             <tr>
                                 <th class="text-muted">Account</th>
-                                <th class="text-muted">CU Requested</th>
-                                <th class="text-muted">CU Consumed</th>
-                                <th class="text-muted">Min Prio Fees</th>
-                                <th class="text-muted">Median Prio Fees</th>
-                                <th class="text-muted">Max Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">CU Requested</th>
+                                <th class="text-muted text-end" style="min-width:10em">CU Consumed</th>
+                                <th class="text-muted text-end" style="min-width:10em">Min Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">Median Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">Max Prio Fees</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for write_account in transaction.write_lock_info[slot] %}
                                 <tr>
+
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
                                             <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
@@ -147,11 +148,32 @@
                                             </div>
                                         </a>
                                     </td>
-                                    <td>{{ write_account.cu_requested | lamports }}</td>
-                                    <td>{{ write_account.cu_consumed | lamports }}</td>
-                                    <td>{{ write_account.min_pf | lamports }}</td>
-                                    <td>{{ write_account.median_pf | lamports }}</td>
-                                    <td>{{ write_account.max_pf | lamports }}</td>
+
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ write_account.cu_requested | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ write_account.cu_consumed | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ write_account.min_pf | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ write_account.median_pf | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ write_account.max_pf | lamports }}
+                                        </div>
+                                    </td>
 
                                 </tr>
                                 {% endfor %}
@@ -170,16 +192,17 @@
                             <thead>
                             <tr>
                                 <th class="text-muted">Account</th>
-                                <th class="text-muted">CU Requested</th>
-                                <th class="text-muted">CU Consumed</th>
-                                <th class="text-muted">Min Prio Fees</th>
-                                <th class="text-muted">Median Prio Fees</th>
-                                <th class="text-muted">Max Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">CU Requested</th>
+                                <th class="text-muted text-end" style="min-width:10em">CU Consumed</th>
+                                <th class="text-muted text-end" style="min-width:10em">Min Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">Median Prio Fees</th>
+                                <th class="text-muted text-end" style="min-width:10em">Max Prio Fees</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for read_account in transaction.read_lock_info[slot] %}
                                 <tr>
+
                                     <td>
                                         <a href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
                                             <div class="d-none d-lg-flex align-items-center">
@@ -189,11 +212,32 @@
                                             </div>
                                         </a>
                                     </td>
-                                    <td>{{ read_account.cu_requested | lamports }}</td>
-                                    <td>{{ read_account.cu_consumed | lamports }}</td>
-                                    <td>{{ read_account.min_pf | lamports }}</td>
-                                    <td>{{ read_account.median_pf | lamports }}</td>
-                                    <td>{{ read_account.max_pf | lamports }}</td>
+
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ read_account.cu_requested | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ read_account.cu_consumed | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ read_account.min_pf | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ read_account.median_pf | lamports }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end font-monospace">
+                                        <div class="font-monospace">
+                                            {{ read_account.max_pf | lamports }}
+                                        </div>
+                                    </td>
 
                                 </tr>
                                 {% endfor %}
