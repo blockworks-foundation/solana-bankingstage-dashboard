@@ -6,28 +6,28 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
         """
         SELECT * FROM (
             SELECT
-				signature,
-				( SELECT count(distinct slot) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
-				(
-					SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
-					FROM banking_stage_results_2.errors err
-					WHERE err.error_code=tx_slot.error_code
-				) AS all_errors,
-				( txi is not null ) AS was_included_in_block,
-				txi.cu_requested,
-				txi.prioritization_fees,
-				utc_timestamp
+                signature,
+                ( SELECT count(distinct slot) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
+            (
+                   SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
+                   FROM banking_stage_results_2.errors err
+                   WHERE err.error_code=tx_slot.error_code
+               ) AS all_errors,
+               ( txi is not null ) AS was_included_in_block,
+               txi.cu_requested,
+               txi.prioritization_fees,
+               utc_timestamp
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
-			LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
+            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE true
                 AND (%s or signature = %s)
                 AND (%s or txi.transaction_id in (
-					SELECT transaction_id
-					FROM banking_stage_results_2.accounts_map_transaction amt
-					INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-					WHERE account_key = %s
-				))
+                   SELECT transaction_id
+                   FROM banking_stage_results_2.accounts_map_transaction amt
+                   INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+                   WHERE account_key = %s
+               ))
         ) AS data
         ORDER BY utc_timestamp DESC
         LIMIT %s

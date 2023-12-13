@@ -72,9 +72,11 @@ def find_transaction_details_by_sig(tx_sig: str):
                  amb.*,
                  acc.account_key
                 FROM banking_stage_results_2.accounts_map_blocks amb
+                INNER JOIN banking_stage_results_2.accounts_map_transaction amt ON amt.acc_id=amb.acc_id
                 INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amb.acc_id
-                WHERE slot IN (SELECT unnest(CAST(%s as bigint[])))
-                """, args=[list(relevant_slots)]))
+                WHERE amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
+                AND amt.transaction_id = %s
+                """, args=[list(relevant_slots), transaction_id]))
         )
 
         write_lock_info = dict()
