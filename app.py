@@ -234,7 +234,7 @@ def timestamp_filter(dt: datetime):
         return None
     else:
         try:
-            return dt.strftime('%a %d %H:%M:%S.%f')
+            return dt.strftime('%a %d %b %H:%M:%SZ')
         except TypeError:
             print("FIELD_ERROR in template filter")
             return "FIELD_ERROR"
