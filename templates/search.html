@@ -18,29 +18,33 @@
 
   {% include "_navbar.html" %}
 
-  <div class="mt-n2">
+  <div class="container-fuild">
 
     <div class="card">
 
       <div class="card-header align-items-center"><h3 class="card-header-title">Search Transactions and Blocks</h3>
       </div>
 
-      <div>
-        <span class="htmx-indicator">
-          <div class="progress" role="progressbar">
-            <div class="progress-bar progress-bar-striped bg-info" style="width: 75%"></div>
-          </div>
-         </span>
-      </div>
+      <div class="card-body mb-0">
 
-      <input class="form-control" type="search"
-             name="search" placeholder="Begin Typing Slot Number or Tx Signature..."
-             hx-post="/search"
-             hx-trigger="keyup changed delay:500ms, search"
-             hx-target="#search-results"
-             hx-indicator=".htmx-indicator">
+        <div>
+          <span class="htmx-indicator">
+            <div class="progress" role="progressbar">
+              <div class="progress-bar progress-bar-striped bg-info" style="width: 75%"></div>
+            </div>
+           </span>
+        </div>
 
-      <div id="search-results" class="table-responsive mb-0">
+        <input class="form-control" type="search"
+               name="search" placeholder="Begin Typing Slot Number or Tx Signature..."
+               hx-post="/search"
+               hx-trigger="keyup changed delay:500ms, search"
+               hx-target="#search-results"
+               hx-indicator=".htmx-indicator">
+
+        <div id="search-results" class="table-responsive m-2">
+        </div>
+
       </div>
 
     </div>
