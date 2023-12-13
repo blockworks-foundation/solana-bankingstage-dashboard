@@ -107,17 +107,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                                {% for error in transaction.errors_array %}
-                                {% if error.slot == slot %}
+                                {% for error in transaction.tx_errors_by_slots[slot] %}
                                 <tr>
                                     <td>
-                                        <span class="text-danger">{{ error.error }}</span>
+                                        <span class="text-danger">{{ error.error_text }}</span>
                                     </td>
                                     <td>
                                         <span class="text-danger">{{ error.count | count }}</span>
                                     </td>
                                 </tr>
-                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>

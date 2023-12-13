@@ -7,7 +7,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
         SELECT * FROM (
             SELECT
 				signature,
-				( SELECT count(*) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
+				( SELECT count(distinct slot) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
 				(
 					SELECT ARRAY_AGG(json_build_object('error', err.error_text, 'count', count)::text)
 					FROM banking_stage_results_2.errors err
@@ -23,11 +23,11 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
             WHERE true
                 AND (%s or signature = %s)
                 AND (%s or txi.transaction_id in (
-						SELECT transaction_id
-						FROM banking_stage_results_2.accounts_map_transaction amt
-						INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-						WHERE account_key = %s
-					))
+					SELECT transaction_id
+					FROM banking_stage_results_2.accounts_map_transaction amt
+					INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+					WHERE account_key = %s
+				))
         ) AS data
         ORDER BY utc_timestamp DESC
         LIMIT %s
@@ -44,10 +44,9 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
     return maprows
 
 
+# may return multiple rows
 def find_transaction_by_sig(tx_sig: str):
     maprows = run_query(transaction_row_limit=10, filter_txsig=tx_sig)
-
-    assert len(maprows) <= 1, "Signature is primary key - find zero or one"
 
     return maprows
 

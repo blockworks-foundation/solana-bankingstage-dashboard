@@ -41,19 +41,27 @@ def find_transaction_details_by_sig(tx_sig: str):
         transaction_id = row["transaction_id"]
 
         # {'transaction_id': 1039639, 'slot': 234765028, 'error': 34, 'count': 1, 'utc_timestamp': datetime.datetime(2023, 12, 8, 18, 29, 23, 861619)}
-        tx_slots = postgres_connection.query(
+        # note: slots may appear multiple times if there are multiple errors
+        tx_errors_by_slots = invert_by_slot(
+            postgres_connection.query(
             """
             SELECT
-             tx_slot.slot,
-             err.error_text
+                tx_slot.slot,
+                err.error_text,
+                count(*)
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
             WHERE transaction_id=%s
-            """, args=[transaction_id])
+            GROUP BY slot, err.error_text
+            """, args=[transaction_id]))
+        print("tx_errors_by_slots", tx_errors_by_slots.keys())
+
         # ordered by slots ascending
-        relevant_slots = [txslot["slot"] for txslot in tx_slots]
+        relevant_slots = tx_errors_by_slots.keys()
 
         row["relevant_slots"] = relevant_slots
+
+        row["tx_errors_by_slots"] = tx_errors_by_slots
 
         # note: sort order is undefined
         accountinfos_per_slot = (
@@ -66,12 +74,12 @@ def find_transaction_details_by_sig(tx_sig: str):
                 FROM banking_stage_results_2.accounts_map_blocks amb
                 INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amb.acc_id
                 WHERE slot IN (SELECT unnest(CAST(%s as bigint[])))
-                """, args=[relevant_slots]))
+                """, args=[list(relevant_slots)]))
         )
 
         write_lock_info = dict()
         read_lock_info = dict()
-        for relevant_slot in set(relevant_slots):
+        for relevant_slot in relevant_slots:
             accountinfos = accountinfos_per_slot.get(relevant_slot, [])
 
             account_info_expanded = []
