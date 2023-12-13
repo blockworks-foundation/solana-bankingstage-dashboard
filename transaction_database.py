@@ -68,7 +68,6 @@ def map_jsons_in_row(row):
         row["all_errors"] = []
         return
     for errors_json in row["all_errors"]:
-        # {"{\"error_text\" : \"TransactionError::AccountInUse\", \"count\" : 1}"}
         errors.append(json.loads(errors_json))
     row["errors_array"] = errors
 

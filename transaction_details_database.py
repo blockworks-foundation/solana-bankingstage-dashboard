@@ -25,7 +25,7 @@ def find_transaction_details_by_sig(tx_sig: str):
                 min(tx_slot.transaction_id) AS transaction_id,
                 min(slot) AS first_slot, min(utc_timestamp) AS min_utc_timestamp
             FROM banking_stage_results_2.transaction_slot tx_slot
-			INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
+            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE txs.signature = %s
             GROUP BY signature
@@ -48,7 +48,7 @@ def find_transaction_details_by_sig(tx_sig: str):
             SELECT
                 tx_slot.slot,
                 err.error_text,
-                count(*)
+                coalesce(sum(tx_slot.count),0) AS count
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.errors err ON err.error_code=tx_slot.error_code
             WHERE transaction_id=%s

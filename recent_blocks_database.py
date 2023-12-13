@@ -61,7 +61,7 @@ def run_query(to_slot=None, filter_slot=None, filter_blockhash=None):
                 successful_transactions,
                 (
                     SELECT
-                        count(tx_slot.error_code)
+                        coalesce(sum(tx_slot.count),0) as count
                     FROM banking_stage_results_2.transaction_slot tx_slot
                     WHERE tx_slot.slot=blocks.slot
                 ) AS banking_stage_errors,

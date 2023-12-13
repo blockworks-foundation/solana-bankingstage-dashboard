@@ -2,3 +2,11 @@ body {
     font-family: 'Rubik';
     --explorer-default-font: 'Rubik';
 }
+
+.table-cell-width-number {
+    min-width:10em;
+}
+
+.table-cell-width-account {
+    min-width:40em;
+}
