@@ -44,10 +44,9 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
     return maprows
 
 
+# may return multiple rows
 def find_transaction_by_sig(tx_sig: str):
     maprows = run_query(transaction_row_limit=10, filter_txsig=tx_sig)
-
-    assert len(maprows) <= 1, "Signature is primary key - find zero or one"
 
     return maprows
 
