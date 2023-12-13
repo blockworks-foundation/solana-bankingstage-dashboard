@@ -2,15 +2,24 @@
 <table id="blockslist" class="table table-sm table-nowrap card-table">
     <thead>
     <tr>
+        <th class="text-muted"></th>
+        <th class="text-muted"></th>
+        <th colspan="3" class="text-center text-muted">Txs in block</th>
+        <th colspan="4" class="text-muted text-center">Block Prioritization Fees</th>
+    </tr>
+    <tr>
         <th class="text-muted">Slot #</th>
         <th class="text-muted">Block content (lin scale)</th>
-        <th class="text-muted">Tx processed/error/banking stage</th>
-        <th class="text-muted text-end">
-            Block Prioritization Fees (min, median, p90, max)
-        </th>
+        <th class="text-muted text-end" style="min-width:10em">processed</th>
+        <th class="text-muted text-end" style="min-width:10em">error</th>
+        <th class="text-muted text-end" style="min-width:10em">banking stage</th>
+        <th class="text-muted text-end" style="min-width:10em">min</th>
+        <th class="text-muted text-end" style="min-width:10em">median</th>
+        <th class="text-muted text-end" style="min-width:10em">p90</th>
+        <th class="text-muted text-end" style="min-width:10em">max</th>
     </tr>
     </thead>
-    <tbody class="list">
+    <tbody class="list text-primary">
         {% for block in blocks %}
         <tr>
             <td>
@@ -48,6 +57,11 @@
                     <span class="" style="display:inline-block; min-width:9em">
                         <span class="text-primary">proc:{{ block.processed_transactions }}</span>
                     </span>
+                </div>
+            </td>
+            <td class="text-end">
+
+                <div class="font-monospace">
                     <span class="" style="display:inline-block; min-width:6em">
                         {% if block.txerrors > 0 %}
                         <span class="text-warning">fail:{{ block.txerrors }}</span>
@@ -55,6 +69,11 @@
                         <span class="text-secondary">fail:0</span>
                         {% endif %}
                     </span>
+                </div>
+            </td>
+            <td class="text-end">
+
+                <div class="font-monospace">
                     <span class="" style="display:inline-block; min-width:6em">
                         {% if block.banking_stage_errors > 0 %}
                         <span class="text-danger">bank:{{ block.banking_stage_errors }}</span>
@@ -66,23 +85,29 @@
             </td>
 
             <td class="text-end">
-                
-                <div class="font-monospace">
-                    <span class="d-inline-block" style="min-width:4em">
-                        <span class="text-primary">{{ block.prioritization_fees.p_min | lamports }} </span>
-                    </span>
-                    <span class="d-inline-block" style="min-width:4em">
-                        <span class="text-primary">{{ block.prioritization_fees.p_median }} </span>
-                    </span>
-                    <span class="d-inline-block" style="min-width:4em">
-                        <span class="text-primary">{{ block.prioritization_fees.p_90 }} </span>
-                    </span>
-                    <span class="d-inline-block" style="min-width:4em">
-                        <span class="text-primary">{{ block.prioritization_fees.p_max | lamports }}</span>
-                    </span>
+                <div class="font-monospace text-primary">
+                    {{ block.prioritization_fees.p_min | lamports }}
                 </div>
-
             </td>
+
+            <td class="text-end">
+                <div class="font-monospace text-primary">
+                    {{ block.prioritization_fees.p_median }}
+                </div>
+            </td>
+
+            <td class="text-end">
+                <div class="font-monospace text-primary">
+                    {{ block.prioritization_fees.p_90 }}
+                </div>
+            </td>
+
+            <td class="text-end">
+                <div class="font-monospace text-primary">
+                    {{ block.prioritization_fees.p_max | lamports }}
+                </div>
+            </td>
+
         </tr>
         {% endfor %}
     </tbody>
