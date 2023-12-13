@@ -23,11 +23,11 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
             WHERE true
                 AND (%s or signature = %s)
                 AND (%s or txi.transaction_id in (
-						SELECT transaction_id
-						FROM banking_stage_results_2.accounts_map_transaction amt
-						INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-						WHERE account_key = %s
-					))
+					SELECT transaction_id
+					FROM banking_stage_results_2.accounts_map_transaction amt
+					INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+					WHERE account_key = %s
+				))
         ) AS data
         ORDER BY utc_timestamp DESC
         LIMIT %s
