@@ -58,15 +58,17 @@ def query(statement, args=[]):
         with db.cursor() as cursor:
             try:
                 cursor.execute(statement, args=args)
-                elapsed_total = time.time() - start
+                elapsed_total_ms = (time.time() - start) * 1000
                 keys = [k[0] for k in cursor.description]
                 maprows = [dict(zip(keys, row)) for row in cursor]
             except Exception as ex:
                 print("Exception executing statement:", ex, statement)
                 raise ex
 
-    if elapsed_total > .2:
-        print("Database Query took", elapsed_total, "secs", "(", elapsed_connect, ")")
+    if elapsed_total_ms > 400:
+        print("SLOW Database Query took", "%.2f" % elapsed_total_ms, "ms", "(conn=" + "%.2f" % elapsed_connect + "ms)")
+    else:
+        print("Database Query took", "%.2f" % elapsed_total_ms, "ms", "(conn=" + "%.2f" % elapsed_connect + "ms)")
 
     return maprows
 
