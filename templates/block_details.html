@@ -40,6 +40,14 @@
                             <td class="text-lg-end font-monospace"><span>{{ block.leader_identity }}</span></td>
                         </tr>
                         <tr>
+                            <td class="w-100">Next Block</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="/block/{{block.next_block}}">{{ block.next_block | slotnumber }}</a></span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Previous Block</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="/block/{{block.prev_block}}">{{ block.prev_block | slotnumber }}</a></span></td>
+                        </tr>
+                        <tr>
                             <td class="w-100">Processed Transactions</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.processed_transactions | count }}</span></td>
                         </tr>

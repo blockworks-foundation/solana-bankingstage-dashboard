@@ -64,7 +64,33 @@ def find_block_by_slotnumber(slot_number: int):
 
         row["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
         row["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
+        next_slot = (
+            postgres_connection.query(
+                """
+                SELECT
+                    slot
+                FROM banking_stage_results_2.blocks
+                WHERE slot > %s ORDER BY slot LIMIT 1
+                """, args=[slot])
+        )
+        prev_slot = (
+            postgres_connection.query(
+                """
+                SELECT
+                    slot
+                FROM banking_stage_results_2.blocks
+                WHERE slot < %s ORDER BY slot desc LIMIT 1
+                """, args=[slot])
+        )
+        next_block = None
+        for block in next_slot:
+            next_block = block['slot']
 
+        prev_block = None
+        for block in prev_slot:
+            prev_block = block['slot']
+        row["next_block"] = next_block
+        row["prev_block"] = prev_block
     return maprows
 
 
