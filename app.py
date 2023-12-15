@@ -9,6 +9,7 @@ import block_details_database
 import config
 import locale
 from datetime import datetime
+import account_details_database
 
 #
 # MAIN
@@ -85,6 +86,20 @@ def get_block(slot):
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
     return render_template('block_details.html', config=this_config, block=block)
+
+@webapp.route('/account/<path:pubkey>')
+def get_account(pubkey):
+    this_config = config.get_config()
+    start = time.time()
+    if not is_b58_44(pubkey):
+        return "Invalid account", 404
+    start = time.time()
+    (account, transactions, is_limit_exceeded) = account_details_database.build_account_details(pubkey)
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("account_details_database.build_account_details() took", elapsed, "seconds")
+    return render_template('account_details.html', config=this_config, account=account, transactions=transactions, limit_exceeded=is_limit_exceeded)
+
 
 def is_slot_number(raw_string):
     return re.fullmatch("[0-9,]+", raw_string) is not None
