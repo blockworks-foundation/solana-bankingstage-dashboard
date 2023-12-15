@@ -80,15 +80,11 @@ def recent_blocks():
 def get_block(slot):
     this_config = config.get_config()
     start = time.time()
-    maprows = list(block_details_database.find_block_by_slotnumber(slot))
+    block = block_details_database.find_block_by_slotnumber(slot)
     elapsed = time.time() - start
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
-    if len(maprows):
-        return render_template('block_details.html', config=this_config, block=maprows[0])
-    else:
-        return "Block not found", 404
-
+    return render_template('block_details.html', config=this_config, block=block)
 
 def is_slot_number(raw_string):
     return re.fullmatch("[0-9,]+", raw_string) is not None
