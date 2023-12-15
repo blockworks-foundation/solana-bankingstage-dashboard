@@ -47,7 +47,7 @@
             </div>
 
             <div id="recent-blocks" class="card">
-                <div class="card-header align-items-center"><h3 class="card-header-title">Recent Block Data</h3></div>
+                <div class="card-header align-items-center"><h3 class="card-header-title">Recent Blocks (holding write-locks)</h3></div>
 
                 <div class="table-responsive mb-0">
                     <table class="table table-sm table-nowrap card-table">
@@ -116,7 +116,9 @@
                 </div>
             </div>
 
-            <div id="recent-banking-errors" class="card-responsive">
+            <div class="card-responsive">
+                <div class="card-header align-items-center"><h3 class="card-header-title">Transactions requesting locks</h3></div>
+
 
                 {% include "_txlist.html" %}
 
