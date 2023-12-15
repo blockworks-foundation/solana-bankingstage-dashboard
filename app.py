@@ -94,11 +94,11 @@ def get_account(pubkey):
     if not is_b58_44(pubkey):
         return "Invalid account", 404
     start = time.time()
-    (account, transactions, is_limit_exceeded) = account_details_database.build_account_details(pubkey)
+    (account, blocks, transactions, is_limit_exceeded) = account_details_database.build_account_details(pubkey, recent_blocks_row_limit=10)
     elapsed = time.time() - start
     if elapsed > .5:
         print("account_details_database.build_account_details() took", elapsed, "seconds")
-    return render_template('account_details.html', config=this_config, account=account, transactions=transactions, limit_exceeded=is_limit_exceeded)
+    return render_template('account_details.html', config=this_config, account=account, recent_blocks=blocks, transactions=transactions, limit_exceeded=is_limit_exceeded)
 
 
 def is_slot_number(raw_string):

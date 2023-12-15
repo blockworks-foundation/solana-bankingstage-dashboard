@@ -16,7 +16,8 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
                ( txi is not null ) AS was_included_in_block,
                txi.cu_requested,
                txi.prioritization_fees,
-               utc_timestamp
+               utc_timestamp,
+               tx_slot.transaction_id
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
@@ -29,7 +30,8 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
                    WHERE account_key = %s
                ))
         ) AS data
-        ORDER BY utc_timestamp DESC
+        -- transaction_id is required as tie breaker
+        ORDER BY utc_timestamp, transaction_id DESC
         LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
