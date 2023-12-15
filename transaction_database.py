@@ -31,7 +31,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
                ))
         ) AS data
         -- transaction_id is required as tie breaker
-        ORDER BY utc_timestamp, transaction_id DESC
+        ORDER BY utc_timestamp DESC, transaction_id DESC
         LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
