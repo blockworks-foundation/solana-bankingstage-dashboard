@@ -55,9 +55,9 @@ def find_transaction_by_sig(tx_sig: str):
 
 # return (rows, is_limit_exceeded)
 def query_transactions_by_address(account_key: str) -> (list, bool):
-    maprows = run_query(transaction_row_limit=501, filter_account_address=account_key)
+    maprows = run_query(transaction_row_limit=100, filter_account_address=account_key)
 
-    if len(maprows) == 501:
+    if len(maprows) == 100:
         print("limit exceeded while searching for transactions by address")
         return maprows, True
 
