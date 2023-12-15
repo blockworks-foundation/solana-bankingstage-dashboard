@@ -53,7 +53,7 @@
                     <table class="table table-sm table-nowrap card-table">
                         <thead>
                         <tr>
-                            <th class="text-muted table-cell-width-account">Slot</th>
+                            <th class="text-muted table-cell-width-slot">Slot</th>
                             <th class="text-muted text-end table-cell-width-number">CU Consumed</th>
                             <th class="text-muted text-end table-cell-width-number">Min</th>
                             <th class="text-muted text-end table-cell-width-number">Median</th>
@@ -70,7 +70,7 @@
                                     <a hx-boost="false" href="/block/{{block.slot}}">
                                         <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
                                                 class=""></span></span><span
-                                                class="font-monospace"><span class="">{{block.slot}}</span></span>
+                                                class="font-monospace"><span class="">{{ block.slot | slotnumber }}</span></span>
                                         </div>
                                     </a></td>
                                 <td class="text-end font-monospace">
@@ -115,9 +115,11 @@
                     </table>
                 </div>
             </div>
+
             <div id="recent-banking-errors" class="card">
 
-            {% include "_txlist.html" %}
+                {% include "_txlist.html" %}
+
             </div>
 
         </div>

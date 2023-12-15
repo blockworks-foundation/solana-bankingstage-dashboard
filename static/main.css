@@ -7,6 +7,10 @@ body {
     min-width:10em;
 }
 
+.table-cell-width-slot {
+    min-width:15em;
+}
+
 .table-cell-width-account {
     min-width:40em;
 }
