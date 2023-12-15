@@ -1,7 +1,7 @@
 import postgres_connection
 import json
 
-def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_address=None):
+def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_address=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -34,7 +34,7 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
         """, [
             filter_txsig is None, filter_txsig,
             filter_account_address is None, filter_account_address,
-            transaction_row_limit or 50,
+            transaction_row_limit,
         ])
 
     for index, row in enumerate(maprows):
@@ -45,14 +45,14 @@ def run_query(transaction_row_limit=None, filter_txsig=None, filter_account_addr
 
 
 # may return multiple rows
-def find_transaction_by_sig(tx_sig: str):
+def search_transaction_by_sig(tx_sig: str):
     maprows = run_query(transaction_row_limit=10, filter_txsig=tx_sig)
 
     return maprows
 
 
 # return (rows, is_limit_exceeded)
-def query_transactions_by_address(account_key: str) -> (list, bool):
+def search_transactions_by_address(account_key: str) -> (list, bool):
     maprows = run_query(transaction_row_limit=501, filter_account_address=account_key)
 
     if len(maprows) == 501:

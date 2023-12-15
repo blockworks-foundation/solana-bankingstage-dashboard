@@ -51,7 +51,7 @@ def calc_bars(row):
         row['hide_bar'] = True
 
 
-def run_query(to_slot=None, filter_slot=None, filter_blockhash=None):
+def run_query(to_slot=None, blocks_row_limit=100, filter_slot=None, filter_blockhash=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -74,13 +74,14 @@ def run_query(to_slot=None, filter_slot=None, filter_blockhash=None):
                 AND (%s or slot = %s)
                 AND (%s or block_hash = %s)
             ORDER BY slot DESC
-            LIMIT 100
+            LIMIT %s
         ) AS data
         """,
         [
             to_slot is None, to_slot,
             filter_slot is None, filter_slot,
             filter_blockhash is None, filter_blockhash,
+            blocks_row_limit,
         ])
 
     for row in maprows:
@@ -91,16 +92,16 @@ def run_query(to_slot=None, filter_slot=None, filter_blockhash=None):
     return maprows
 
 
-def find_block_by_slotnumber(slot_number: int):
-    maprows = run_query(filter_slot=slot_number)
+def search_block_by_slotnumber(slot_number: int):
+    maprows = run_query(filter_slot=slot_number, blocks_row_limit=20)
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
 
     return maprows
 
 
-def find_block_by_blockhash(block_hash: str):
-    maprows = run_query(filter_blockhash=block_hash)
+def search_block_by_blockhash(block_hash: str):
+    maprows = run_query(filter_blockhash=block_hash, blocks_row_limit=20)
 
     assert len(maprows) <= 1, "Block hash is unique - find zero or one"
 

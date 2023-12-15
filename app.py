@@ -66,7 +66,7 @@ def recent_blocks():
         to_slot = None
 
     start = time.time()
-    maprows = list(recent_blocks_database.run_query(to_slot))
+    maprows = list(recent_blocks_database.run_query(to_slot, blocks_row_limit=100))
     elapsed = time.time() - start
     if elapsed > .5:
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
@@ -129,7 +129,7 @@ def search():
 
         if is_slot_number(search_string):
             search_string = search_string.replace(',', '')
-            maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
+            maprows = list(recent_blocks_database.search_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
@@ -139,21 +139,21 @@ def search():
 
         if is_blockhash:
             print("blockhash search=", search_string)
-            maprows = list(recent_blocks_database.find_block_by_blockhash(search_string))
+            maprows = list(recent_blocks_database.search_block_by_blockhash(search_string))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif not is_blockhash and is_b58_44(search_string):
             print("account address search=", search_string)
-            (maprows, is_limit_exceeded) = list(transaction_database.query_transactions_by_address(search_string))
+            (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
             print("txsig search=", search_string)
-            maprows = list(transaction_database.find_transaction_by_sig(search_string))
+            maprows = list(transaction_database.search_transaction_by_sig(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
             else:
