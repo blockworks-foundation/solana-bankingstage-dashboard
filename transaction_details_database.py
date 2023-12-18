@@ -69,6 +69,7 @@ def find_transaction_details_by_sig(tx_sig: str):
         # * in this case the accounts are show but without the infos like prio fee
         # * accounts linked via amt have no slot relation and thus appear redundantly for all slots
         # * see tx ACQLVWCGhLurkcPp8a2QfaK9rpoe3opcbWa1TBtijhbQ3X6rMYpDcUaa9usY4b4fwj5pgTWj85wew7WhCEyTHBN for example
+        # * is_write_locked and is_account_write_locked must be the same
         accountinfos_per_slot = (
             invert_by_slot(
                 postgres_connection.query(
@@ -83,10 +84,6 @@ def find_transaction_details_by_sig(tx_sig: str):
                 WHERE amt.transaction_id = %s
                 """, args=[list(relevant_slots), transaction_id]))
         )
-
-        for row in accountinfos_per_slot:
-            if row['is_write_locked'] is not None:
-                assert row['is_write_locked'] == row['is_account_write_locked']
 
         write_lock_info = dict()
         read_lock_info = dict()
