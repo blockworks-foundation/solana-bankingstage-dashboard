@@ -63,21 +63,30 @@ def find_transaction_details_by_sig(tx_sig: str):
 
         row["tx_errors_by_slots"] = tx_errors_by_slots
 
-        # note: sort order is undefined
+        # note: sort order will be defined later
+        # note: amb vs amt:
+        # * relation does not exist if the transaction was not included
+        # * in this case the accounts are show but without the infos like prio fee
+        # * accounts linked via amt have no slot relation and thus appear redundantly for all slots
+        # * see tx ACQLVWCGhLurkcPp8a2QfaK9rpoe3opcbWa1TBtijhbQ3X6rMYpDcUaa9usY4b4fwj5pgTWj85wew7WhCEyTHBN for example
         accountinfos_per_slot = (
             invert_by_slot(
                 postgres_connection.query(
                 """
                 SELECT
-                 amb.*,
-                 acc.account_key
-                FROM banking_stage_results_2.accounts_map_blocks amb
-                INNER JOIN banking_stage_results_2.accounts_map_transaction amt ON amt.acc_id=amb.acc_id
-                INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amb.acc_id
-                WHERE amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
-                AND amt.transaction_id = %s
+                 amt.is_writable AS is_account_write_locked,
+                 acc.account_key,
+                 amb.*
+                FROM banking_stage_results_2.accounts_map_transaction amt
+                INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+                LEFT JOIN banking_stage_results_2.accounts_map_blocks amb ON amb.acc_id=amt.acc_id AND amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
+                WHERE amt.transaction_id = %s
                 """, args=[list(relevant_slots), transaction_id]))
         )
+
+        for row in accountinfos_per_slot:
+            if row['is_write_locked'] is not None:
+                assert row['is_write_locked'] == row['is_account_write_locked']
 
         write_lock_info = dict()
         read_lock_info = dict()
@@ -90,7 +99,7 @@ def find_transaction_details_by_sig(tx_sig: str):
                 info = {
                     'slot': account_info['slot'],
                     'key': account_info['account_key'],
-                    'is_write_locked': account_info['is_write_locked'],
+                    'is_account_write_locked': account_info['is_account_write_locked'],
                     'cu_requested': account_info['total_cu_requested'],
                     'cu_consumed': account_info['total_cu_consumed'],
                     'min_pf': prio_fee_data['min'],
@@ -99,8 +108,8 @@ def find_transaction_details_by_sig(tx_sig: str):
                 }
                 account_info_expanded.append(info)
             account_info_expanded.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
-            write_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
-            read_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
+            write_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is True]
+            read_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is False]
 
         row["write_lock_info"] = write_lock_info
         row["read_lock_info"] = read_lock_info
