@@ -70,41 +70,57 @@ def find_transaction_details_by_sig(tx_sig: str):
         # * accounts linked via amt have no slot relation and thus appear redundantly for all slots
         # * see tx ACQLVWCGhLurkcPp8a2QfaK9rpoe3opcbWa1TBtijhbQ3X6rMYpDcUaa9usY4b4fwj5pgTWj85wew7WhCEyTHBN for example
         # * is_write_locked and is_account_write_locked must be the same
-        accountinfos_per_slot = (
-            invert_by_slot(
-                postgres_connection.query(
-                """
-                SELECT
-                 amt.is_writable AS is_account_write_locked,
-                 acc.account_key,
-                 amb.*
-                FROM banking_stage_results_2.accounts_map_transaction amt
-                INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-                LEFT JOIN banking_stage_results_2.accounts_map_blocks amb ON amb.acc_id=amt.acc_id AND amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
-                WHERE amt.transaction_id = %s
-                """, args=[list(relevant_slots), transaction_id]))
-        )
+        all_accountinfos = (
+            postgres_connection.query(
+            """
+            SELECT
+             amt.is_writable AS is_account_write_locked,
+             acc.account_key,
+             amb.*
+            FROM banking_stage_results_2.accounts_map_transaction amt
+            INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+            LEFT JOIN banking_stage_results_2.accounts_map_blocks amb ON amb.acc_id=amt.acc_id AND amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
+            WHERE amt.transaction_id = %s
+            ORDER BY amb.total_cu_consumed DESC NULLS LAST, amt.acc_id
+            """, args=[list(relevant_slots), transaction_id]))
 
         write_lock_info = dict()
         read_lock_info = dict()
         for relevant_slot in relevant_slots:
-            accountinfos = accountinfos_per_slot.get(relevant_slot, [])
 
             account_info_expanded = []
-            for account_info in accountinfos:
-                prio_fee_data = json.loads(account_info['prioritization_fees_info'])
-                info = {
-                    'slot': account_info['slot'],
-                    'key': account_info['account_key'],
-                    'is_account_write_locked': account_info['is_account_write_locked'],
-                    'cu_requested': account_info['total_cu_requested'],
-                    'cu_consumed': account_info['total_cu_consumed'],
-                    'min_pf': prio_fee_data['min'],
-                    'median_pf': prio_fee_data['med'],
-                    'max_pf': prio_fee_data['max']
-                }
-                account_info_expanded.append(info)
-            account_info_expanded.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
+
+            for account_info in all_accountinfos:
+                # slot is set if amb relation exists i.e. if the tx was included
+                maybe_slot = account_info['slot']
+
+                if maybe_slot and maybe_slot != relevant_slot:
+                    continue
+
+                if maybe_slot is None:
+                    info = {
+                        'key': account_info['account_key'],
+                        'is_account_write_locked': account_info['is_account_write_locked'],
+                        'cu_requested': None,
+                        'cu_consumed': None,
+                        'min_pf': None,
+                        'median_pf': None,
+                        'max_pf': None,
+                    }
+                    account_info_expanded.append(info)
+                else:
+                    prio_fee_data = json.loads(account_info['prioritization_fees_info'])
+                    info = {
+                        'key': account_info['account_key'],
+                        'is_account_write_locked': account_info['is_account_write_locked'],
+                        'cu_requested': account_info['total_cu_requested'],
+                        'cu_consumed': account_info['total_cu_consumed'],
+                        'min_pf': prio_fee_data['min'],
+                        'median_pf': prio_fee_data['med'],
+                        'max_pf': prio_fee_data['max']
+                    }
+                    account_info_expanded.append(info)
+
             write_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is True]
             read_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is False]
 
