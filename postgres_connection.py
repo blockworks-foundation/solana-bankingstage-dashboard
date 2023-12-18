@@ -52,11 +52,10 @@ pool = _init_pool()
 def query(statement, args=[]):
     start = time.time()
 
-    elapsed_connect = time.time() - start
-
     with pool.connection() as db:
         with db.cursor() as cursor:
             try:
+                elapsed_connect_ms = (time.time() - start) * 1000
                 cursor.execute(statement, args=args)
                 elapsed_total_ms = (time.time() - start) * 1000
                 keys = [k[0] for k in cursor.description]
@@ -66,9 +65,9 @@ def query(statement, args=[]):
                 raise ex
 
     if elapsed_total_ms > 400:
-        print("SLOW Database Query took", "%.2f" % elapsed_total_ms, "ms", "(conn=" + "%.2f" % elapsed_connect + "ms)")
+        print("SLOW Database Query took", "%.2fms" % elapsed_total_ms, "(conn=" + "%.2f" % elapsed_connect_ms + "ms)")
     else:
-        print("Database Query took", "%.2f" % elapsed_total_ms, "ms", "(conn=" + "%.2f" % elapsed_connect + "ms)")
+        print("Database Query took", "%.2fms" % elapsed_total_ms, "(conn=" + "%.2f" % elapsed_connect_ms + "ms)")
 
     return maprows
 

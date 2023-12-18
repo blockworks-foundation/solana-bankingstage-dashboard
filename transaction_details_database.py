@@ -54,7 +54,6 @@ def find_transaction_details_by_sig(tx_sig: str):
             WHERE transaction_id=%s
             GROUP BY slot, err.error_text
             """, args=[transaction_id]))
-        print("tx_errors_by_slots", tx_errors_by_slots.keys())
 
         # ordered by slots ascending
         relevant_slots = tx_errors_by_slots.keys()
