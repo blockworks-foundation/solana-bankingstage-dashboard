@@ -1,5 +1,7 @@
 import postgres_connection
 import json
+
+import recent_blocks_database
 import transaction_database
 from collections import defaultdict
 
@@ -83,12 +85,15 @@ def find_transaction_details_by_sig(tx_sig: str):
             ORDER BY amb.total_cu_consumed DESC NULLS LAST, amt.acc_id
             """, args=[list(relevant_slots), transaction_id]))
 
+        block_details_per_slot = dict()
         write_lock_info = dict()
         read_lock_info = dict()
         for relevant_slot in relevant_slots:
 
-            account_info_expanded = []
+            block_details = recent_blocks_database.run_query(filter_slot=relevant_slot)[0]
+            block_details_per_slot[relevant_slot] = block_details
 
+            account_info_expanded = []
             for account_info in all_accountinfos:
                 # slot is set if amb relation exists i.e. if the tx was included
                 maybe_slot = account_info['slot']
@@ -123,9 +128,11 @@ def find_transaction_details_by_sig(tx_sig: str):
             write_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is True]
             read_lock_info[relevant_slot] = [acc for acc in account_info_expanded if acc['is_account_write_locked'] is False]
 
+        row["block_details_per_slot"] = block_details_per_slot
         row["write_lock_info"] = write_lock_info
         row["read_lock_info"] = read_lock_info
 
+    # note: effectively this is always one row
     return maprows
 
 

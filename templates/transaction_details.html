@@ -93,8 +93,47 @@
             </div>
 
             {% for slot in transaction.relevant_slots %}
+            {% set block_details = transaction.block_details_per_slot[slot] %}
                 <div id="relevant-slot-{{slot}}" class="card">
                     <div class="card-header align-items-center"><h3 class="card-header-title">Slot {{ slot | slotnumber }} - Errors</h3></div>
+
+                    <div class="table-responsive mb-0">
+                        <table class="table table-sm table-nowrap card-table">
+                            <thead>
+                            <tr>
+                                <th class="text-muted text-end table-cell-width-number">Min Prio Fees</th>
+                                <th class="text-muted text-end table-cell-width-number">Median Prio Fees</th>
+                                <th class="text-muted text-end table-cell-width-number">Max Prio Fees</th>
+                                <th class="text-muted text-end table-cell-width-number">p75 Prio Fees</th>
+                                <th class="text-muted text-end table-cell-width-number">p90 Prio Fees</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="text-end font-monospace">
+                                    <span class="font-monospace">{{ block_details.prioritization_fees.p_min }}</span>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <span class="font-monospace">{{ block_details.prioritization_fees.p_median }}</span>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <span class="font-monospace">{{ block_details.prioritization_fees.p_max }}</span>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <span class="font-monospace">{{ block_details.prioritization_fees.p_75 }}</span>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <span class="font-monospace">{{ block_details.prioritization_fees.p_90 }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <span>(micro-lamports/CU)</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
 
                     <div class="table-responsive mb-0">
                         <table class="table table-sm table-nowrap card-table">
