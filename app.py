@@ -67,7 +67,7 @@ def recent_blocks():
         to_slot = None
 
     start = time.time()
-    maprows = list(recent_blocks_database.run_query(to_slot))
+    maprows = list(recent_blocks_database.run_query(to_slot, blocks_row_limit=100))
     elapsed = time.time() - start
     if elapsed > .5:
         print("recent_blocks_database.RunQuery() took", elapsed, "seconds")
@@ -94,11 +94,11 @@ def get_account(pubkey):
     if not is_b58_44(pubkey):
         return "Invalid account", 404
     start = time.time()
-    (account, blocks, transactions, is_limit_exceeded) = account_details_database.build_account_details(pubkey, recent_blocks_row_limit=10)
+    (account, blocks, transactions) = account_details_database.build_account_details(pubkey, recent_blocks_row_limit=10, transaction_row_limit=100)
     elapsed = time.time() - start
     if elapsed > .5:
         print("account_details_database.build_account_details() took", elapsed, "seconds")
-    return render_template('account_details.html', config=this_config, account=account, recent_blocks=blocks, transactions=transactions, limit_exceeded=is_limit_exceeded)
+    return render_template('account_details.html', config=this_config, account=account, recent_blocks=blocks, transactions=transactions)
 
 
 def is_slot_number(raw_string):
@@ -124,7 +124,7 @@ def is_account_key(raw_string):
 
 
 
-
+# please prefix all database methods with "search_" and use them only for search
 @webapp.route('/search', methods=["GET", "POST"])
 def search():
     this_config = config.get_config()
@@ -140,7 +140,7 @@ def search():
 
         if is_slot_number(search_string):
             search_string = search_string.replace(',', '')
-            maprows = list(recent_blocks_database.find_block_by_slotnumber(int(search_string)))
+            maprows = list(recent_blocks_database.search_block_by_slotnumber(int(search_string)))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
@@ -150,21 +150,21 @@ def search():
 
         if is_blockhash:
             print("blockhash search=", search_string)
-            maprows = list(recent_blocks_database.find_block_by_blockhash(search_string))
+            maprows = list(recent_blocks_database.search_block_by_blockhash(search_string))
             if len(maprows):
                 return render_template('_blockslist.html', config=this_config, blocks=maprows)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif not is_blockhash and is_b58_44(search_string):
             print("account address search=", search_string)
-            (maprows, is_limit_exceeded) = list(transaction_database.query_transactions_by_address(search_string))
+            (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
             print("txsig search=", search_string)
-            maprows = list(transaction_database.find_transaction_by_sig(search_string))
+            maprows = list(transaction_database.search_transaction_by_sig(search_string))
             if len(maprows):
                 return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
             else:

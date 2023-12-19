@@ -3,8 +3,9 @@ import postgres_connection
 import json
 
 
-def build_account_details(pubkey: str, recent_blocks_row_limit=10):
-    (transactions, is_limit_exceeded) = list(transaction_database.query_transactions_by_address(pubkey))
+def build_account_details(pubkey: str, recent_blocks_row_limit=10, transaction_row_limit=1000):
+    transactions = list(transaction_database.query_transactions_by_address(
+        pubkey, transaction_row_limit=transaction_row_limit))
     account = {'pubkey': pubkey}
 
     blocks = postgres_connection.query(
@@ -27,8 +28,9 @@ def build_account_details(pubkey: str, recent_blocks_row_limit=10):
         row['p75'] = pf['p75']
         row['p90'] = pf['p90']
         row['p95'] = pf['p95']
-    return account, blocks, transactions, is_limit_exceeded
-    
+    return account, blocks, transactions
+
+
 def main():
     build_account_details('AfASDKLEWG7Di9HtZDmHKftR1fsMXBtTSxP7qMo9qv7L')
 
