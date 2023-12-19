@@ -93,9 +93,6 @@ def find_transaction_details_by_sig(tx_sig: str):
                 # slot is set if amb relation exists i.e. if the tx was included
                 maybe_slot = account_info['slot']
 
-                if maybe_slot and maybe_slot != relevant_slot:
-                    continue
-
                 if maybe_slot is None:
                     info = {
                         'key': account_info['account_key'],
