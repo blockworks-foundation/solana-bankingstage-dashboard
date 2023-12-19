@@ -28,19 +28,46 @@ def find_block_by_slotnumber(slot_number: int):
         """, args=[slot_number])
 
     assert len(maprows) <= 1, "Slot is primary key - find zero or one"
+    next_slot = (
+        postgres_connection.query(
+            """
+            SELECT
+                min(slot) as next_slot
+            FROM banking_stage_results_2.blocks
+            WHERE slot > %s
+            """, args=[slot_number])
+    )
+    prev_slot = (
+        postgres_connection.query(
+            """
+            SELECT
+                max(slot) as prev_slot
+            FROM banking_stage_results_2.blocks
+            WHERE slot < %s
+            """, args=[slot_number])
+    )
+    next_block = list(next_slot)[0]['next_slot']
+    prev_block = list(prev_slot)[0]['prev_slot']
 
-    for row in maprows:
-        slot = row["slot"]
+    if len(maprows) == 0:
+        block = {}
+        block["next_block"] = next_block
+        block["prev_block"] = prev_block
+        block["supp_infos"] = {}
+        return block
+    else:
+        block = list(maprows)[0]
+        slot = block["slot"]
 
-        row['supp_infos'] = json.loads(row['supp_infos'])
+        block['supp_infos'] = json.loads(block['supp_infos'])
 
         # note: sort order is undefined
         accountinfos = (
             postgres_connection.query(
                 """
                 SELECT
-                 amb.*,
-                 acc.account_key
+                    amb.*,
+                    acc.account_key
                 FROM banking_stage_results_2.accounts_map_blocks amb
                 INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amb.acc_id
                 WHERE slot = %s
@@ -62,10 +89,11 @@ def find_block_by_slotnumber(slot_number: int):
             account_info_expanded.append(info)
         account_info_expanded.sort(key=lambda acc: int(acc['cu_consumed']), reverse=True)
 
-        row["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
-        row["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
-
-    return maprows
+        block["heavily_writelocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is True]
+        block["heavily_readlocked_accounts_parsed"] = [acc for acc in account_info_expanded if acc['is_write_locked'] is False]
+        block["next_block"] = next_block
+        block["prev_block"] = prev_block
+        return block
 
 
 def is_matching_blockhash(block_hash):

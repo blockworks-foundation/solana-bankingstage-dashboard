@@ -71,9 +71,13 @@ Open Firefox Browser and navigate to ...
 
 ### Data Model
 
-Source:
-* transaction_infos: transaction in blocks
-* transaction_slot: transaction from banking stage plugin; reflecting errors
+* transaction data (irrespective of block inclusion):
+  * transaction_slot: transaction from banking stage plugin; reflecting errors trying to include transaction in block (block is designated by slot)
+  * accounts_map_transaction: mapping of accounts to transactions irrespective of block inclusion
+* related to a produced block (happens _after_ transaction data):
+  * transaction_infos: transaction in blocks
+  * accounts_map_blocks: accounts mentioned in block
+
 
 Conventions:
 

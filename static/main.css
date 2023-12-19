@@ -1,10 +1,14 @@
 body {
-    font-family: 'Rubik';
+    font-family: 'Rubik', sans-serif;
     --explorer-default-font: 'Rubik';
 }
 
 .table-cell-width-number {
     min-width:10em;
+}
+
+.table-cell-width-slot {
+    min-width:15em;
 }
 
 .table-cell-width-account {

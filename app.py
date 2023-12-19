@@ -9,6 +9,7 @@ import block_details_database
 import config
 import locale
 from datetime import datetime
+import account_details_database
 
 #
 # MAIN
@@ -80,14 +81,24 @@ def recent_blocks():
 def get_block(slot):
     this_config = config.get_config()
     start = time.time()
-    maprows = list(block_details_database.find_block_by_slotnumber(slot))
+    block = block_details_database.find_block_by_slotnumber(slot)
     elapsed = time.time() - start
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
-    if len(maprows):
-        return render_template('block_details.html', config=this_config, block=maprows[0])
-    else:
-        return "Block not found", 404
+    return render_template('block_details.html', config=this_config, block=block)
+
+@webapp.route('/account/<path:pubkey>')
+def get_account(pubkey):
+    this_config = config.get_config()
+    start = time.time()
+    if not is_b58_44(pubkey):
+        return "Invalid account", 404
+    start = time.time()
+    (account, blocks, transactions) = account_details_database.build_account_details(pubkey, recent_blocks_row_limit=10, transaction_row_limit=100)
+    elapsed = time.time() - start
+    if elapsed > .5:
+        print("account_details_database.build_account_details() took", elapsed, "seconds")
+    return render_template('account_details.html', config=this_config, account=account, recent_blocks=blocks, transactions=transactions)
 
 
 def is_slot_number(raw_string):
@@ -113,7 +124,7 @@ def is_account_key(raw_string):
 
 
 
-
+# please prefix all database methods with "search_" and use them only for search
 @webapp.route('/search', methods=["GET", "POST"])
 def search():
     this_config = config.get_config()

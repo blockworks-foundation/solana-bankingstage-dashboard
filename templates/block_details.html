@@ -27,8 +27,13 @@
                     <table class="table table-sm table-nowrap card-table">
                         <tbody class="list">
                         <tr>
+                            {% if block.slot %}
                             <td class="w-100">Slot</td>
                             <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="https://explorer.solana.com//block/{{block.slot}}?cluster={{config.cluster}}">{{ block.slot | slotnumber }}</a></span></td>
+                            {% else %}
+                            <td class="w-100">Status</td>
+                            <td class="text-lg-end font-monospace"><span>Block Not Found</span></td>
+                            {% endif %}
                         </tr>
                         <tr>
                             <td class="w-100">Blockhash</td>
@@ -39,6 +44,15 @@
                             <td class="w-100">Leader Identity</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.leader_identity }}</span></td>
                         </tr>
+                        <tr>
+                            <td class="w-100">Next Block</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="/block/{{block.next_block}}">{{ block.next_block | slotnumber }}</a></span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Previous Block</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="/block/{{block.prev_block}}">{{ block.prev_block | slotnumber }}</a></span></td>
+                        </tr>
+                        {% if block.slot %}
                         <tr>
                             <td class="w-100">Processed Transactions</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.processed_transactions | count }}</span></td>
@@ -71,6 +85,7 @@
                             <td class="w-100">Prioritization Fees p90</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_90 | lamports }} micro-lamports/CU</span></td>
                         </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>
@@ -107,7 +122,7 @@
                             <tr>
 
                                 <td>
-                                    <a hx-boost="false" href="https://explorer.solana.com/account/{{ write_account.key }}?cluster={{config.cluster}}">
+                                    <a hx-boost="false" href="/account/{{ write_account.key }}">
                                         <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
                                                 class=""></span></span><span
                                                 class="font-monospace"><span class="">{{write_account.key}}</span></span>
@@ -166,7 +181,7 @@
                         {% for read_account in block.heavily_readlocked_accounts_parsed %}
                             <tr>
                                 <td>
-                                    <a hx-boost="false" href="https://explorer.solana.com/account/{{ read_account.key }}?cluster={{config.cluster}}">
+                                    <a hx-boost="false" href="/account/{{read_account.key}}">
                                         <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
                                                 class=""></span></span><span
                                                 class="font-monospace"><span class="">{{read_account.key}}</span></span>

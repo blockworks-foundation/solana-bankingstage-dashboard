@@ -1,6 +1,7 @@
 import postgres_connection
 import json
 
+
 def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_address=None):
     maprows = postgres_connection.query(
         """
@@ -16,7 +17,8 @@ def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_addres
                ( txi is not null ) AS was_included_in_block,
                txi.cu_requested,
                txi.prioritization_fees,
-               utc_timestamp
+               utc_timestamp,
+               tx_slot.transaction_id
             FROM banking_stage_results_2.transaction_slot tx_slot
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
@@ -29,7 +31,8 @@ def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_addres
                    WHERE account_key = %s
                ))
         ) AS data
-        ORDER BY utc_timestamp DESC
+        -- transaction_id is required as tie breaker
+        ORDER BY utc_timestamp DESC, transaction_id DESC
         LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
@@ -51,11 +54,17 @@ def search_transaction_by_sig(tx_sig: str):
     return maprows
 
 
+def query_transactions_by_address(account_key: str, transaction_row_limit=100):
+    maprows = run_query(transaction_row_limit=transaction_row_limit, filter_account_address=account_key)
+
+    return maprows
+
+
 # return (rows, is_limit_exceeded)
 def search_transactions_by_address(account_key: str) -> (list, bool):
-    maprows = run_query(transaction_row_limit=501, filter_account_address=account_key)
+    maprows = run_query(transaction_row_limit=100, filter_account_address=account_key)
 
-    if len(maprows) == 501:
+    if len(maprows) == 100:
         print("limit exceeded while searching for transactions by address")
         return maprows, True
 
@@ -70,6 +79,7 @@ def map_jsons_in_row(row):
     for errors_json in row["all_errors"]:
         errors.append(json.loads(errors_json))
     row["errors_array"] = errors
+
 
 def main():
     run_query()

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Account Details</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="preconnect" href="https://api.fonts.coollabs.io" crossorigin>
+    <link href="https://api.fonts.coollabs.io/css2?family=Rubik&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+
+    <div class="main-content pb-6">
+
+        {% include "_navbar.html" %}
+
+        <div class="container mt-n2">
+            <div class="header">
+                <div class="header-body"><h6 class="header-pretitle">Details</h6>
+                    <h2 class="header-title">Account {{ account.pubkey }}</h2></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3 class="card-header-title mb-0 d-flex align-items-center">Overview</h3>
+                </div>
+                <div class="table-responsive mb-0">
+                    <table class="table table-sm table-nowrap card-table">
+                        <tbody class="list">
+                        <tr>
+                            <td class="w-100">Account</td>
+                            <td class="text-lg-end font-monospace"><span class="font-monospace"><a href="https://explorer.solana.com//address/{{account.pubkey}}?cluster={{config.cluster}}">{{ account.pubkey }}</a></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="container">
+                <div class="header">
+                    <div class="header-body pt-0">
+                        <ul class="nav nav-tabs nav-overflow header-tabs">
+                            <!-- note: local anchors are not hx-boost'ed -->
+                            <li class="nav-item"><a class="nav-link" href="#recent-blocks">Recent Blocks</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#recent-banking-errors">Recent Banking Errors</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recent-blocks" class="card">
+                <div class="card-header align-items-center"><h3 class="card-header-title">Recent Blocks (holding write-locks)</h3></div>
+
+                <div class="table-responsive mb-0">
+                    <table class="table table-sm table-nowrap card-table">
+                        <thead>
+                        <tr>
+                            <th class="text-muted table-cell-width-slot">Slot</th>
+                            <th class="text-muted text-end table-cell-width-number">CU Consumed</th>
+                            <th class="text-muted text-end table-cell-width-number">Min</th>
+                            <th class="text-muted text-end table-cell-width-number">Median</th>
+                            <th class="text-muted text-end table-cell-width-number">p75</th>
+                            <th class="text-muted text-end table-cell-width-number">p90</th>
+                            <th class="text-muted text-end table-cell-width-number">p95</th>
+                            <th class="text-muted text-end table-cell-width-number">Max</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for block in recent_blocks %}
+                            <tr>
+                                <td>
+                                    <a hx-boost="false" href="/block/{{block.slot}}">
+                                        <div class="d-none d-lg-flex align-items-center "><span class="font-size-tiny me-2"><span
+                                                class=""></span></span><span
+                                                class="font-monospace"><span class="">{{ block.slot | slotnumber }}</span></span>
+                                        </div>
+                                    </a></td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.total_cu_consumed | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.min | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.med | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.p75 | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.p90 | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.p95 | lamports }}
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    <div class="font-monospace">
+                                        {{ block.max | lamports }}
+                                    </div>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-responsive">
+                <div class="card-header align-items-center"><h3 class="card-header-title">Transactions requesting locks</h3></div>
+
+
+                {% include "_txlist.html" %}
+
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+</html>
