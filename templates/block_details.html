@@ -66,12 +66,12 @@
                             <td class="text-lg-end font-monospace"><span>{{ block.banking_stage_errors | map_count or 'n/a'}}</span></td>
                         </tr>
                         <tr>
-                            <td class="w-100">Prioritization Fees Median</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_median | lamports }} micro-lamports/CU</span></td>
-                        </tr>
-                        <tr>
                             <td class="w-100">Prioritization Fees Min</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_min | lamports }} micro-lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees Median</td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_median | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Max</td>
