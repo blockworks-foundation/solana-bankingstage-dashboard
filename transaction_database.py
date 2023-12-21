@@ -2,7 +2,7 @@ import postgres_connection
 import json
 
 
-def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_address=None):
+def run_query(transaction_row_limit=50, filter_txsig=None):
     maprows = postgres_connection.query(
         """
         SELECT * FROM (
@@ -24,25 +24,47 @@ def run_query(transaction_row_limit=50, filter_txsig=None, filter_account_addres
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE true
                 AND (%s or signature = %s)
-                AND (%s or txi.transaction_id in (
-                   SELECT transaction_id
-                   FROM banking_stage_results_2.accounts_map_transaction amt
-                   INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-                   WHERE account_key = %s
-               ))
         ) AS data
         -- transaction_id is required as tie breaker
         ORDER BY utc_timestamp DESC, transaction_id DESC
         LIMIT %s
         """, [
             filter_txsig is None, filter_txsig,
-            filter_account_address is None, filter_account_address,
             transaction_row_limit,
         ])
 
     for index, row in enumerate(maprows):
         row['pos'] = index + 1
         map_jsons_in_row(row)
+
+    return maprows
+
+
+def query_transactions_by_address(account_key: str, transaction_row_limit=100):
+    maprows = postgres_connection.query(
+    """
+        SELECT * FROM (
+            SELECT
+               amt.transaction_id,
+               signature,
+               ( txi is not null ) AS was_included_in_block,
+               txi.cu_requested,
+               txi.prioritization_fees
+            FROM banking_stage_results_2.accounts_map_transaction amt
+            INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=amt.transaction_id
+            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt.transaction_id
+            WHERE account_key = %s
+        ) AS data
+        ORDER BY transaction_id DESC
+        LIMIT %s
+        """, [
+            account_key,
+            transaction_row_limit,
+        ])
+
+    for index, row in enumerate(maprows):
+        row['pos'] = index + 1
 
     return maprows
 
@@ -54,17 +76,11 @@ def search_transaction_by_sig(tx_sig: str):
     return maprows
 
 
-def query_transactions_by_address(account_key: str, transaction_row_limit=100):
-    maprows = run_query(transaction_row_limit=transaction_row_limit, filter_account_address=account_key)
-
-    return maprows
-
-
 # return (rows, is_limit_exceeded)
 def search_transactions_by_address(account_key: str) -> (list, bool):
-    maprows = run_query(transaction_row_limit=100, filter_account_address=account_key)
+    maprows = query_transactions_by_address(transaction_row_limit=101, account_key=account_key)
 
-    if len(maprows) == 100:
+    if len(maprows) == 101:
         print("limit exceeded while searching for transactions by address")
         return maprows, True
 

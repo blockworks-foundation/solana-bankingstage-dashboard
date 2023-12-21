@@ -1,0 +1,47 @@
+<table id="txlist" class="table table-sm table-nowrap card-table">
+    <thead>
+    <tr>
+        <th class="text-muted c-pointer">#</th>
+        <th class="text-muted">In block</th>
+        <th class="text-muted">Transaction Signature</th>
+        <th class="text-muted text-end table-cell-width-number">CU requested</th>
+        <th class="text-muted text-end table-cell-width-number">Prio Fees</th>
+    </tr>
+    </thead>
+    <tbody class="list">
+    {% if limit_exceeded %}
+    <tr>
+        <td colspan="7" class="text-warning">Result was truncated</td>
+    </tr>
+    {% endif %}
+    {% for tx in transactions %}
+    <tr>
+        <td>{{ tx.pos }}</td>
+
+        {% if tx.was_included_in_block %}
+        <td><span class="badge bg-success-soft">Included</span></td>
+        {% else %}
+        <td><span class="badge bg-warning-soft">Excluded</span></td>
+        {% endif %}
+        <td>
+            <div class="d-flex align-items-center font-monospace" style="width:40em">
+                <div class="text-truncate">
+                    <a href="/transaction/{{tx.signature}}">{{ tx.signature }}</a>
+                </div>
+            </div>
+        </td>
+        <td class="text-end font-monospace">
+            <div class="font-monospace text-primary">
+                {{ tx.cu_requested | lamports }}
+            </div>
+        </td>
+        <td class="text-end font-monospace">
+            <div class="font-monospace text-primary">
+                {{ tx.prioritization_fees | lamports }}
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
