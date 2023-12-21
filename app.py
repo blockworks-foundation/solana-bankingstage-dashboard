@@ -159,7 +159,7 @@ def search():
             print("account address search=", search_string)
             (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
             if len(maprows):
-                return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
+                return render_template('_txlistmini.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
