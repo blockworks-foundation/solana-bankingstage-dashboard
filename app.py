@@ -133,16 +133,19 @@ def search_page():
 @webapp.route('/search/<path:searchstring>', methods=["GET"])
 def search_deeplink(searchstring):
     this_config = config.get_config()
-    return "foobar"
+    return search_and_render(searchstring)
 
 
 # please prefix all database methods with "search_" and use them only for search
 @webapp.route('/search', methods=["POST"])
 def search_form():
     assert htmx, "htmx must be enabled"
-    this_config = config.get_config()
-
     search_string = request.form.get("search").strip()
+    return search_and_render(search_string)
+
+
+def search_and_render(search_string):
+    this_config = config.get_config()
 
     if search_string == "":
         return render_template('_search_noresult.html', config=this_config)
