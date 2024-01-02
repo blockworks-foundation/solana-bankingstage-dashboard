@@ -164,7 +164,10 @@ def search():
 
             (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
             if len(maprows):
-                return render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded)
+                return (
+                    render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded),
+                    {'HX-Replace-Url': '/search/account-by-key/' + account['account_key']}
+                )
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
