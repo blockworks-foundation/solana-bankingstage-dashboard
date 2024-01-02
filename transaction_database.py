@@ -49,11 +49,19 @@ def query_transactions_by_address(account_key: str, transaction_row_limit=100):
                signature,
                ( txi is not null ) AS was_included_in_block,
                txi.cu_requested,
-               txi.prioritization_fees
+               txi.prioritization_fees,
+               tx_slot.min_utc_timestamp AS utc_timestamp
             FROM banking_stage_results_2.accounts_map_transaction amt
             INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
             INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=amt.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt.transaction_id
+            LEFT JOIN (
+                SELECT
+                    transaction_id,
+                    min(utc_timestamp) AS min_utc_timestamp
+                FROM banking_stage_results_2.transaction_slot tx_slot
+                GROUP BY transaction_id
+            ) tx_slot ON tx_slot.transaction_id=amt.transaction_id
             WHERE account_key = %s
         ) AS data
         ORDER BY transaction_id DESC
