@@ -126,14 +126,13 @@ def is_account_key(raw_string):
 @webapp.route('/search', methods=["GET"])
 def search_page():
     this_config = config.get_config()
-    print("GET search with", request.args)
     return render_template('search.html', config=this_config)
 
 
 @webapp.route('/search/<path:searchstring>', methods=["GET"])
 def search_deeplink(searchstring):
     this_config = config.get_config()
-    return search_and_render(searchstring)
+    return render_template('search.html', config=this_config, search_string=searchstring)
 
 
 # please prefix all database methods with "search_" and use them only for search
@@ -178,7 +177,7 @@ def search_and_render(search_string):
         if len(maprows):
             return (
                 render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded),
-                {'HX-Replace-Url': '/search/' + search_string}
+                make_search_deeplink_header(search_string)
             )
         else:
             return render_template('_search_noresult.html', config=this_config)
@@ -192,6 +191,9 @@ def search_and_render(search_string):
     else:
         return render_template('_search_unsupported.html', config=this_config, search_string=search_string)
 
+
+def make_search_deeplink_header(search_string):
+    return {'HX-Replace-Url': '/search/' + search_string}
 
 @webapp.route('/transaction/<path:signature>')
 def get_transaction_details(signature):
