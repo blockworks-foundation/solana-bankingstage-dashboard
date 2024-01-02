@@ -123,64 +123,71 @@ def is_account_key(raw_string):
     return re.fullmatch("[0-9a-zA-Z]{32,44}", raw_string) is not None
 
 
+@webapp.route('/search', methods=["GET"])
+def search_page():
+    this_config = config.get_config()
+    print("GET search with", request.args)
+    return render_template('search.html', config=this_config)
+
+
+@webapp.route('/search/<path:searchstring>', methods=["GET"])
+def search_deeplink(searchstring):
+    this_config = config.get_config()
+    return "foobar"
+
 
 # please prefix all database methods with "search_" and use them only for search
-@webapp.route('/search', methods=["GET", "POST"])
-def search():
+@webapp.route('/search', methods=["POST"])
+def search_form():
+    assert htmx, "htmx must be enabled"
     this_config = config.get_config()
 
-    if request.method == "GET":
-        return render_template('search.html', config=this_config)
+    search_string = request.form.get("search").strip()
 
-    if htmx:
-        search_string = request.form.get("search").strip()
+    if search_string == "":
+        return render_template('_search_noresult.html', config=this_config)
 
-        if search_string == "":
+    if is_slot_number(search_string):
+        search_string = search_string.replace(',', '')
+        maprows = list(recent_blocks_database.search_block_by_slotnumber(int(search_string)))
+        if len(maprows):
+            return render_template('_blockslist.html', config=this_config, blocks=maprows)
+        else:
             return render_template('_search_noresult.html', config=this_config)
 
-        if is_slot_number(search_string):
-            search_string = search_string.replace(',', '')
-            maprows = list(recent_blocks_database.search_block_by_slotnumber(int(search_string)))
-            if len(maprows):
-                return render_template('_blockslist.html', config=this_config, blocks=maprows)
-            else:
-                return render_template('_search_noresult.html', config=this_config)
+    is_blockhash = block_details_database.is_matching_blockhash(search_string)
 
-        is_blockhash = block_details_database.is_matching_blockhash(search_string)
-
-        if is_blockhash:
-            print("blockhash search=", search_string)
-            maprows = list(recent_blocks_database.search_block_by_blockhash(search_string))
-            if len(maprows):
-                return render_template('_blockslist.html', config=this_config, blocks=maprows)
-            else:
-                return render_template('_search_noresult.html', config=this_config)
-        elif not is_blockhash and is_b58_44(search_string):
-            print("account address search=", search_string)
-            maprows_account = account_details_database.search_account_by_key(search_string)
-            if len(maprows_account) != 1:
-                return render_template('_search_noresult.html', config=this_config)
-            account = maprows_account[0]
-
-            (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
-            if len(maprows):
-                return (
-                    render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded),
-                    {'HX-Replace-Url': '/search/account-by-key/' + account['account_key']}
-                )
-            else:
-                return render_template('_search_noresult.html', config=this_config)
-        elif is_tx_sig(search_string):
-            print("txsig search=", search_string)
-            maprows = list(transaction_database.search_transaction_by_sig(search_string))
-            if len(maprows):
-                return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
-            else:
-                return render_template('_search_noresult.html', config=this_config)
+    if is_blockhash:
+        print("blockhash search=", search_string)
+        maprows = list(recent_blocks_database.search_block_by_blockhash(search_string))
+        if len(maprows):
+            return render_template('_blockslist.html', config=this_config, blocks=maprows)
         else:
-            return render_template('_search_unsupported.html', config=this_config, search_string=search_string)
+            return render_template('_search_noresult.html', config=this_config)
+    elif not is_blockhash and is_b58_44(search_string):
+        print("account address search=", search_string)
+        maprows_account = account_details_database.search_account_by_key(search_string)
+        if len(maprows_account) != 1:
+            return render_template('_search_noresult.html', config=this_config)
+        account = maprows_account[0]
 
-    return render_template('search.html', config=this_config)
+        (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
+        if len(maprows):
+            return (
+                render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded),
+                {'HX-Replace-Url': '/search/' + search_string}
+            )
+        else:
+            return render_template('_search_noresult.html', config=this_config)
+    elif is_tx_sig(search_string):
+        print("txsig search=", search_string)
+        maprows = list(transaction_database.search_transaction_by_sig(search_string))
+        if len(maprows):
+            return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
+        else:
+            return render_template('_search_noresult.html', config=this_config)
+    else:
+        return render_template('_search_unsupported.html', config=this_config, search_string=search_string)
 
 
 @webapp.route('/transaction/<path:signature>')
