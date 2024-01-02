@@ -31,6 +31,20 @@ def build_account_details(pubkey: str, recent_blocks_row_limit=10, transaction_r
     return account, blocks, transactions
 
 
+# should be 1
+def search_account_by_key(account_key: str):
+    maprows = postgres_connection.query(
+        """
+            SELECT
+                account_key
+            FROM banking_stage_results_2.accounts acc
+            WHERE account_key = %s
+        """, args=[account_key])
+
+    assert len(maprows) <= 1, "Account key is primary key - find zero or one"
+    return maprows
+
+
 def main():
     build_account_details('AfASDKLEWG7Di9HtZDmHKftR1fsMXBtTSxP7qMo9qv7L')
 

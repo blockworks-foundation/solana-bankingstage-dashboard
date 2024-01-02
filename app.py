@@ -157,9 +157,14 @@ def search():
                 return render_template('_search_noresult.html', config=this_config)
         elif not is_blockhash and is_b58_44(search_string):
             print("account address search=", search_string)
+            maprows_account = account_details_database.search_account_by_key(search_string)
+            if len(maprows_account) != 1:
+                return render_template('_search_noresult.html', config=this_config)
+            account = maprows_account[0]
+
             (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
             if len(maprows):
-                return render_template('_txlistmini.html', config=this_config, transactions=maprows, limit_exceeded=is_limit_exceeded)
+                return render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded)
             else:
                 return render_template('_search_noresult.html', config=this_config)
         elif is_tx_sig(search_string):
