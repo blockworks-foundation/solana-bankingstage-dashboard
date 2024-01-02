@@ -153,7 +153,11 @@ def search_and_render(search_string):
         search_string = search_string.replace(',', '')
         maprows = list(recent_blocks_database.search_block_by_slotnumber(int(search_string)))
         if len(maprows):
-            return render_template('_blockslist.html', config=this_config, blocks=maprows)
+            # match
+            return (
+                render_template('_blockslist.html', config=this_config, blocks=maprows),
+                make_search_deeplink_header(search_string)
+            )
         else:
             return render_template('_search_noresult.html', config=this_config)
 
@@ -163,7 +167,11 @@ def search_and_render(search_string):
         print("blockhash search=", search_string)
         maprows = list(recent_blocks_database.search_block_by_blockhash(search_string))
         if len(maprows):
-            return render_template('_blockslist.html', config=this_config, blocks=maprows)
+            # match
+            return (
+                render_template('_blockslist.html', config=this_config, blocks=maprows),
+                make_search_deeplink_header(search_string)
+            )
         else:
             return render_template('_search_noresult.html', config=this_config)
     elif not is_blockhash and is_b58_44(search_string):
@@ -175,6 +183,7 @@ def search_and_render(search_string):
 
         (maprows, is_limit_exceeded) = list(transaction_database.search_transactions_by_address(search_string))
         if len(maprows):
+            # match
             return (
                 render_template('_search_accountresult.html', config=this_config, account=account, transactions=maprows, limit_exceeded=is_limit_exceeded),
                 make_search_deeplink_header(search_string)
@@ -185,7 +194,11 @@ def search_and_render(search_string):
         print("txsig search=", search_string)
         maprows = list(transaction_database.search_transaction_by_sig(search_string))
         if len(maprows):
-            return render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False)
+            # match
+            return (
+                render_template('_txlist.html', config=this_config, transactions=maprows, limit_exceeded=False),
+                make_search_deeplink_header(search_string)
+            )
         else:
             return render_template('_search_noresult.html', config=this_config)
     else:
