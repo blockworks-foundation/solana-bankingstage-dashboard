@@ -71,19 +71,23 @@
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Median</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_median | lamports }} micro-lamports/CU</span></td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.med_cu | lamports }} micro-lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees p75</td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p75_cu | lamports }} micro-lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees p90</td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p90_cu | lamports }} micro-lamports/CU</span></td>
+                        </tr>
+                        <tr>
+                            <td class="w-100">Prioritization Fees p95</td>
+                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p95_cu | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         <tr>
                             <td class="w-100">Prioritization Fees Max</td>
                             <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_max | lamports }} micro-lamports/CU</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Prioritization Fees p75</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_75 | lamports }} micro-lamports/CU</span></td>
-                        </tr>
-                        <tr>
-                            <td class="w-100">Prioritization Fees p90</td>
-                            <td class="text-lg-end font-monospace"><span>{{ block.supp_infos.p_90 | lamports }} micro-lamports/CU</span></td>
                         </tr>
                         {% endif %}
                         </tbody>
