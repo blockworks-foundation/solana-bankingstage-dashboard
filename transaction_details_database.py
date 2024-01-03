@@ -64,31 +64,31 @@ def find_transaction_details_by_sig(tx_sig: str):
 
         row["tx_errors_by_slots"] = tx_errors_by_slots
 
-        # note: sort order will be defined later
-        # note: amb vs amt:
-        # * relation does not exist if the transaction was not included
-        # * in this case the accounts are show but without the infos like prio fee
-        # * accounts linked via amt have no slot relation and thus appear redundantly for all slots
-        # * see tx ACQLVWCGhLurkcPp8a2QfaK9rpoe3opcbWa1TBtijhbQ3X6rMYpDcUaa9usY4b4fwj5pgTWj85wew7WhCEyTHBN for example
-        # * is_write_locked and is_account_write_locked must be the same
-        all_accountinfos = (
-            postgres_connection.query(
-            """
-            SELECT
-             amt.is_writable AS is_account_write_locked,
-             acc.account_key,
-             amb.*
-            FROM banking_stage_results_2.accounts_map_transaction amt
-            INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-            LEFT JOIN banking_stage_results_2.accounts_map_blocks amb ON amb.acc_id=amt.acc_id AND amb.slot IN (SELECT unnest(CAST(%s as bigint[])))
-            WHERE amt.transaction_id = %s
-            ORDER BY amb.total_cu_consumed DESC NULLS LAST, amt.acc_id
-            """, args=[list(relevant_slots), transaction_id]))
-
         block_details_per_slot = dict()
         write_lock_info = dict()
         read_lock_info = dict()
         for relevant_slot in relevant_slots:
+
+            # note: sort order will be defined later
+            # note: amb vs amt:
+            # * relation does not exist if the transaction was not included
+            # * in this case the accounts are show but without the infos like prio fee
+            # * accounts linked via amt have no slot relation and thus appear redundantly for all slots
+            # * see tx ACQLVWCGhLurkcPp8a2QfaK9rpoe3opcbWa1TBtijhbQ3X6rMYpDcUaa9usY4b4fwj5pgTWj85wew7WhCEyTHBN for example
+            # * is_write_locked and is_account_write_locked must be the same
+            all_accountinfos = (
+                postgres_connection.query(
+                    """
+                    SELECT
+                     amt.is_writable AS is_account_write_locked,
+                     acc.account_key,
+                     amb.*
+                    FROM banking_stage_results_2.accounts_map_transaction amt
+                    INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
+                    LEFT JOIN banking_stage_results_2.accounts_map_blocks amb ON amb.acc_id=amt.acc_id AND amb.slot=%s
+                    WHERE amt.transaction_id = %s
+                    ORDER BY amb.total_cu_consumed DESC NULLS LAST, amt.acc_id
+                    """, args=[relevant_slot, transaction_id]))
 
             block_details = recent_blocks_database.run_query(filter_slot=relevant_slot)[0]
             block_details_per_slot[relevant_slot] = block_details
