@@ -3,6 +3,7 @@
     <tr>
         <th class="text-muted c-pointer">#</th>
         <th class="text-muted">In block</th>
+        <th class="text-muted">Timestamp</th>
         <th class="text-muted">Transaction Signature</th>
         <th class="text-muted text-end table-cell-width-number">CU requested</th>
         <th class="text-muted text-end table-cell-width-number">Prio Fees</th>
@@ -23,6 +24,13 @@
         {% else %}
         <td><span class="badge bg-warning-soft">Excluded</span></td>
         {% endif %}
+        <td>
+            <div class="align-items-center">
+                <span class="font-monospace text-muted">
+                    {{ tx.utc_timestamp or '--' }}
+                </span>
+            </div>
+        </td>
         <td>
             <div class="d-flex align-items-center font-monospace" style="width:40em">
                 <div class="text-truncate">
