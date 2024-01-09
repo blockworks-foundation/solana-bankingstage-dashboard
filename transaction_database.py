@@ -45,29 +45,33 @@ def query_transactions_by_address(account_key: str, transaction_row_limit=100):
     """
         SELECT * FROM (
             SELECT
-               amt.transaction_id,
+               amt_txs.transaction_id,
+               sort_nr,
                signature,
                ( txi is not null ) AS was_included_in_block,
                txi.cu_requested,
                txi.prioritization_fees,
                tx_slot.min_utc_timestamp AS utc_timestamp
-            FROM banking_stage_results_2.accounts_map_transaction amt
-            INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt.acc_id
-            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=amt.transaction_id
-            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt.transaction_id
+            FROM banking_stage_results_2.accounts_map_transaction_latest amt_latest
+            -- amt.tx_ids is an array of transaction_ids limited to 1000 (see sidecar LIMIT_LATEST_TXS_PER_ACCOUNT)
+            INNER JOIN unnest(amt_latest.tx_ids) WITH ORDINALITY AS amt_txs(transaction_id, sort_nr) ON true
+            INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt_latest.acc_id
+            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=amt_txs.transaction_id
+            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt_txs.transaction_id
             LEFT JOIN (
                 SELECT
                     transaction_id,
                     min(utc_timestamp) AS min_utc_timestamp
                 FROM banking_stage_results_2.transaction_slot tx_slot
                 GROUP BY transaction_id
-            ) tx_slot ON tx_slot.transaction_id=amt.transaction_id
+            ) tx_slot ON tx_slot.transaction_id=amt_txs.transaction_id
             WHERE account_key = %s
         ) AS data
-        ORDER BY transaction_id DESC
+        ORDER BY sort_nr DESC
         LIMIT %s
         """, [
             account_key,
+            # note: there is only a limited number of transaction ids per account stored in the postgres array amt_latest.tx_ids
             transaction_row_limit,
         ])
 
