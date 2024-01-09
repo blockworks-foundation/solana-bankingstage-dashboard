@@ -20,22 +20,17 @@
 
             <div class="card-header align-items-center bg-secondary">
                 <h2 class="card-header-title">
-                    Ooops - something went wrong!
+                    Requested page or object not found
                 </h2>
 
             </div>
 
             <div class="card-body bg-warning-soft">
-                What you can do:
+                Details
                 <ul>
-                    <li>Try again later.</li>
-                    <li>Navigate to another page using the navbar.</li>
-                    <li> Contact the administrator of this site.</li>
+                    <li>Object-Type: {{ object_type }}</li>
+                    <li>Object-ID: {{ object_id }}</li>
                 </ul>
-            </div>
-            <div class="card-body bg-secondary-soft">
-                Error message:
-                <pre class="p-4 text-start text-white-50">{{ exception }}</pre>
             </div>
 
     </div>
