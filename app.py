@@ -1,3 +1,5 @@
+from http.client import HTTPException
+
 from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
@@ -82,10 +84,15 @@ def get_block(slot):
     this_config = config.get_config()
     start = time.time()
     block = block_details_database.find_block_by_slotnumber(slot)
+    print("block=", block)
+    if block is None:
+        return "Invalid block", 404
+
     elapsed = time.time() - start
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
     return render_template('block_details.html', config=this_config, block=block)
+
 
 @webapp.route('/account/<path:pubkey>')
 def get_account(pubkey):
@@ -219,7 +226,7 @@ def get_transaction_details(signature):
     if len(maprows):
         return render_template('transaction_details.html', config=this_config, transaction=maprows[0])
     else:
-        return "Transaction not found", 404
+        return render_not_found(object_type="Transaction", object_id=signature)
 
 
 # format 123456789 to "123,456,789"
@@ -282,3 +289,21 @@ def timestamp_filter(dt: datetime):
         except TypeError:
             print("FIELD_ERROR in template filter")
             return "FIELD_ERROR"
+
+
+def render_not_found(object_type, object_id):
+    this_config = config.get_config()
+    return render_template("404_errorpage.html", config=this_config, object_type=object_type, object_id=object_id), 404
+
+
+@webapp.errorhandler(404)
+def resource_not_found(e):
+    print("ERROR 404 (will show 404_errorpage.html)", request.url)
+    return render_not_found(object_type="URL", object_id=request.url)
+
+
+@webapp.errorhandler(Exception)
+def handle_exception(e):
+    this_config = config.get_config()
+    print("APPLICATION ERROR (will show 500_errorpage.html): ", e)
+    return render_template("500_errorpage.html", exception=e, config=this_config), 500
