@@ -84,10 +84,6 @@ def get_block(slot):
     this_config = config.get_config()
     start = time.time()
     block = block_details_database.find_block_by_slotnumber(slot)
-    print("block=", block)
-    if block is None:
-        return "Invalid block", 404
-
     elapsed = time.time() - start
     if elapsed > .5:
         print("block_details_database.find_block_by_slotnumber() took", elapsed, "seconds")
@@ -214,6 +210,7 @@ def search_and_render(search_string):
 
 def make_search_deeplink_header(search_string):
     return {'HX-Replace-Url': '/search/' + search_string}
+
 
 @webapp.route('/transaction/<path:signature>')
 def get_transaction_details(signature):
