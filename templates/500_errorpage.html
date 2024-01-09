@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Search Block</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="preconnect" href="https://api.fonts.coollabs.io" crossorigin>
+    <link href="https://api.fonts.coollabs.io/css2?family=Rubik&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='a72bf4ce55ad4320.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+
+<div class="main-content pb-6">
+
+    {% include "_navbar.html" %}
+
+    <div class="container-fluid">
+
+            <div class="card-header align-items-center bg-secondary">
+                <h2 class="card-header-title">
+                    Ooops - something went wrong!
+                </h2>
+
+            </div>
+
+            <div class="card-body bg-warning-soft">
+                What you can do:
+                <ul>
+                    <li>Try again later.</li>
+                    <li>Navigate to another page using the navbar.</li>
+                    <li> Contact the administrator of this site.</li>
+                </ul>
+            </div>
+            <div class="card-body bg-secondary-soft">
+                Error message:
+                <pre class="p-4 text-start text-white-50">{{ e }}</pre>
+            </div>
+
+    </div>
+
+</div>
+</body>
+</html>

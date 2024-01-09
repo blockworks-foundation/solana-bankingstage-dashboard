@@ -1,3 +1,5 @@
+from http.client import HTTPException
+
 from flask import Flask, render_template, request, make_response, redirect
 from flask_htmx import HTMX
 import time
@@ -282,3 +284,20 @@ def timestamp_filter(dt: datetime):
         except TypeError:
             print("FIELD_ERROR in template filter")
             return "FIELD_ERROR"
+
+
+@webapp.errorhandler(HTTPException)
+def handle_exception(e):
+    print("HTTPException", e)
+    return "foobar", 400
+
+
+@webapp.errorhandler(Exception)
+def handle_exception(e):
+    this_config = config.get_config()
+    # pass through HTTP errors
+    if isinstance(e, HTTPException):
+        return e
+
+    # now you're handling non-HTTP exceptions only
+    return render_template("500_errorpage.html", e=e, config=this_config), 500
