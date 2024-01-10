@@ -10,29 +10,32 @@ def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
         """
+        WITH tx_slot_data AS (
+            SELECT
+                transaction_id,
+                min(slot) AS first_slot,
+                min(utc_timestamp) AS min_utc_timestamp
+            FROM banking_stage_results_2.transaction_slot tx_slot
+            GROUP BY transaction_id
+        )
         SELECT
-            tx_slot_agg.transaction_id,
-            tx_slot_agg.signature,
-            tx_slot_agg.first_slot AS first_notification_slot,
-            tx_slot_agg.min_utc_timestamp AS utc_timestamp,
+            txs.transaction_id,
+            txs.signature,
+            -- optional fieds from transaction_slot
+            tx_slot_data.transaction_id,
+            tx_slot_data.first_slot AS first_notification_slot,
+            tx_slot_data.min_utc_timestamp AS utc_timestamp,
             -- optional fields from transaction_infos
             txi.is_successful,
             txi.processed_slot,
             txi.cu_requested,
             txi.prioritization_fees
-        FROM (
-            SELECT
-                signature,
-                -- note: min() is arbitrary
-                min(tx_slot.transaction_id) AS transaction_id,
-                min(slot) AS first_slot, min(utc_timestamp) AS min_utc_timestamp
-            FROM banking_stage_results_2.transaction_slot tx_slot
-            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
-            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
-            WHERE txs.signature = %s
-            GROUP BY signature
-        ) as tx_slot_agg
-        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot_agg.transaction_id
+        FROM banking_stage_results_2.transactions txs
+        LEFT JOIN tx_slot_data ON tx_slot_data.transaction_id=txs.transaction_id
+        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=txs.transaction_id
+        WHERE true
+            AND (tx_slot_data IS NOT NULL OR txi IS NOT NULL)
+            AND txs.signature = %s
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
