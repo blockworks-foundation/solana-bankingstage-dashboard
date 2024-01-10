@@ -8,19 +8,20 @@ def run_query(transaction_row_limit=50, filter_txsig=None):
         SELECT * FROM (
             SELECT
                 signature,
+                txi.transaction_id,
                 ( SELECT count(distinct slot) FROM banking_stage_results_2.transaction_slot WHERE transaction_id=tx_slot.transaction_id ) AS num_relative_slots,
-            (
+                (
                    SELECT ARRAY_AGG(json_build_object('slot', tx_slot.slot, 'error', err.error_text, 'count', count)::text)
                    FROM banking_stage_results_2.errors err
                    WHERE err.error_code=tx_slot.error_code
                ) AS all_errors,
+               tx_slot.utc_timestamp,
+               -- optional fields from transaction_infos
                ( txi is not null ) AS was_included_in_block,
                txi.cu_requested,
-               txi.prioritization_fees,
-               utc_timestamp,
-               tx_slot.transaction_id
-            FROM banking_stage_results_2.transaction_slot tx_slot
-            INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot.transaction_id
+               txi.prioritization_fees
+            FROM banking_stage_results_2.transactions txs
+            INNER JOIN banking_stage_results_2.transaction_slot tx_slot ON tx_slot.transaction_id=txs.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE true
                 AND (%s or signature = %s)
