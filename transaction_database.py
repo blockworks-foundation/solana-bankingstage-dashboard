@@ -64,9 +64,12 @@ def query_transactions_by_address(account_key: str, transaction_row_limit=100):
         INNER JOIN unnest(amt_latest.tx_ids) WITH ORDINALITY AS amt_txs(transaction_id, sort_nr) ON true
         INNER JOIN banking_stage_results_2.accounts acc ON acc.acc_id=amt_latest.acc_id
         INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=amt_txs.transaction_id
-        INNER JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt_txs.transaction_id
         LEFT JOIN tx_slot_data ON tx_slot_data.transaction_id=amt_txs.transaction_id
-        WHERE account_key = %s
+        LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=amt_txs.transaction_id
+        WHERE true
+            -- note: check for txi is actually useless ATM as txi is always updated aling with amt_latest
+            AND (tx_slot_data IS NOT NULL OR txi IS NOT NULL)
+            AND account_key = %s
         ORDER BY sort_nr DESC
         LIMIT %s
         """, [
