@@ -90,11 +90,12 @@ def search_transaction_by_sig(tx_sig: str):
 
 # return (rows, is_limit_exceeded)
 def search_transactions_by_address(account_key: str) -> (list, bool):
-    maprows = query_transactions_by_address(transaction_row_limit=101, account_key=account_key)
+    page_size = 10
+    maprows = query_transactions_by_address(transaction_row_limit=page_size+1, account_key=account_key)
 
-    if len(maprows) == 101:
+    if len(maprows) == page_size+1:
         print("limit exceeded while searching for transactions by address")
-        return maprows, True
+        return maprows[:page_size], True
 
     return maprows, False
 
