@@ -90,7 +90,10 @@ def find_transaction_details_by_sig(tx_sig: str):
                     ORDER BY amb.total_cu_consumed DESC NULLS LAST, amt.acc_id
                     """, args=[relevant_slot, transaction_id]))
 
-            block_details = recent_blocks_database.run_query(filter_slot=relevant_slot)[0]
+            related_blocks = recent_blocks_database.run_query(filter_slot=relevant_slot)
+            if len(related_blocks) != 1:
+                raise Exception("Expected exactly one block for slot %s" % relevant_slot)
+            block_details = related_blocks[0]
             block_details_per_slot[relevant_slot] = block_details
 
             account_info_expanded = []
