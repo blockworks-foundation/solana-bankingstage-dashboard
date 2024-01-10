@@ -20,7 +20,9 @@ def find_transaction_details_by_sig(tx_sig: str):
         )
         SELECT
             txs.transaction_id,
-            signature,
+            txs.signature,
+            -- optional fieds from transaction_slot
+            tx_slot_data.transaction_id,
             tx_slot_data.first_slot AS first_notification_slot,
             tx_slot_data.min_utc_timestamp AS utc_timestamp,
             -- optional fields from transaction_infos
@@ -28,10 +30,12 @@ def find_transaction_details_by_sig(tx_sig: str):
             txi.processed_slot,
             txi.cu_requested,
             txi.prioritization_fees
-        FROM tx_slot_data
-        INNER JOIN banking_stage_results_2.transactions txs ON txs.transaction_id=tx_slot_data.transaction_id
+        FROM banking_stage_results_2.transactions txs
+        LEFT JOIN tx_slot_data ON tx_slot_data.transaction_id=txs.transaction_id
         LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=txs.transaction_id
-        WHERE txs.signature = %s
+        WHERE true
+            AND (tx_slot_data IS NOT NULL OR txi IS NOT NULL)
+            AND txs.signature = %s
         """, args=[tx_sig])
 
     assert len(maprows) <= 1, "Tx Sig is primary key - find zero or one"
