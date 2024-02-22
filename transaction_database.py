@@ -2,6 +2,7 @@ import postgres_connection
 import json
 
 
+# note: query must be compatible with find_transaction_details_by_sig
 def run_query(transaction_row_limit=50, filter_txsig=None):
     maprows = postgres_connection.query(
         """
@@ -21,7 +22,7 @@ def run_query(transaction_row_limit=50, filter_txsig=None):
                txi.cu_requested,
                txi.prioritization_fees
             FROM banking_stage_results_2.transactions txs
-            INNER JOIN banking_stage_results_2.transaction_slot tx_slot ON tx_slot.transaction_id=txs.transaction_id
+            LEFT JOIN banking_stage_results_2.transaction_slot tx_slot ON tx_slot.transaction_id=txs.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE true
                 AND (%s or signature = %s)
