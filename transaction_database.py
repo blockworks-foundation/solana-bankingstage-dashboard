@@ -25,6 +25,7 @@ def run_query(transaction_row_limit=50, filter_txsig=None):
             LEFT JOIN banking_stage_results_2.transaction_slot tx_slot ON tx_slot.transaction_id=txs.transaction_id
             LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
             WHERE true
+                AND (tx_slot IS NOT NULL OR txi IS NOT NULL)
                 AND (%s or signature = %s)
         ) AS data
         -- transaction_id is required as tie breaker
