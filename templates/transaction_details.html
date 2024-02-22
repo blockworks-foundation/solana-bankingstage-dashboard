@@ -92,6 +92,12 @@
                 </div>
             </div>
 
+            {% if not transaction.relevant_slots %}
+                <div class="card">
+                    <div class="card-header align-items-center"><h3 class="card-header-title text-warning">No relevant slots</h3></div>
+                </div>
+            {% endif %}
+
             {% for slot in transaction.relevant_slots %}
             {% set block_details = transaction.block_details_per_slot[slot] %}
                 <div id="relevant-slot-{{slot}}" class="card">

@@ -2,10 +2,10 @@ import postgres_connection
 import json
 
 import recent_blocks_database
-import transaction_database
 from collections import defaultdict
 
 
+# note: query must be compatible with transaction_database.run_query
 def find_transaction_details_by_sig(tx_sig: str):
     # transaction table primary key is used
     maprows = postgres_connection.query(
