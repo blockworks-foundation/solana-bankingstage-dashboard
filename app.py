@@ -302,5 +302,11 @@ def resource_not_found(e):
 @webapp.errorhandler(Exception)
 def handle_exception(e):
     this_config = config.get_config()
-    print("APPLICATION ERROR (will show 500_errorpage.html): ", e)
-    return render_template("500_errorpage.html", exception=e, config=this_config), 500
+
+    if e.__cause__ is not None:
+        errortext = "{exception} ({cause})".format(exception = e, cause = e.__cause__)
+    else:
+        errortext = "{exception}".format(exception = e)
+
+    print("APPLICATION ERROR (will show 500_errorpage.html): ", errortext)
+    return render_template("500_errorpage.html", exception=errortext, config=this_config), 500

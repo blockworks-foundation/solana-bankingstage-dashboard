@@ -60,9 +60,16 @@ def query(statement, args=[]):
                 elapsed_total_ms = (time.time() - start) * 1000
                 keys = [k[0] for k in cursor.description]
                 maprows = [dict(zip(keys, row)) for row in cursor]
+            except pg8000.InterfaceError as ex:
+                print("Interface error: ", ex, "(%s)" % ex.__cause__, statement)
+                raise ex
             except Exception as ex:
                 print("Exception executing statement:", ex, statement)
                 raise ex
+
+    # NB. There is a longstanding bug in the PostgreSQL server whereby if a COMMIT
+    # is issued against a failed transaction, the transaction is silently rolled back,
+    # rather than an error being returned. pg8000 attempts to detect when this has happened and raise an InterfaceError.
 
     if elapsed_total_ms > 400:
         print("SLOW Database Query took", "%.2fms" % elapsed_total_ms, "(conn=" + "%.2f" % elapsed_connect_ms + "ms)")
