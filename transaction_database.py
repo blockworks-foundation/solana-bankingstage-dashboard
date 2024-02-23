@@ -3,6 +3,8 @@ import json
 
 
 # note: query must be compatible with find_transaction_details_by_sig
+# for tx-error list we want only transactions with tx_slot entry
+# for tx search we want both tx_slot and tx_infos
 def run_query(transaction_row_limit=50, filter_txsig=None):
     maprows = postgres_connection.query(
         """
@@ -26,7 +28,7 @@ def run_query(transaction_row_limit=50, filter_txsig=None):
             {join_tx_slot} banking_stage_results_2.transaction_slot tx_slot USING (transaction_id)
             LEFT JOIN banking_stage_results_2.transaction_infos txi USING (transaction_id)
             WHERE true
-                AND (%s or signature = %s)
+                AND (%s or signature = %s AND (tx_slot IS NOT NULL OR txi IS NOT NULL))
         ) AS data
         -- transaction_id is required as tie breaker
         ORDER BY utc_timestamp DESC, transaction_id DESC
