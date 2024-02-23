@@ -22,16 +22,19 @@ def run_query(transaction_row_limit=50, filter_txsig=None):
                txi.cu_requested,
                txi.prioritization_fees
             FROM banking_stage_results_2.transactions txs
-            LEFT JOIN banking_stage_results_2.transaction_slot tx_slot ON tx_slot.transaction_id=txs.transaction_id
-            LEFT JOIN banking_stage_results_2.transaction_infos txi ON txi.transaction_id=tx_slot.transaction_id
+            -- INNER JOIN / LEFT JOIN
+            {join_tx_slot} banking_stage_results_2.transaction_slot tx_slot USING (transaction_id)
+            LEFT JOIN banking_stage_results_2.transaction_infos txi USING (transaction_id)
             WHERE true
-                AND (tx_slot IS NOT NULL OR txi IS NOT NULL)
                 AND (%s or signature = %s)
         ) AS data
         -- transaction_id is required as tie breaker
         ORDER BY utc_timestamp DESC, transaction_id DESC
         LIMIT %s
-        """, [
+        """
+        # this approach is a bit ugly, but the performance of LEFT JOIN + WHERE not null is terrible
+        .format(join_tx_slot = "INNER JOIN" if filter_txsig is None else "LEFT JOIN"),
+    [
             filter_txsig is None, filter_txsig,
             transaction_row_limit,
         ])
