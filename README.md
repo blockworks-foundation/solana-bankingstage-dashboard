@@ -13,7 +13,7 @@ Production - contact us for Link
 
 ![Transaction Details](docs/tx-details-writelocked-accounts.png "Blocks Content")
 
-##### List of Blocks with fill rate / errors / total tx
+##### List of Blocks with fill ratio / errors / total tx
 
 ![Recent Blocks](docs/recent-blocks-list.png "Recent Blocks")
 
