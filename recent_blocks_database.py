@@ -17,7 +17,7 @@ def calc_figures(row):
     row['txerrors'] = txerrors
 
 
-def calc_bars(row):
+def calc_bar_block_content(row):
     successful_transactions = row['successful_transactions']
     processed_transactions = row['processed_transactions']
     banking_stage_errors = row['banking_stage_errors'] or 0
@@ -49,6 +49,18 @@ def calc_bars(row):
         row['bar_bankingerror_scaled'] = format_width_percentage(lc - lb)
     else:
         row['hide_bar'] = True
+
+
+def calc_bar_block_fill(row):
+    total_cu_used = row['total_cu_used']
+    total_cu_unused = 48000000 - total_cu_used
+    total = 48000000
+    a = total_cu_used / total
+    b = total_cu_unused / total
+
+    row['bar_cu_consumed'] = format_width_percentage(a)
+    row['bar_cu_unused'] = format_width_percentage(b)
+    row['total_cu_used_mn'] = format(total_cu_used / 1000000, "#.1f") + "M"
 
 
 def run_query(to_slot=None, blocks_row_limit=100, filter_slot=None, filter_blockhash=None):
@@ -85,7 +97,8 @@ def run_query(to_slot=None, blocks_row_limit=100, filter_slot=None, filter_block
         ])
 
     for row in maprows:
-        calc_bars(row)
+        calc_bar_block_content(row)
+        calc_bar_block_fill(row)
         calc_figures(row)
         row["prioritization_fees"] = json.loads(row['supp_infos'])
 

@@ -4,12 +4,14 @@
     <tr>
         <th class="text-muted"></th>
         <th class="text-muted"></th>
+        <th class="text-muted"></th>
         <th colspan="3" class="text-center text-muted">Txs in block</th>
         <th colspan="4" class="text-muted text-center">Block Prioritization Fees</th>
     </tr>
     <tr>
         <th class="text-muted">Slot #</th>
         <th class="text-muted">Block content (lin scale)</th>
+        <th class="text-muted">Block fill rate</th>
         <th class="text-muted text-end table-cell-width-number">processed</th>
         <th class="text-muted text-end table-cell-width-number">error</th>
         <th class="text-muted text-end table-cell-width-number">banking stage</th>
@@ -50,6 +52,18 @@
                     {% endif %}
                 </div>
 
+            </td>
+            <td>
+                <div style="width:20em">
+                    <div class="progress">
+                        <div class="progress-bar bg-info-soft" role="progressbar" style="width:{{ block.bar_cu_consumed }}">
+                            <span class="overflow-hidden">{{ block.total_cu_used_mn }}</span>
+                        </div>
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width:{{ block.bar_cu_unused }}">
+                            <span class="overflow-hidden">{{ block.bar_cu_unused }}</span>
+                        </div>
+                    </div>
+                </div>
             </td>
             <td class="text-end">
 
