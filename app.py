@@ -32,7 +32,7 @@ print("LOCALE", locale.getlocale())
 
 @webapp.route('/')
 def index():
-    return redirect("/tx-errors", code=302)
+    return redirect("/recent-blocks", code=302)
 
 
 # fly.io service health check
