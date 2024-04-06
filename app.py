@@ -43,7 +43,7 @@ def health():
 
 @webapp.route('/dashboard')
 def dashboard():
-    return redirect("/tx-errors", code=302)
+    return redirect("/recent-blocks", code=302)
 
 
 @webapp.route('/tx-errors')
